@@ -1,20 +1,4 @@
-
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Society Announcements',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: AnnouncementHome(),
-    );
-  }
-}
 
 class Announcement {
   final String title;
