@@ -51,9 +51,26 @@ class _HomePageState extends State<HomePage> {
                     child: const Text('Pick Image'),
                   )
                 else ...[
-                  Text(
-                    _pickedImage!.name,
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  Row(
+                    children: [
+                      const Icon(Icons.image, size: 18),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          _pickedImage!.name,
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close, size: 18),
+                        onPressed: () {
+                          setState(() {
+                            _pickedImage = null;
+                          });
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 8),
                   (_pickedImage!.path.isNotEmpty && File(_pickedImage!.path).existsSync())
