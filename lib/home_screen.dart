@@ -17,6 +17,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final List<Map<String, dynamic>> societies = [];
   final List<Map<String, dynamic>> joinedSocieties = [];
+  final List<Map<String, String>> announcements = [
+    // Example announcement
+    // {'societyName': 'Badminton', 'announcement': 'Badminton practice this Friday!'}
+  ];
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descController = TextEditingController();
   XFile? _pickedImage;
@@ -222,34 +226,67 @@ class _HomePageState extends State<HomePage> {
                         itemCount: joinedSocieties.length,
                         itemBuilder: (context, index) {
                           final society = joinedSocieties[index];
-                          return Card(
-                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            child: Container(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    height: 280,
-                                    color: Colors.grey[300],
-                                    child: kIsWeb
-                                        ? (society['image'] != null
-                                            ? Image.memory(society['image'], fit: BoxFit.cover)
-                                            : const Center(child: Text('Image Placeholder')))
-                                        : (society['image'] != null
-                                            ? Image.file(File(society['image']), fit: BoxFit.cover)
-                                            : const Center(child: Text('Image Placeholder'))),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  const Divider(),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    society['name'] ?? '',
-                                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Text(society['desc'] ?? ''),
-                                ],
+                          return InkWell(
+                            onTap: () {
+                              final relevantAnnouncements = announcements
+                                  .where((a) => a['societyName'] == society['name'])
+                                  .toList();
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text(society['name'] ?? 'Society Announcements'),
+                                    content: SizedBox(
+                                      width: 350,
+                                      height: 400,
+                                      child: relevantAnnouncements.isEmpty
+                                          ? const Text('No announcements for this group.')
+                                          : ListView.builder(
+                                              itemCount: relevantAnnouncements.length,
+                                              itemBuilder: (context, idx) => ListTile(
+                                                title: Text(relevantAnnouncements[idx]['announcement'] ?? ''),
+                                              ),
+                                            ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.of(context).pop(),
+                                        child: const Text('Close'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: Card(
+                              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      height: 280,
+                                      color: Colors.grey[300],
+                                      child: kIsWeb
+                                          ? (society['image'] != null
+                                              ? Image.memory(society['image'], fit: BoxFit.cover)
+                                              : const Center(child: Text('Image Placeholder')))
+                                          : (society['image'] != null
+                                              ? Image.file(File(society['image']), fit: BoxFit.cover)
+                                              : const Center(child: Text('Image Placeholder'))),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    const Divider(),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      society['name'] ?? '',
+                                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(society['desc'] ?? ''),
+                                  ],
+                                ),
                               ),
                             ),
                           );
