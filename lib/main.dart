@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'announcements.dart';
+import 'home_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -48,18 +49,6 @@ class _MainTabsState extends State<MainTabs> {
           BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
         ],
       ),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Home')),
-      body: const Center(child: Text('Home feed goes here')),
     );
   }
 }
