@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final List<Map<String, dynamic>> societies = [];
+  final List<Map<String, dynamic>> joinedSocieties = [];
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descController = TextEditingController();
   XFile? _pickedImage;
@@ -177,8 +178,8 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Join Request Sent'),
-          content: const Text('Your join request has been sent to an admin.'),
+          title: const Text('Joined Society'),
+          content: const Text('You have joined this society.'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -190,63 +191,131 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _joinSociety(int index) {
+    setState(() {
+      joinedSocieties.add(societies[index]);
+      societies.removeAt(index);
+    });
+    _showJoinConfirmation(joinedSocieties.last['name'] ?? '');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Home')),
-      body: societies.isEmpty
+      body: (societies.isEmpty && joinedSocieties.isEmpty)
           ? const Center(child: Text('No societies yet.'))
-          : ListView.builder(
-              itemCount: societies.length,
-              itemBuilder: (context, index) {
-                final society = societies[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: 280,
-                          color: Colors.grey[300],
-                          child: kIsWeb
-                            ? (society['image'] != null
-                                ? Image.memory(society['image'], fit: BoxFit.cover)
-                                : const Center(child: Text('Image Placeholder')))
-                            : (society['image'] != null
-                                ? Image.file(File(society['image']), fit: BoxFit.cover)
-                                : const Center(child: Text('Image Placeholder'))),
-                        ),
-                        const SizedBox(height: 8),
-                        const Divider(),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                society['name'] ?? '',
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                ),
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (joinedSocieties.isNotEmpty) ...[
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Text('Joined Societies', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: joinedSocieties.length,
+                        itemBuilder: (context, index) {
+                          final society = joinedSocieties[index];
+                          return Card(
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    height: 280,
+                                    color: Colors.grey[300],
+                                    child: kIsWeb
+                                        ? (society['image'] != null
+                                            ? Image.memory(society['image'], fit: BoxFit.cover)
+                                            : const Center(child: Text('Image Placeholder')))
+                                        : (society['image'] != null
+                                            ? Image.file(File(society['image']), fit: BoxFit.cover)
+                                            : const Center(child: Text('Image Placeholder'))),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Divider(),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    society['name'] ?? '',
+                                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(society['desc'] ?? ''),
+                                ],
                               ),
                             ),
-                            ElevatedButton(
-                              onPressed: () {
-                                _showJoinConfirmation(society['name'] ?? '');
-                              },
-                              child: const Text('Join'),
+                          );
+                        },
+                      ),
+                    ],
+                    if (societies.isNotEmpty) ...[
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Text('Available Societies', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: societies.length,
+                        itemBuilder: (context, index) {
+                          final society = societies[index];
+                          return Card(
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    height: 280,
+                                    color: Colors.grey[300],
+                                    child: kIsWeb
+                                        ? (society['image'] != null
+                                            ? Image.memory(society['image'], fit: BoxFit.cover)
+                                            : const Center(child: Text('Image Placeholder')))
+                                        : (society['image'] != null
+                                            ? Image.file(File(society['image']), fit: BoxFit.cover)
+                                            : const Center(child: Text('Image Placeholder'))),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Divider(),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          society['name'] ?? '',
+                                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          _joinSociety(index);
+                                        },
+                                        child: const Text('Join'),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(society['desc'] ?? ''),
+                                ],
+                              ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Text(society['desc'] ?? ''),
-                      ],
-                    ),
-                  ),
-                );
-              },
+                          );
+                        },
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
