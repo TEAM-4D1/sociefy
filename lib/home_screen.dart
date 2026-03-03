@@ -2,6 +2,8 @@
 //The logo should be rendered at the top left of the screen here
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,9 +13,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<Map<String, String>> societies = [];
+  final List<Map<String, String?>> societies = [];
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descController = TextEditingController();
+  XFile? _pickedImage;
+
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      _pickedImage = image;
+    });
+  }
 
   void _showCreateSocietyDialog() {
     showDialog(
@@ -21,24 +32,36 @@ class _HomePageState extends State<HomePage> {
       builder: (context) {
         return AlertDialog(
           title: const Text('Create Society'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Society Name'),
-              ),
-              TextField(
-                controller: descController,
-                decoration: const InputDecoration(labelText: 'Description'),
-              ),
-            ],
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Society Name'),
+                ),
+                TextField(
+                  controller: descController,
+                  decoration: const InputDecoration(labelText: 'Description'),
+                ),
+                const SizedBox(height: 8),
+                _pickedImage == null
+                    ? TextButton(
+                        onPressed: _pickImage,
+                        child: const Text('Pick Image'),
+                      )
+                    : Image.file(File(_pickedImage!.path), height: 120),
+              ],
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () {
                 nameController.clear();
                 descController.clear();
+                setState(() {
+                  _pickedImage = null;
+                });
                 Navigator.of(context).pop();
               },
               child: const Text('Cancel'),
@@ -50,7 +73,9 @@ class _HomePageState extends State<HomePage> {
                     societies.add({
                       'name': nameController.text,
                       'desc': descController.text,
+                      'image': _pickedImage?.path,
                     });
+                    _pickedImage = null;
                   });
                   nameController.clear();
                   descController.clear();
@@ -97,41 +122,41 @@ class _HomePageState extends State<HomePage> {
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Container(
                     padding: const EdgeInsets.all(16),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            height: 280, // Increased height for image placeholder (4x larger)
-                            color: Colors.grey[300],
-                            child: const Center(child: Text('Image Placeholder')),
-                          ),
-                          const SizedBox(height: 8),
-                          const Divider(), // Line dividing image and title
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  society['name'] ?? '',
-                                  style: const TextStyle(
-                                    fontSize: 22, // Larger font for title
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 280,
+                          color: Colors.grey[300],
+                          child: society['image'] != null
+                              ? Image.file(File(society['image']!), fit: BoxFit.cover)
+                              : const Center(child: Text('Image Placeholder')),
+                        ),
+                        const SizedBox(height: 8),
+                        const Divider(),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                society['name'] ?? '',
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  _showJoinConfirmation(society['name'] ?? ''); 
-                                },
-                                child: const Text('Join'),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-                          Text(society['desc'] ?? ''),
-                        ],
-                      ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                _showJoinConfirmation(society['name'] ?? '');
+                              },
+                              child: const Text('Join'),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(society['desc'] ?? ''),
+                      ],
                     ),
                   ),
                 );
