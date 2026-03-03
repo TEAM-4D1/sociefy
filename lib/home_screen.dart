@@ -177,8 +177,8 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Joined Society'),
-          content: Text('You have successfully joined "$societyName".'),
+          title: const Text('Join Request Sent'),
+          content: const Text('Your join request has been sent to an admin.'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
