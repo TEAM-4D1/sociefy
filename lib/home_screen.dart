@@ -45,12 +45,21 @@ class _HomePageState extends State<HomePage> {
                   decoration: const InputDecoration(labelText: 'Description'),
                 ),
                 const SizedBox(height: 8),
-                _pickedImage == null
-                    ? TextButton(
-                        onPressed: _pickImage,
-                        child: const Text('Pick Image'),
-                      )
-                    : Image.file(File(_pickedImage!.path), height: 120),
+                if (_pickedImage == null)
+                  TextButton(
+                    onPressed: _pickImage,
+                    child: const Text('Pick Image'),
+                  )
+                else ...[
+                  Text(
+                    _pickedImage!.name,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 8),
+                  (_pickedImage!.path.isNotEmpty && File(_pickedImage!.path).existsSync())
+                      ? Image.file(File(_pickedImage!.path), height: 120)
+                      : const SizedBox.shrink(),
+                ],
               ],
             ),
           ),
