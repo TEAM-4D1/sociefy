@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'main_tabs.dart';
 
 /// Simplified sign-in screen: only a "Sign in with UoP" button.
 /// Pressing the button immediately calls [onSignedIn] so the app can navigate
@@ -13,8 +14,14 @@ class SignInScreen extends StatelessWidget {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Signing in with UoP...')));
-    // Immediately proceed to the app for now (no verification).
-    onSignedIn?.call();
+    // If a callback was provided use it; otherwise navigate using this context.
+    if (onSignedIn != null) {
+      onSignedIn!.call();
+    } else {
+      Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const MainTabs()));
+    }
   }
 
   @override
