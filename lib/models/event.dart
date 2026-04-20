@@ -23,18 +23,7 @@ class Event {
     required this.isSaved,
   });
 
-  Event copyWith({bool? isSaved}) {
-    return Event(
-      id: id,
-      societyId: societyId,
-      societyName: societyName,
-      title: title,
-      description: description,
-      date: date,
-      startTime: startTime,
-      endTime: endTime,
-      venue: venue,
-      isSaved: isSaved ?? this.isSaved,
-    );
+  String get formattedDate {
+    return "${date.day}/${date.month}/${date.year}";
   }
 }
