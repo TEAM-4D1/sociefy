@@ -1,28 +1,16 @@
-import 'package:flutter/foundation.dart';
+
 import '../models/society.dart';
 import '../models/event.dart';
+
+import 'package:flutter/foundation.dart';
 
 class AppState extends ChangeNotifier {
   bool _isAuthenticated = false;
   String? userId;
   bool isAdmin = false;
 
-<<<<<<< HEAD
-  void login({String? userId, bool isAdmin = false}) {
-    isAuthenticated = true;
-    this.userId = userId ?? this.userId;
-    this.isAdmin = isAdmin;
-=======
-  // =====================
-  // STATE STORAGE (IDs only)
-  // =====================
-
   final List<String> _joinedSocietyIds = [];
   final List<String> _savedEventIds = [];
-
-  // =====================
-  // SOCIETIES (CLEAN MODEL)
-  // =====================
 
   final List<Society> _societies = [
     Society(
@@ -46,10 +34,6 @@ class AppState extends ChangeNotifier {
           'Join to participate in a variety of sports and fitness activities.',
     ),
   ];
-
-  // =====================
-  // EVENTS (MATCH YOUR EVENT MODEL)
-  // =====================
 
   final List<Event> _events = [
     Event(
@@ -90,34 +74,23 @@ class AppState extends ChangeNotifier {
     ),
   ];
 
-  // =====================
-  // AUTH
-  // =====================
-
   bool get isAuthenticated => _isAuthenticated;
 
-  void login({String? userId}) {
+  void login({String? userId, bool isAdmin = false}) {
     _isAuthenticated = true;
-    this.userId = userId;
->>>>>>> b5fe359c98136d8e5b8cee1acd4bbe8d2c1f0095
+    this.userId = userId ?? this.userId;
+    this.isAdmin = isAdmin;
     notifyListeners();
   }
 
   void logout() {
     _isAuthenticated = false;
     userId = null;
-<<<<<<< HEAD
     isAdmin = false;
-=======
     _joinedSocietyIds.clear();
     _savedEventIds.clear();
->>>>>>> b5fe359c98136d8e5b8cee1acd4bbe8d2c1f0095
     notifyListeners();
   }
-
-  // =====================
-  // SOCIETIES LOGIC
-  // =====================
 
   List<Society> get societies => _societies;
 
@@ -140,10 +113,6 @@ class AppState extends ChangeNotifier {
     _joinedSocietyIds.remove(id);
     notifyListeners();
   }
-
-  // =====================
-  // EVENTS LOGIC
-  // =====================
 
   List<Event> get events => _events;
 
