@@ -51,17 +51,6 @@ class _SignInScreenState extends State<SignInScreen> {
             colors: [Color(0xFF4A148C), Color(0xFF7B1FA2)],
           ),
         ),
-        TextButton(
-          onPressed: () {
-            Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (_) => const RegisterScreen()));
-          },
-          child: const Text(
-            "Don't have an account? Register",
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Center(
