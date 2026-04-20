@@ -5,6 +5,7 @@ import '../providers/app_state.dart';
 import '../theme/colours.dart';
 import '../theme/text_styles.dart';
 import 'event_detail_screen.dart';
+import 'contact_info_screen.dart';
 
 class SocietyDetailScreen extends StatelessWidget {
   final Society society;
@@ -67,6 +68,19 @@ class SocietyDetailScreen extends StatelessWidget {
 
                   Text(society.description, style: AppTextStyles.bodyRegular),
 
+                  const SizedBox(height: 16),
+                  OutlinedButton.icon(
+                    icon: const Icon(Icons.contact_mail),
+                    label: const Text('View Contact Info'),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ContactInfoScreen(society: society),
+                        ),
+                      );
+                    },
+                  ),
                   const SizedBox(height: 32),
 
                   const Text(
