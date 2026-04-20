@@ -152,9 +152,11 @@ class _SignInScreenState extends State<SignInScreen> {
                     const SizedBox(height: 24),
                     TextButton(
                       onPressed: () {
-                        Navigator.of(
-                          context,
-                        ).push(MaterialPageRoute(builder: (_) => const RegisterScreen()));
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const RegisterScreen(),
+                          ),
+                        );
                       },
                       child: const Text(
                         "Don't have an account? Register",
