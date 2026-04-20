@@ -54,7 +54,10 @@ class _SocietiesScreenState extends State<SocietiesScreen> {
                   itemBuilder: (context, index) {
                     final society = societies[index];
                     return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       elevation: 2,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,7 +93,8 @@ class _SocietiesScreenState extends State<SocietiesScreen> {
                                           society.category,
                                           style: const TextStyle(fontSize: 12),
                                         ),
-                                        backgroundColor: AppColours.accentAmber.withOpacity(0.15),
+                                        backgroundColor: AppColours.accentAmber
+                                            .withOpacity(0.15),
                                         labelStyle: TextStyle(
                                           color: AppColours.accentAmber,
                                           fontWeight: FontWeight.bold,
@@ -109,7 +113,11 @@ class _SocietiesScreenState extends State<SocietiesScreen> {
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      const Icon(Icons.people, size: 16, color: Colors.grey),
+                                      const Icon(
+                                        Icons.people,
+                                        size: 16,
+                                        color: Colors.grey,
+                                      ),
                                       const SizedBox(width: 4),
                                       Text(
                                         '${society.memberCount} members',
