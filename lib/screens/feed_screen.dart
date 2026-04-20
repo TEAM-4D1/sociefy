@@ -65,28 +65,88 @@ class FeedScreen extends StatelessWidget {
           final joinedSocieties = appState.societies
               .where((s) => s.isJoined)
               .toList();
+          final isAdmin = appState.isAdmin;
           if (joinedSocieties.isEmpty) {
-            return const Center(
-              child: Text(
-                "You haven't joined any societies yet. Explore to see updates here!",
-                textAlign: TextAlign.center,
-              ),
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (isAdmin)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.add),
+                          label: const Text('Add Post'),
+                          onPressed: () {
+                            // TODO: Implement add post dialog
+                          },
+                        ),
+                        const SizedBox(width: 16),
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.group_add),
+                          label: const Text('Create Society'),
+                          onPressed: () {
+                            // TODO: Implement create society dialog
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                const Center(
+                  child: Text(
+                    "You haven't joined any societies yet. Explore to see updates here!",
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
             );
           }
-          return ListView.builder(
-            padding: const EdgeInsets.all(24.0),
-            itemCount: joinedSocieties.length,
-            itemBuilder: (context, index) {
-              final society = joinedSocieties[index];
-              // Fake announcement data for demonstration
-              return _AnnouncementCard(
-                societyName: society.name,
-                title: 'Weekly Meeting',
-                date: 'Every Friday, 5pm',
-                content:
-                    'Join us in Room 1.04 for our weekly catch-up and planning session! All members welcome.',
-              );
-            },
+          return Column(
+            children: [
+              if (isAdmin)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.add),
+                        label: const Text('Add Post'),
+                        onPressed: () {
+                          // TODO: Implement add post dialog
+                        },
+                      ),
+                      const SizedBox(width: 16),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.group_add),
+                        label: const Text('Create Society'),
+                        onPressed: () {
+                          // TODO: Implement create society dialog
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(24.0),
+                  itemCount: joinedSocieties.length,
+                  itemBuilder: (context, index) {
+                    final society = joinedSocieties[index];
+                    // Fake announcement data for demonstration
+                    return _AnnouncementCard(
+                      societyName: society.name,
+                      title: 'Weekly Meeting',
+                      date: 'Every Friday, 5pm',
+                      content:
+                          'Join us in Room 1.04 for our weekly catch-up and planning session! All members welcome.',
+                    );
+                  },
+                ),
+              ),
+            ],
           );
         },
       ),

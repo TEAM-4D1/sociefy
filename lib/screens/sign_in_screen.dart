@@ -1,5 +1,7 @@
 // import 'register_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sociefy/providers/app_state.dart';
 
 /// Simplified sign-in screen: only a "Sign in with UoP" button.
 /// Pressing the button immediately calls [onSignedIn] so the app can navigate
@@ -36,14 +38,16 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
-  void _signInWithUop(BuildContext context) {
+  void _signInWithUop(BuildContext context, {bool isAdmin = false}) {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Signing in with UoP...')));
     Future.delayed(const Duration(milliseconds: 500), () {
-      // TODO: Replace with real authentication
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const Placeholder()),
+      // Set authenticated state via Provider
+      final appState = Provider.of<AppState>(context, listen: false);
+      appState.login(
+        userId: _emailController.text.isNotEmpty ? _emailController.text : 'user1',
+        isAdmin: isAdmin,
       );
     });
   }
@@ -172,12 +176,37 @@ class _SignInScreenState extends State<SignInScreen> {
                             label: const Text('Sign In'),
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
-                                _signInWithUop(context);
+                                _signInWithUop(context, isAdmin: false);
                               }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
                               foregroundColor: const Color(0xFF4A148C),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            icon: const Icon(Icons.admin_panel_settings),
+                            label: const Text('Are you a committee member or admin? Sign in here'),
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                _signInWithUop(context, isAdmin: true);
+                              }
+                            },
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              side: const BorderSide(color: Color(0xFF4A148C)),
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
@@ -198,6 +227,7 @@ class _SignInScreenState extends State<SignInScreen> {
           ),
           if (_showRegister)
             Container(
+              // ignore: deprecated_member_use
               color: Colors.black.withOpacity(0.7),
               child: Center(
                 child: ConstrainedBox(

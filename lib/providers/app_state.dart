@@ -10,16 +10,19 @@ import '../services/message_service.dart';
 class AppState extends ChangeNotifier {
   bool isAuthenticated = false;
   String? userId;
+  bool isAdmin = false;
 
-  void login({String? userId}) {
+  void login({String? userId, bool isAdmin = false}) {
     isAuthenticated = true;
     this.userId = userId ?? this.userId;
+    this.isAdmin = isAdmin;
     notifyListeners();
   }
 
   void logout() {
     isAuthenticated = false;
     userId = null;
+    isAdmin = false;
     notifyListeners();
   }
 
