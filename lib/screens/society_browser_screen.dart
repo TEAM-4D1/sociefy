@@ -1,3 +1,4 @@
+import 'society_detail_screen.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,16 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
                       child: ListTile(
                         title: Text(society.name),
                         subtitle: Text(society.category),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  SocietyDetailScreen(society: society),
+                            ),
+                          );
+                        },
                       ),
                     );
                   },
