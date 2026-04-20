@@ -38,12 +38,11 @@ class AuthService {
 
   /// Signs out the currently authenticated user.
   Future<void> signOut() async {
-    // TODO: Implement sign out logic
+    await FirebaseAuth.instance.signOut();
   }
 
   /// Returns the currently authenticated [User], or null if not signed in.
   User? get currentUser {
-    // TODO: Implement current user getter
-    return null;
+    return FirebaseAuth.instance.currentUser;
   }
 }
