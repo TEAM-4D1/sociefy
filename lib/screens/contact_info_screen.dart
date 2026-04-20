@@ -12,8 +12,45 @@ class ContactInfoScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: ListView(
-          children: const [
-            // Add contact info widgets here
+          children: [
+            const Text(
+              'Committee Members',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('President'),
+                subtitle: const Text('Alex Johnson'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.email),
+                  onPressed: () {},
+                ),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('Secretary'),
+                subtitle: const Text('Jamie Lee'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.email),
+                  onPressed: () {},
+                ),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('Treasurer'),
+                subtitle: const Text('Morgan Smith'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.email),
+                  onPressed: () {},
+                ),
+              ),
+            ),
           ],
         ),
       ),
