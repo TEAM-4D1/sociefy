@@ -92,6 +92,51 @@ class _SignInScreenState extends State<SignInScreen> {
                     const SizedBox(height: 32),
                     // Removed 'Sign in to continue' text
                     const SizedBox(height: 24),
+                    TextFormField(
+                      controller: _emailController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter email';
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter password';
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
