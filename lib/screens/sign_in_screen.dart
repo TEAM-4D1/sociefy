@@ -1,3 +1,4 @@
+import 'register_screen.dart';
 import 'package:flutter/material.dart';
 import '../theme/colours.dart';
 import 'package:provider/provider.dart';
@@ -48,6 +49,17 @@ class _SignInScreenState extends State<SignInScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [Color(0xFF4A148C), Color(0xFF7B1FA2)],
+          ),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const RegisterScreen()));
+          },
+          child: const Text(
+            "Don't have an account? Register",
+            style: TextStyle(color: Colors.white),
           ),
         ),
         child: Padding(
@@ -137,6 +149,18 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
+                    const SizedBox(height: 24),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(builder: (_) => const RegisterScreen()));
+                      },
+                      child: const Text(
+                        "Don't have an account? Register",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
