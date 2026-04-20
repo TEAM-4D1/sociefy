@@ -143,7 +143,7 @@ class _SocietiesScreenState extends State<SocietiesScreen> {
                                             vertical: 8,
                                           ),
                                         ),
-                                        onPressed: () {
+                                        onPressed: () async {
                                           final appState = context
                                               .read<AppState>();
                                           if (society.isJoined) {
