@@ -27,7 +27,6 @@ class _HomePageState extends State<HomePage> {
   PlatformFile? _webPickedFile;
   Uint8List? _webImageBytes;
 
-  String? _selectedSocietyForAnnouncement;
   final TextEditingController announcementController = TextEditingController();
 
   void _showCreateSocietyDialog() {
@@ -199,82 +198,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _showCreateAnnouncementDialog() {
-    final List<String> allSocietyNames = [
-      ...societies.map((s) => s['name'] as String),
-      ...joinedSocieties.map((s) => s['name'] as String),
-    ];
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Create Announcement'),
-          content: StatefulBuilder(
-            builder: (context, setStateDialog) {
-              return SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    DropdownButtonFormField<String>(
-                      initialValue: _selectedSocietyForAnnouncement,
-                      items: allSocietyNames.map((name) {
-                        return DropdownMenuItem<String>(
-                          value: name,
-                          child: Text(name),
-                        );
-                      }).toList(),
-                      onChanged: (val) {
-                        setStateDialog(() {
-                          _selectedSocietyForAnnouncement = val;
-                        });
-                      },
-                      decoration: const InputDecoration(
-                        labelText: 'Select Society',
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: announcementController,
-                      decoration: const InputDecoration(
-                        labelText: 'Announcement',
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                _selectedSocietyForAnnouncement = null;
-                announcementController.clear();
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (_selectedSocietyForAnnouncement != null &&
-                    announcementController.text.isNotEmpty) {
-                  setState(() {
-                    announcements.add({
-                      'societyName': _selectedSocietyForAnnouncement!,
-                      'announcement': announcementController.text,
-                    });
-                  });
-                  _selectedSocietyForAnnouncement = null;
-                  announcementController.clear();
-                  Navigator.of(context).pop();
-                }
-              },
-              child: const Text('Post'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   void _showJoinConfirmation(String societyName) {
     showDialog(
