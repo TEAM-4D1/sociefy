@@ -46,6 +46,39 @@ class SignInScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // App icon
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.groups,
+                      color: Color(0xFF4A148C),
+                      size: 64,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Sociefy',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Your university societies, all in one place',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 32),
                   const Text(
                     'Sign in to continue',
                     style: TextStyle(fontSize: 18),
@@ -60,7 +93,6 @@ class SignInScreen extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
             ),
           ),
         ),
