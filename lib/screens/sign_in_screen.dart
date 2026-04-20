@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sociefy/providers/app_state.dart';
+import '../services/auth_service.dart';
+import '../main_tabs.dart';
 
 /// Simplified sign-in screen: only a "Sign in with UoP" button.
 /// Pressing the button immediately calls [onSignedIn] so the app can navigate
@@ -14,9 +16,7 @@ class SignInScreen extends StatefulWidget {
   State<SignInScreen> createState() => _SignInScreenState();
 }
 
-
 class _SignInScreenState extends State<SignInScreen> {
-
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -24,10 +24,11 @@ class _SignInScreenState extends State<SignInScreen> {
   // Registration modal state
   bool _showRegister = false;
   final _registerFormKey = GlobalKey<FormState>();
-  final TextEditingController _registerEmailController = TextEditingController();
-  final TextEditingController _registerPasswordController = TextEditingController();
+  final TextEditingController _registerEmailController =
+      TextEditingController();
+  final TextEditingController _registerPasswordController =
+      TextEditingController();
   String? _registerSuccessMsg;
-
 
   @override
   void dispose() {
@@ -38,20 +39,30 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
-  void _signInWithUop(BuildContext context, {bool isAdmin = false}) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Signing in with UoP...')));
-    Future.delayed(const Duration(milliseconds: 500), () {
-      // Set authenticated state via Provider
-      final appState = Provider.of<AppState>(context, listen: false);
-      appState.login(
-        userId: _emailController.text.isNotEmpty ? _emailController.text : 'user1',
-        isAdmin: isAdmin,
+  Future<void> _signInWithUop(
+    BuildContext context, {
+    bool isAdmin = false,
+  }) async {
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Signing in with UoP...')),
+    );
+    final authService = AuthService();
+    final email = _emailController.text;
+    final password = _passwordController.text;
+    final result = await authService.signIn(email, password);
+    messenger.hideCurrentSnackBar();
+    if (result != null) {
+      if (!mounted) return;
+      Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const MainTabs()));
+    } else {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Invalid email or password')),
       );
-    });
+    }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +209,9 @@ class _SignInScreenState extends State<SignInScreen> {
                           width: double.infinity,
                           child: OutlinedButton.icon(
                             icon: const Icon(Icons.admin_panel_settings),
-                            label: const Text('Are you a committee member or admin? Sign in here'),
+                            label: const Text(
+                              'Are you a committee member or admin? Sign in here',
+                            ),
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 _signInWithUop(context, isAdmin: true);
@@ -310,21 +323,28 @@ class _SignInScreenState extends State<SignInScreen> {
                               width: double.infinity,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  if (_registerFormKey.currentState!.validate()) {
+                                  if (_registerFormKey.currentState!
+                                      .validate()) {
                                     setState(() {
-                                      _registerSuccessMsg = 'Account created for ${_registerEmailController.text}!';
+                                      _registerSuccessMsg =
+                                          'Account created for ${_registerEmailController.text}!';
                                     });
-                                    Future.delayed(const Duration(seconds: 2), () {
-                                      setState(() {
-                                        _showRegister = false;
-                                      });
-                                    });
+                                    Future.delayed(
+                                      const Duration(seconds: 2),
+                                      () {
+                                        setState(() {
+                                          _showRegister = false;
+                                        });
+                                      },
+                                    );
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF4A148C),
                                   foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30),
                                   ),
