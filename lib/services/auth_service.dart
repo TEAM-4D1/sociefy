@@ -1,0 +1,31 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
+/// A service class for handling authentication operations.
+class AuthService {
+  /// Signs in a user with the provided [email] and [password].
+  ///
+  /// Returns a [UserCredential] if successful, or null otherwise.
+  Future<UserCredential?> signIn(String email, String password) async {
+    // TODO: Implement sign in logic
+    return null;
+  }
+
+  /// Registers a new user with the provided [email] and [password].
+  ///
+  /// Returns a [UserCredential] if successful, or null otherwise.
+  Future<UserCredential?> register(String email, String password) async {
+    // TODO: Implement registration logic
+    return null;
+  }
+
+  /// Signs out the currently authenticated user.
+  Future<void> signOut() async {
+    // TODO: Implement sign out logic
+  }
+
+  /// Returns the currently authenticated [User], or null if not signed in.
+  User? get currentUser {
+    // TODO: Implement current user getter
+    return null;
+  }
+}
