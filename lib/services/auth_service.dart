@@ -5,9 +5,18 @@ class AuthService {
   /// Signs in a user with the provided [email] and [password].
   ///
   /// Returns a [UserCredential] if successful, or null otherwise.
+  /// Logs errors using debugPrint.
   Future<UserCredential?> signIn(String email, String password) async {
-    // TODO: Implement sign in logic
-    return null;
+    try {
+      return await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } catch (e) {
+      // ignore: avoid_print
+      debugPrint('signIn error: \$e');
+      return null;
+    }
   }
 
   /// Registers a new user with the provided [email] and [password].
