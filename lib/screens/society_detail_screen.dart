@@ -7,6 +7,7 @@ import '../theme/text_styles.dart';
 
 class SocietyDetailScreen extends StatelessWidget {
   final Society society;
+
   const SocietyDetailScreen({Key? key, required this.society})
     : super(key: key);
 
@@ -34,7 +35,9 @@ class SocietyDetailScreen extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 32,
-                        backgroundColor: AppColours.primaryPurple.withOpacity(0.1),
+                        backgroundColor: AppColours.primaryPurple.withOpacity(
+                          0.1,
+                        ),
                         child: Icon(
                           Icons.groups,
                           size: 36,
@@ -46,10 +49,7 @@ class SocietyDetailScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              society.name,
-                              style: AppTextStyles.heading1,
-                            ),
+                            Text(society.name, style: AppTextStyles.heading1),
                             const SizedBox(height: 8),
                             Text(
                               society.category,
@@ -60,110 +60,112 @@ class SocietyDetailScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                                const SizedBox(height: 24),
-                                Text(
-                                  society.description,
-                                  style: AppTextStyles.bodyRegular,
-                                ),
-                                const SizedBox(height: 32),
-                                const Text(
-                                  'Upcoming Events',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                Consumer<AppState>(
-                                  builder: (context, appState, _) {
-                                    final events = appState.eventsForSociety(society.id);
-                                    if (events.isEmpty) {
-                                      return const Text('No upcoming events');
-                                    }
-                                    return SizedBox(
-                                      height: 180,
-                                      child: ListView.builder(
-                                        itemCount: events.length,
-                                        itemBuilder: (context, index) {
-                                          final event = events[index];
-                                          return Card(
-                                            margin: const EdgeInsets.symmetric(vertical: 6),
-                                            child: ListTile(
-                                              title: Text(event.title),
-                                              subtitle: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(event.formattedDate),
-                                                  Row(
-                                                    children: [
-                                                      const Icon(Icons.location_on, size: 16, color: Colors.grey),
-                                                      const SizedBox(width: 4),
-                                                      Text(event.venue),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        },
+
+                  const SizedBox(height: 24),
+
+                  Text(society.description, style: AppTextStyles.bodyRegular),
+
+                  const SizedBox(height: 32),
+
+                  const Text(
+                    'Upcoming Events',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  Consumer<AppState>(
+                    builder: (context, appState, _) {
+                      final events = appState.eventsForSociety(society.id);
+
+                      if (events.isEmpty) {
+                        return const Text('No upcoming events');
+                      }
+
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: events.length,
+                        itemBuilder: (context, index) {
+                          final event = events[index];
+
+                          return Card(
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            child: ListTile(
+                              title: Text(event.title),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(event.formattedDate),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.location_on,
+                                        size: 16,
+                                        color: Colors.grey,
                                       ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    bottomNavigationBar: Consumer<AppState>(
-                      builder: (context, appState, _) {
-                        final isJoined = appState.societies
-                            .firstWhere((s) => s.id == society.id)
-                            .isJoined;
-                        return BottomAppBar(
-                          elevation: 8,
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: SizedBox(
-                              width: double.infinity,
-                              height: 48,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: isJoined
-                                      ? Colors.grey[300]
-                                      : AppColours.primaryPurple,
-                                  foregroundColor: isJoined ? Colors.black87 : Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(24),
+                                      const SizedBox(width: 4),
+                                      Text(event.venue),
+                                    ],
                                   ),
-                                ),
-                                onPressed: () {
-                                  if (isJoined) {
-                                    appState.leaveSociety(society.id);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Left [200bsociety.name}')),
-                                    );
-                                  } else {
-                                    appState.joinSociety(society.id);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Joined ${society.name}')),
-                                                  );
-                                                }
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  }
-                                },
-                                child: Text(isJoined ? 'Leave Society' : 'Join Society'),
+                                ],
                               ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+
+      bottomNavigationBar: Consumer<AppState>(
+        builder: (context, appState, _) {
+          final isJoined = appState.societies
+              .firstWhere((s) => s.id == society.id)
+              .isJoined;
+
+          return BottomAppBar(
+            elevation: 8,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isJoined
+                        ? Colors.grey[300]
+                        : AppColours.primaryPurple,
+                    foregroundColor: isJoined ? Colors.black87 : Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
                     ),
-                  );
+                  ),
+                  onPressed: () {
+                    if (isJoined) {
+                      appState.leaveSociety(society.id);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Left ${society.name}')),
+                      );
+                    } else {
+                      appState.joinSociety(society.id);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Joined ${society.name}')),
+                      );
+                    }
+                  },
+                  child: Text(isJoined ? 'Leave Society' : 'Join Society'),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
+}
