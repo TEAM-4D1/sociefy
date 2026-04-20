@@ -4,6 +4,7 @@ import '../models/society.dart';
 import '../providers/app_state.dart';
 import '../theme/colours.dart';
 import '../theme/text_styles.dart';
+import 'event_detail_screen.dart';
 
 class SocietyDetailScreen extends StatelessWidget {
   final Society society;
@@ -111,6 +112,15 @@ class SocietyDetailScreen extends StatelessWidget {
                                   ),
                                 ],
                               ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        EventDetailScreen(event: event),
+                                  ),
+                                );
+                              },
                             ),
                           );
                         },
