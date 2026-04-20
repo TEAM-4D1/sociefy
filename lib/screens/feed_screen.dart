@@ -1,56 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
-// Announcement card for feed
-class _AnnouncementCard extends StatelessWidget {
-  final String societyName;
-  final String title;
-  final String date;
-  final String content;
-
-  const _AnnouncementCard({
-    Key? key,
-    required this.societyName,
-    required this.title,
-    required this.date,
-    required this.content,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  societyName,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  date,
-                  style: const TextStyle(color: Colors.grey, fontSize: 12),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 6),
-            Text(content),
-          ],
-        ),
-      ),
-    );
-  }
-}
-import 'package:flutter/material.dart';
 
 // Announcement card for feed
 class _AnnouncementCard extends StatelessWidget {
@@ -112,7 +62,9 @@ class FeedScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('My Societies Feed')),
       body: Consumer<AppState>(
         builder: (context, appState, _) {
-          final joinedSocieties = appState.societies.where((s) => s.isJoined).toList();
+          final joinedSocieties = appState.societies
+              .where((s) => s.isJoined)
+              .toList();
           if (joinedSocieties.isEmpty) {
             return const Center(
               child: Text(
@@ -126,13 +78,13 @@ class FeedScreen extends StatelessWidget {
             itemCount: joinedSocieties.length,
             itemBuilder: (context, index) {
               final society = joinedSocieties[index];
-              // Placeholder: show society name for now
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 10),
-                child: ListTile(
-                  title: Text(society.name),
-                  subtitle: Text(society.category),
-                ),
+              // Fake announcement data for demonstration
+              return _AnnouncementCard(
+                societyName: society.name,
+                title: 'Weekly Meeting',
+                date: 'Every Friday, 5pm',
+                content:
+                    'Join us in Room 1.04 for our weekly catch-up and planning session! All members welcome.',
               );
             },
           );
