@@ -35,6 +35,7 @@ class SocietyDetailScreen extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 32,
+                        // ignore: deprecated_member_use
                         backgroundColor: AppColours.primaryPurple.withOpacity(
                           0.1,
                         ),

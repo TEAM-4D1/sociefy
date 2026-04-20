@@ -94,6 +94,7 @@ class _SocietiesScreenState extends State<SocietiesScreen> {
                                           style: const TextStyle(fontSize: 12),
                                         ),
                                         backgroundColor: AppColours.accentAmber
+                                            // ignore: deprecated_member_use
                                             .withOpacity(0.15),
                                         labelStyle: TextStyle(
                                           color: AppColours.accentAmber,
