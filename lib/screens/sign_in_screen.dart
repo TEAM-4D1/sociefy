@@ -1,28 +1,26 @@
 import 'package:flutter/material.dart';
 import '../theme/colours.dart';
-import '../main_tabs.dart';
+import 'package:provider/provider.dart';
+import '../providers/app_state.dart';
 
 /// Simplified sign-in screen: only a "Sign in with UoP" button.
 /// Pressing the button immediately calls [onSignedIn] so the app can navigate
 /// to the home screen. Manual email/password and forgot-password UI removed
 /// for now per request.
 class SignInScreen extends StatelessWidget {
-  final VoidCallback? onSignedIn;
-  const SignInScreen({Key? key, this.onSignedIn}) : super(key: key);
+  const SignInScreen({Key? key}) : super(key: key);
 
   void _signInWithUop(BuildContext context) {
-    // Show a short feedback then invoke the callback to navigate to the app.
+    // Show a short feedback then update authentication state.
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Signing in with UoP...')));
-    // If a callback was provided use it; otherwise navigate using this context.
-    if (onSignedIn != null) {
-      onSignedIn!.call();
-    } else {
-      Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => const MainTabs()));
-    }
+    // Set authenticated state via Provider
+    Future.delayed(const Duration(milliseconds: 500), () {
+      // Give a short delay for UX
+      final appState = Provider.of<AppState>(context, listen: false);
+      appState.login();
+    });
   }
 
   @override

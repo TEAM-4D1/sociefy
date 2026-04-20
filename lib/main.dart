@@ -17,14 +17,14 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Society App',
         theme: AppTheme.theme,
-        home: Builder(
-          builder: (context) => SignInScreen(
-            onSignedIn: () {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const MainTabs()),
-              );
-            },
-          ),
+        home: Consumer<AppState>(
+          builder: (context, appState, _) {
+            if (appState.isAuthenticated) {
+              return const MainTabs();
+            } else {
+              return const SignInScreen();
+            }
+          },
         ),
       ),
     );
