@@ -44,18 +44,24 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     TextField(
                       controller: nameController,
-                      decoration: const InputDecoration(labelText: 'Society Name'),
+                      decoration: const InputDecoration(
+                        labelText: 'Society Name',
+                      ),
                     ),
                     TextField(
                       controller: descController,
-                      decoration: const InputDecoration(labelText: 'Description'),
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                      ),
                     ),
                     const SizedBox(height: 8),
                     if (!kIsWeb && _pickedImage == null)
                       TextButton(
                         onPressed: () async {
                           final ImagePicker picker = ImagePicker();
-                          final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+                          final XFile? image = await picker.pickImage(
+                            source: ImageSource.gallery,
+                          );
                           if (image != null) {
                             setState(() {
                               _pickedImage = image;
@@ -68,8 +74,10 @@ class _HomePageState extends State<HomePage> {
                     else if (kIsWeb && _webPickedFile == null)
                       TextButton(
                         onPressed: () async {
-                          FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.image);
-                          if (result != null && result.files.single.bytes != null) {
+                          FilePickerResult? result = await FilePicker.platform
+                              .pickFiles(type: FileType.image);
+                          if (result != null &&
+                              result.files.single.bytes != null) {
                             setState(() {
                               _webPickedFile = result.files.single;
                               _webImageBytes = result.files.single.bytes;
@@ -87,7 +95,10 @@ class _HomePageState extends State<HomePage> {
                           Expanded(
                             child: Text(
                               _pickedImage!.name,
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -103,11 +114,13 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      (_pickedImage!.path.isNotEmpty && File(_pickedImage!.path).existsSync())
+                      (_pickedImage!.path.isNotEmpty &&
+                              File(_pickedImage!.path).existsSync())
                           ? Image.file(File(_pickedImage!.path), height: 120)
                           : const SizedBox.shrink(),
-                    ]
-                    else if (kIsWeb && _webPickedFile != null && _webImageBytes != null) ...[
+                    ] else if (kIsWeb &&
+                        _webPickedFile != null &&
+                        _webImageBytes != null) ...[
                       Row(
                         children: [
                           const Icon(Icons.image, size: 18),
@@ -115,7 +128,10 @@ class _HomePageState extends State<HomePage> {
                           Expanded(
                             child: Text(
                               _webPickedFile!.name,
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -155,13 +171,16 @@ class _HomePageState extends State<HomePage> {
             ),
             ElevatedButton(
               onPressed: () {
-                if (nameController.text.isNotEmpty && descController.text.isNotEmpty) {
+                if (nameController.text.isNotEmpty &&
+                    descController.text.isNotEmpty) {
                   setState(() {
                     societies.add({
                       'name': nameController.text,
                       'desc': descController.text,
                       'image': kIsWeb ? _webImageBytes : _pickedImage?.path,
-                      'imageName': kIsWeb ? _webPickedFile?.name : _pickedImage?.name,
+                      'imageName': kIsWeb
+                          ? _webPickedFile?.name
+                          : _pickedImage?.name,
                     });
                     _pickedImage = null;
                     _webPickedFile = null;
@@ -197,7 +216,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     DropdownButtonFormField<String>(
-                      value: _selectedSocietyForAnnouncement,
+                      initialValue: _selectedSocietyForAnnouncement,
                       items: allSocietyNames.map((name) {
                         return DropdownMenuItem<String>(
                           value: name,
@@ -209,12 +228,16 @@ class _HomePageState extends State<HomePage> {
                           _selectedSocietyForAnnouncement = val;
                         });
                       },
-                      decoration: const InputDecoration(labelText: 'Select Society'),
+                      decoration: const InputDecoration(
+                        labelText: 'Select Society',
+                      ),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: announcementController,
-                      decoration: const InputDecoration(labelText: 'Announcement'),
+                      decoration: const InputDecoration(
+                        labelText: 'Announcement',
+                      ),
                     ),
                   ],
                 ),
@@ -232,7 +255,8 @@ class _HomePageState extends State<HomePage> {
             ),
             ElevatedButton(
               onPressed: () {
-                if (_selectedSocietyForAnnouncement != null && announcementController.text.isNotEmpty) {
+                if (_selectedSocietyForAnnouncement != null &&
+                    announcementController.text.isNotEmpty) {
                   setState(() {
                     announcements.add({
                       'societyName': _selectedSocietyForAnnouncement!,
@@ -292,8 +316,17 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     if (joinedSocieties.isNotEmpty) ...[
                       const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        child: Text('Joined Societies', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: Text(
+                          'Joined Societies',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                       ListView.builder(
                         shrinkWrap: true,
@@ -304,28 +337,41 @@ class _HomePageState extends State<HomePage> {
                           return InkWell(
                             onTap: () {
                               final relevantAnnouncements = announcements
-                                  .where((a) => a['societyName'] == society['name'])
+                                  .where(
+                                    (a) => a['societyName'] == society['name'],
+                                  )
                                   .toList();
                               showDialog(
                                 context: context,
                                 builder: (context) {
                                   return AlertDialog(
-                                    title: Text(society['name'] ?? 'Society Announcements'),
+                                    title: Text(
+                                      society['name'] ??
+                                          'Society Announcements',
+                                    ),
                                     content: SizedBox(
                                       width: 350,
                                       height: 400,
                                       child: relevantAnnouncements.isEmpty
-                                          ? const Text('No announcements for this group.')
+                                          ? const Text(
+                                              'No announcements for this group.',
+                                            )
                                           : ListView.builder(
-                                              itemCount: relevantAnnouncements.length,
-                                              itemBuilder: (context, idx) => ListTile(
-                                                title: Text(relevantAnnouncements[idx]['announcement'] ?? ''),
-                                              ),
+                                              itemCount:
+                                                  relevantAnnouncements.length,
+                                              itemBuilder: (context, idx) =>
+                                                  ListTile(
+                                                    title: Text(
+                                                      relevantAnnouncements[idx]['announcement'] ??
+                                                          '',
+                                                    ),
+                                                  ),
                                             ),
                                     ),
                                     actions: [
                                       TextButton(
-                                        onPressed: () => Navigator.of(context).pop(),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
                                         child: const Text('Close'),
                                       ),
                                     ],
@@ -334,7 +380,10 @@ class _HomePageState extends State<HomePage> {
                               );
                             },
                             child: Card(
-                              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
                               child: Container(
                                 padding: const EdgeInsets.all(16),
                                 child: Column(
@@ -345,18 +394,35 @@ class _HomePageState extends State<HomePage> {
                                       color: Colors.grey[300],
                                       child: kIsWeb
                                           ? (society['image'] != null
-                                              ? Image.memory(society['image'], fit: BoxFit.cover)
-                                              : const Center(child: Text('Image Placeholder')))
+                                                ? Image.memory(
+                                                    society['image'],
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : const Center(
+                                                    child: Text(
+                                                      'Image Placeholder',
+                                                    ),
+                                                  ))
                                           : (society['image'] != null
-                                              ? Image.file(File(society['image']), fit: BoxFit.cover)
-                                              : const Center(child: Text('Image Placeholder'))),
+                                                ? Image.file(
+                                                    File(society['image']),
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : const Center(
+                                                    child: Text(
+                                                      'Image Placeholder',
+                                                    ),
+                                                  )),
                                     ),
                                     const SizedBox(height: 8),
                                     const Divider(),
                                     const SizedBox(height: 8),
                                     Text(
                                       society['name'] ?? '',
-                                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                                      style: const TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                     const SizedBox(height: 6),
                                     Text(society['desc'] ?? ''),
@@ -370,8 +436,17 @@ class _HomePageState extends State<HomePage> {
                     ],
                     if (societies.isNotEmpty) ...[
                       const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        child: Text('Available Societies', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: Text(
+                          'Available Societies',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                       ListView.builder(
                         shrinkWrap: true,
@@ -380,7 +455,10 @@ class _HomePageState extends State<HomePage> {
                         itemBuilder: (context, index) {
                           final society = societies[index];
                           return Card(
-                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
                             child: Container(
                               padding: const EdgeInsets.all(16),
                               child: Column(
@@ -391,11 +469,25 @@ class _HomePageState extends State<HomePage> {
                                     color: Colors.grey[300],
                                     child: kIsWeb
                                         ? (society['image'] != null
-                                            ? Image.memory(society['image'], fit: BoxFit.cover)
-                                            : const Center(child: Text('Image Placeholder')))
+                                              ? Image.memory(
+                                                  society['image'],
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : const Center(
+                                                  child: Text(
+                                                    'Image Placeholder',
+                                                  ),
+                                                ))
                                         : (society['image'] != null
-                                            ? Image.file(File(society['image']), fit: BoxFit.cover)
-                                            : const Center(child: Text('Image Placeholder'))),
+                                              ? Image.file(
+                                                  File(society['image']),
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : const Center(
+                                                  child: Text(
+                                                    'Image Placeholder',
+                                                  ),
+                                                )),
                                   ),
                                   const SizedBox(height: 8),
                                   const Divider(),
@@ -405,7 +497,10 @@ class _HomePageState extends State<HomePage> {
                                       Expanded(
                                         child: Text(
                                           society['name'] ?? '',
-                                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                                          style: const TextStyle(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
                                       ElevatedButton(
