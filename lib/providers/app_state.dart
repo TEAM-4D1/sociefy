@@ -1,30 +1,92 @@
 import 'package:flutter/foundation.dart';
+
 import '../models/society.dart';
 import '../models/event.dart';
-import '../data/sample_societies.dart';
-import '../data/sample_events.dart';
 
-
-import '../services/message_service.dart';
+import '../models/announcement.dart';
 
 class AppState extends ChangeNotifier {
   bool isAuthenticated = false;
   String? userId;
 
-  void login({String? userId}) {
-    isAuthenticated = true;
-    this.userId = userId ?? this.userId;
-    notifyListeners();
-  }
+  // Dummy societies
+  final List<Society> _societies = [
+    Society(
+      id: 'cs',
+      name: 'Computer Science Society',
+      category: 'Academic',
+      description:
+          'A society for students interested in computing, coding, and technology.',
+    ),
+    Society(
+      id: 'drama',
+      name: 'Drama Club',
+      category: 'Arts',
+      description: 'For those who love acting, theatre, and stage production.',
+    ),
+    Society(
+      id: 'sports',
+      name: 'Sports Society',
+      category: 'Recreation',
+      description:
+          'Join to participate in a variety of sports and fitness activities.',
+    ),
+  ];
 
-  void logout() {
-    isAuthenticated = false;
-    userId = null;
-    notifyListeners();
-  }
+  // Dummy events
+  final List<Event> _events = [
+    Event(
+      id: 'e1',
+      societyId: 'cs',
+      title: 'Hackathon 2026',
+      description: 'A 24-hour coding competition for all skill levels.',
+      date: DateTime(2026, 5, 10),
+      venue: 'Engineering Building, Room 101',
+    ),
+    Event(
+      id: 'e2',
+      societyId: 'drama',
+      title: 'Spring Play Auditions',
+      description: 'Open auditions for our annual spring production.',
+      date: DateTime(2026, 4, 25),
+      venue: 'Main Auditorium',
+    ),
+    Event(
+      id: 'e3',
+      societyId: 'sports',
+      title: 'Inter-University Football Match',
+      description: 'Cheer for our team in the big match!',
+      date: DateTime(2026, 6, 2),
+      venue: 'University Stadium',
+    ),
+  ];
 
-  List<Society> _societies = List.from(sampleSocieties);
-  List<Event> _events = List.from(sampleEvents);
+  // Dummy announcements
+  final List<Announcement> _announcements = [
+    Announcement(
+      id: 'a1',
+      societyId: 'cs',
+      title: 'Welcome to the new semester!',
+      content: 'Our first meeting will be on April 22. All are welcome!',
+      date: DateTime(2026, 4, 20),
+    ),
+    Announcement(
+      id: 'a2',
+      societyId: 'drama',
+      title: 'Audition Results Posted',
+      content:
+          'Check your email for the cast list. Rehearsals start next week.',
+      date: DateTime(2026, 4, 28),
+    ),
+    Announcement(
+      id: 'a3',
+      societyId: 'sports',
+      title: 'Training Schedule Update',
+      content: 'Training will now be held every Tuesday and Thursday at 5pm.',
+      date: DateTime(2026, 4, 21),
+    ),
+  ];
+
   List<String> _savedEventIds = [];
   // List of message channels (by society name) the user has joined
   List<String> _joinedChannels = [];
