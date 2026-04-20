@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../models/event.dart';
 
 class EventDetailScreen extends StatelessWidget {
   final Event event;
+
   const EventDetailScreen({Key? key, required this.event}) : super(key: key);
 
   @override
@@ -19,23 +21,17 @@ class EventDetailScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
+
             Text(event.description, style: const TextStyle(fontSize: 16)),
             const SizedBox(height: 16),
+
             Text(
-              'Date: ${event.formattedDate}',
+              'Date: ${DateFormat.yMMMMd().format(event.date)}',
               style: const TextStyle(fontSize: 16),
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Start Time: ${event.startTime}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'End Time: ${event.endTime}',
-              style: const TextStyle(fontSize: 16),
-            ),
+
             const SizedBox(height: 16),
+
             Row(
               children: [
                 const Icon(Icons.location_on, size: 20, color: Colors.grey),
@@ -43,7 +39,9 @@ class EventDetailScreen extends StatelessWidget {
                 Text(event.venue, style: const TextStyle(fontSize: 16)),
               ],
             ),
+
             const SizedBox(height: 24),
+
             Container(
               height: 150,
               width: double.infinity,
@@ -55,7 +53,9 @@ class EventDetailScreen extends StatelessWidget {
                 child: Icon(Icons.map, size: 48, color: Colors.grey),
               ),
             ),
+
             const SizedBox(height: 32),
+
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -68,13 +68,6 @@ class EventDetailScreen extends StatelessWidget {
                     ),
                   );
                 },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  textStyle: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
               ),
             ),
           ],
