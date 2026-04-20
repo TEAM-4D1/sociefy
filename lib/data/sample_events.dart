@@ -6,7 +6,8 @@ final List<Event> sampleEvents = [
     societyId: 'soc_1',
     societyName: 'Badminton Society',
     title: 'Friendly Doubles Tournament',
-    description: 'Join us for a fun doubles tournament. All skill levels welcome!',
+    description:
+        'Join us for a fun doubles tournament. All skill levels welcome!',
     date: DateTime(2026, 5, 10),
     startTime: '10:00 AM',
     endTime: '1:00 PM',
@@ -42,7 +43,8 @@ final List<Event> sampleEvents = [
     societyId: 'soc_4',
     societyName: 'Drama Society',
     title: 'Improvisation Workshop',
-    description: 'A hands-on workshop to improve your acting and improv skills.',
+    description:
+        'A hands-on workshop to improve your acting and improv skills.',
     date: DateTime(2026, 5, 25),
     startTime: '2:00 PM',
     endTime: '5:00 PM',
@@ -90,7 +92,8 @@ final List<Event> sampleEvents = [
     societyId: 'soc_5',
     societyName: 'Coding Club',
     title: 'Hackathon: Code for Good',
-    description: 'A 24-hour hackathon focused on building solutions for social good.',
+    description:
+        'A 24-hour hackathon focused on building solutions for social good.',
     date: DateTime(2026, 6, 20),
     startTime: '10:00 AM',
     endTime: '10:00 PM',
