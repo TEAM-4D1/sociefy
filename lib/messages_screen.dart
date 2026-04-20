@@ -2,6 +2,9 @@
 
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+import 'providers/app_state.dart';
+
 class MessagesPage extends StatelessWidget {
   const MessagesPage({super.key});
 
@@ -9,7 +12,32 @@ class MessagesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Messages')),
-      body: const Center(child: Text('Messages / Forums go here')),
+      body: Consumer<AppState>(
+        builder: (context, appState, _) {
+          final channels = appState.joinedChannels;
+          if (channels.isEmpty) {
+            return const Center(
+              child: Text('Join a society to access its message channel.'),
+            );
+          }
+          return ListView.builder(
+            itemCount: channels.length,
+            itemBuilder: (context, index) {
+              final channel = channels[index];
+              return ListTile(
+                leading: const Icon(Icons.forum),
+                title: Text(channel),
+                onTap: () {
+                  // Placeholder for entering the channel
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Open channel: $channel')),
+                  );
+                },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
