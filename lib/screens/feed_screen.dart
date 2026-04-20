@@ -1,3 +1,5 @@
+import 'package:provider/provider.dart';
+import '../providers/app_state.dart';
 // Announcement card for feed
 class _AnnouncementCard extends StatelessWidget {
   final String societyName;
@@ -108,9 +110,33 @@ class FeedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('My Societies Feed')),
-      body: const Padding(
-        padding: EdgeInsets.all(24.0),
-        child: Text('Loading updates...'),
+      body: Consumer<AppState>(
+        builder: (context, appState, _) {
+          final joinedSocieties = appState.societies.where((s) => s.isJoined).toList();
+          if (joinedSocieties.isEmpty) {
+            return const Center(
+              child: Text(
+                "You haven't joined any societies yet. Explore to see updates here!",
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(24.0),
+            itemCount: joinedSocieties.length,
+            itemBuilder: (context, index) {
+              final society = joinedSocieties[index];
+              // Placeholder: show society name for now
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                child: ListTile(
+                  title: Text(society.name),
+                  subtitle: Text(society.category),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
