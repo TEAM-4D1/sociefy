@@ -136,68 +136,6 @@ class AppState extends ChangeNotifier {
     }
   }
 }
-import 'package:flutter/foundation.dart';
-import '../models/society.dart';
-import '../models/event.dart';
-import '../models/announcement.dart';
-class AppState extends ChangeNotifier {
-  bool _isAuthenticated = false;
-  String? userId;
-
-  // Dummy societies
-  final List<Society> _societies = [
-    Society(
-    Society(
-      id: 'drama',
-      name: 'Drama Club',
-    Society(
-      id: 'sports',
-      name: 'Sports Society',
-  // Dummy events
-  final List<Event> _events = [
-    Event(
-    Event(
-      id: 'e2',
-      societyId: 'drama',
-    Event(
-      id: 'e3',
-      societyId: 'sports',
-  // Dummy announcements
-  final List<Announcement> _announcements = [
-    Announcement(
-    Announcement(
-      id: 'a2',
-      societyId: 'drama',
-    Announcement(
-      id: 'a3',
-      societyId: 'sports',
-  List<String> _savedEventIds = [];
-  List<String> _joinedChannels = [];
-
-  List<Society> get societies => _societies;
-  bool get isAuthenticated => _isAuthenticated;
-
-  void login({String? userId}) {
-    _isAuthenticated = true;
-    this.userId = userId ?? this.userId;
-  void logout() {
-    _isAuthenticated = false;
-    userId = null;
-  void joinSociety(String societyId) {
-    final idx = _societies.indexWhere((s) => s.id == societyId);
-    if (idx != -1 && !_societies[idx].isJoined) {
-      _societies[idx] = _societies[idx].copyWith(isJoined: true);
-      notifyListeners();
-    }
-  void leaveSociety(String societyId) {
-    final idx = _societies.indexWhere((s) => s.id == societyId);
-    if (idx != -1 && _societies[idx].isJoined) {
-      _societies[idx] = _societies[idx].copyWith(isJoined: false);
-      notifyListeners();
-    }
-  List<String> get joinedChannels => List.unmodifiable(_joinedChannels);
-  List<Society> get joinedSocieties => _societies.where((s) => s.isJoined).toList();
-  List<Society> get availableSocieties => _societies.where((s) => !s.isJoined).toList();
   List<Event> get events => List.unmodifiable(_events);
   List<Event> get savedEvents => _events.where((e) => _savedEventIds.contains(e.id)).toList();
   List<Event> eventsForSociety(String societyId) => _events.where((e) => e.societyId == societyId).toList();
