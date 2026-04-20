@@ -6,7 +6,7 @@ import '../models/event.dart';
 import '../models/announcement.dart';
 
 class AppState extends ChangeNotifier {
-  bool isAuthenticated = false;
+  bool _isAuthenticated = false;
   String? userId;
 
   // Dummy societies
@@ -91,7 +91,22 @@ class AppState extends ChangeNotifier {
   // List of message channels (by society name) the user has joined
   List<String> _joinedChannels = [];
 
-  List<Society> get societies => List.unmodifiable(_societies);
+  List<Society> get societies => _societies;
+
+  bool get isAuthenticated => _isAuthenticated;
+
+  void login({String? userId}) {
+    _isAuthenticated = true;
+    this.userId = userId ?? this.userId;
+    notifyListeners();
+  }
+
+  void logout() {
+    _isAuthenticated = false;
+    userId = null;
+    notifyListeners();
+  }
+
   // List of joined message channels (society names)
   List<String> get joinedChannels => List.unmodifiable(_joinedChannels);
 
