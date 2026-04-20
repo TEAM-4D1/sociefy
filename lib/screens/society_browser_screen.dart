@@ -1,3 +1,5 @@
+import 'package:provider/provider.dart';
+import '../providers/app_state.dart';
 import 'package:flutter/material.dart';
 
 class SocietyBrowserScreen extends StatefulWidget {
@@ -26,6 +28,29 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
                 filled: true,
                 fillColor: Colors.white,
               ),
+            ),
+          ),
+          Expanded(
+            child: Consumer<AppState>(
+              builder: (context, appState, _) {
+                final societies = appState.societies;
+                return ListView.builder(
+                  itemCount: societies.length,
+                  itemBuilder: (context, index) {
+                    final society = societies[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      child: ListTile(
+                        title: Text(society.name),
+                        subtitle: Text(society.category),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
           ),
         ],
