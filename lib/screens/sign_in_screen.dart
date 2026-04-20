@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'theme/colours.dart';
-import 'main_tabs.dart';
+import '../theme/colours.dart';
+import '../main_tabs.dart';
 
 /// Simplified sign-in screen: only a "Sign in with UoP" button.
 /// Pressing the button immediately calls [onSignedIn] so the app can navigate
