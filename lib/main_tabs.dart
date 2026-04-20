@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'announcements.dart';
 import 'home_screen.dart';
-import 'messages_screen.dart';
+import 'screens/messages_screen.dart';
 
 class MainTabs extends StatefulWidget {
   const MainTabs({super.key});
