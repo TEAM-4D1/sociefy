@@ -23,9 +23,6 @@ class Event {
     required this.isSaved,
   });
 
-  String get formattedDate {
-    return "${date.day}/${date.month}/${date.year}";
-  }
-
-  String get formattedDate => "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year.toString()}";
+  String get formattedDate =>
+      "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year.toString()}";
 }
