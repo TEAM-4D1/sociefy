@@ -5,6 +5,17 @@ import '../data/sample_societies.dart';
 import '../data/sample_events.dart';
 
 class AppState extends ChangeNotifier {
+  bool isAuthenticated = false;
+  void login() {
+    isAuthenticated = true;
+    notifyListeners();
+  }
+
+  void logout() {
+    isAuthenticated = false;
+    notifyListeners();
+  }
+
   List<Society> _societies = List.from(sampleSocieties);
   List<Event> _events = List.from(sampleEvents);
   List<String> _savedEventIds = [];

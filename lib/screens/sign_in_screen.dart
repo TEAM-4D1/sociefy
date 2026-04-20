@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'theme/colours.dart';
-import 'main_tabs.dart';
+import '../theme/colours.dart';
+import '../main_tabs.dart';
 
 /// Simplified sign-in screen: only a "Sign in with UoP" button.
 /// Pressing the button immediately calls [onSignedIn] so the app can navigate
@@ -73,10 +73,7 @@ class SignInScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   const Text(
                     'Your university societies, all in one place',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
@@ -106,6 +103,7 @@ class SignInScreen extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
             ),
           ),
         ),
