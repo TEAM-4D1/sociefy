@@ -1,70 +1,43 @@
-import '../models/society.dart';
+class Society {
+  final String id;
+  final String name;
+  final String description;
+  final String category;
+  final String contactName;
+  final String contactEmail;
+  final int memberCount;
+  final bool isJoined;
 
-List<Society> sampleSocieties = [
-  Society(
-    id: 'soc_1',
-    name: 'Badminton Society',
-    description:
-        'A club for badminton enthusiasts of all skill levels to play, train, and compete.',
-    category: 'Sports',
-    contactName: 'Alice Tan',
-    contactEmail: 'alice.tan@sociefy.com',
-    memberCount: 42,
-    isJoined: false,
-  ),
-  Society(
-    id: 'soc_2',
-    name: 'Film Society',
-    description:
-        'Explore the world of cinema through screenings, discussions, and filmmaking workshops.',
-    category: 'Arts',
-    contactName: 'Brian Lee',
-    contactEmail: 'brian.lee@sociefy.com',
-    memberCount: 55,
-    isJoined: false,
-  ),
-  Society(
-    id: 'soc_3',
-    name: 'Chess Society',
-    description:
-        'Join us for weekly chess matches, tournaments, and strategy sessions.',
-    category: 'Games',
-    contactName: 'Cynthia Lim',
-    contactEmail: 'cynthia.lim@sociefy.com',
-    memberCount: 30,
-    isJoined: false,
-  ),
-  Society(
-    id: 'soc_4',
-    name: 'Drama Society',
-    description:
-        'Perform, direct, or write in our vibrant community of theatre lovers.',
-    category: 'Performing Arts',
-    contactName: 'David Ong',
-    contactEmail: 'david.ong@sociefy.com',
-    memberCount: 48,
-    isJoined: false,
-  ),
-  Society(
-    id: 'soc_5',
-    name: 'Coding Club',
-    description:
-        'Collaborate on projects, attend coding workshops, and participate in hackathons.',
-    category: 'Technology',
-    contactName: 'Emily Chan',
-    contactEmail: 'emily.chan@sociefy.com',
-    memberCount: 80,
-    isJoined: false,
-  ),
-  Society(
-    id: 'soc_6',
-    name: 'Basketball Society',
-    description:
-        'For those who love basketball—join us for games, training, and tournaments.',
-    category: 'Sports',
-    contactName: 'Felix Goh',
-    contactEmail: 'felix.goh@sociefy.com',
-    memberCount: 60,
-    isJoined: false,
-  ),
-];
+  Society({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.category,
+    required this.contactName,
+    required this.contactEmail,
+    required this.memberCount,
+    required this.isJoined,
+  });
+
+  Society copyWith({
+    String? id,
+    String? name,
+    String? description,
+    String? category,
+    String? contactName,
+    String? contactEmail,
+    int? memberCount,
+    bool? isJoined,
+  }) {
+    return Society(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      category: category ?? this.category,
+      contactName: contactName ?? this.contactName,
+      contactEmail: contactEmail ?? this.contactEmail,
+      memberCount: memberCount ?? this.memberCount,
+      isJoined: isJoined ?? this.isJoined,
+    );
+  }
+}
