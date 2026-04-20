@@ -1,11 +1,30 @@
 import '../models/society.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 /// A service class for handling society-related operations.
 class SocietyService {
-  /// Retrieves all societies from the database.
+  /// Retrieves all societies from the Firestore 'societies' collection.
+  ///
+  /// Returns a list of [Society] objects, or an empty list on error.
   Future<List<Society>> getAllSocieties() async {
-    // TODO: Implement fetching all societies
-    return [];
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('societies')
+          .get();
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return Society(
+          id: doc.id,
+          name: data['name'] ?? '',
+          category: data['category'] ?? '',
+          description: data['description'] ?? '',
+        );
+      }).toList();
+    } catch (e) {
+      debugPrint('getAllSocieties error: \$e');
+      return [];
+    }
   }
 
   /// Joins the user with [userId] to the society with [societyId].
