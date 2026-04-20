@@ -33,7 +33,8 @@ class _SignInScreenState extends State<SignInScreen> {
     ).showSnackBar(const SnackBar(content: Text('Signing in with UoP...')));
     Future.delayed(const Duration(milliseconds: 500), () {
       final appState = Provider.of<AppState>(context, listen: false);
-      appState.login();
+      // Simulate userId assignment (replace with real auth in production)
+      appState.login(userId: 'user1');
     });
   }
 
