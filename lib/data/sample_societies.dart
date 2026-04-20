@@ -1,10 +1,11 @@
 import '../models/society.dart';
 
-const List<Society> sampleSocieties = [
+List<Society> sampleSocieties = [
   Society(
     id: 'soc_1',
     name: 'Badminton Society',
-    description: 'A club for badminton enthusiasts of all skill levels to play, train, and compete.',
+    description:
+        'A club for badminton enthusiasts of all skill levels to play, train, and compete.',
     category: 'Sports',
     contactName: 'Alice Tan',
     contactEmail: 'alice.tan@sociefy.com',
@@ -14,7 +15,8 @@ const List<Society> sampleSocieties = [
   Society(
     id: 'soc_2',
     name: 'Film Society',
-    description: 'Explore the world of cinema through screenings, discussions, and filmmaking workshops.',
+    description:
+        'Explore the world of cinema through screenings, discussions, and filmmaking workshops.',
     category: 'Arts',
     contactName: 'Brian Lee',
     contactEmail: 'brian.lee@sociefy.com',
@@ -24,7 +26,8 @@ const List<Society> sampleSocieties = [
   Society(
     id: 'soc_3',
     name: 'Chess Society',
-    description: 'Join us for weekly chess matches, tournaments, and strategy sessions.',
+    description:
+        'Join us for weekly chess matches, tournaments, and strategy sessions.',
     category: 'Games',
     contactName: 'Cynthia Lim',
     contactEmail: 'cynthia.lim@sociefy.com',
@@ -34,7 +37,8 @@ const List<Society> sampleSocieties = [
   Society(
     id: 'soc_4',
     name: 'Drama Society',
-    description: 'Perform, direct, or write in our vibrant community of theatre lovers.',
+    description:
+        'Perform, direct, or write in our vibrant community of theatre lovers.',
     category: 'Performing Arts',
     contactName: 'David Ong',
     contactEmail: 'david.ong@sociefy.com',
@@ -44,7 +48,8 @@ const List<Society> sampleSocieties = [
   Society(
     id: 'soc_5',
     name: 'Coding Club',
-    description: 'Collaborate on projects, attend coding workshops, and participate in hackathons.',
+    description:
+        'Collaborate on projects, attend coding workshops, and participate in hackathons.',
     category: 'Technology',
     contactName: 'Emily Chan',
     contactEmail: 'emily.chan@sociefy.com',
@@ -54,7 +59,8 @@ const List<Society> sampleSocieties = [
   Society(
     id: 'soc_6',
     name: 'Basketball Society',
-    description: 'For those who love basketball—join us for games, training, and tournaments.',
+    description:
+        'For those who love basketball—join us for games, training, and tournaments.',
     category: 'Sports',
     contactName: 'Felix Goh',
     contactEmail: 'felix.goh@sociefy.com',
