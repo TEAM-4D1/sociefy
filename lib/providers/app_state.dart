@@ -19,8 +19,12 @@ class AppState extends ChangeNotifier {
   List<Society> _societies = List.from(sampleSocieties);
   List<Event> _events = List.from(sampleEvents);
   List<String> _savedEventIds = [];
+  // List of message channels (by society name) the user has joined
+  List<String> _joinedChannels = [];
 
   List<Society> get societies => List.unmodifiable(_societies);
+  // List of joined message channels (society names)
+  List<String> get joinedChannels => List.unmodifiable(_joinedChannels);
 
   List<Society> get joinedSocieties =>
       _societies.where((s) => s.isJoined).toList();
@@ -40,6 +44,11 @@ class AppState extends ChangeNotifier {
     final idx = _societies.indexWhere((s) => s.id == id);
     if (idx != -1 && !_societies[idx].isJoined) {
       _societies[idx] = _societies[idx].copyWith(isJoined: true);
+      // Add to joined channels if not already present
+      final channelName = _societies[idx].name;
+      if (!_joinedChannels.contains(channelName)) {
+        _joinedChannels.add(channelName);
+      }
       notifyListeners();
     }
   }
@@ -48,6 +57,9 @@ class AppState extends ChangeNotifier {
     final idx = _societies.indexWhere((s) => s.id == id);
     if (idx != -1 && _societies[idx].isJoined) {
       _societies[idx] = _societies[idx].copyWith(isJoined: false);
+      // Remove from joined channels
+      final channelName = _societies[idx].name;
+      _joinedChannels.remove(channelName);
       notifyListeners();
     }
   }
