@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'providers/app_state.dart';
 import 'screens/sign_in_screen.dart';
 import 'main_tabs.dart';
+import 'theme/app_theme.dart';
 
 void main() => runApp(const MyApp());
 
@@ -15,10 +16,7 @@ class MyApp extends StatelessWidget {
       create: (_) => AppState(),
       child: MaterialApp(
         title: 'Society App',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
+        theme: AppTheme.theme,
         home: Builder(
           builder: (context) => SignInScreen(
             onSignedIn: () {
