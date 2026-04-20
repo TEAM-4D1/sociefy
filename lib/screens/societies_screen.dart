@@ -123,6 +123,56 @@ class _SocietiesScreenState extends State<SocietiesScreen> {
                                         '${society.memberCount} members',
                                         style: AppTextStyles.bodyGrey,
                                       ),
+                                      const Spacer(),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: society.isJoined
+                                              ? Colors.grey[300]
+                                              : AppColours.primaryPurple,
+                                          foregroundColor: society.isJoined
+                                              ? Colors.black87
+                                              : Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 20,
+                                            vertical: 8,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          final appState = context
+                                              .read<AppState>();
+                                          if (society.isJoined) {
+                                            appState.leaveSociety(society.id);
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  'Left ${society.name}',
+                                                ),
+                                              ),
+                                            );
+                                          } else {
+                                            appState.joinSociety(society.id);
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  'Joined ${society.name}',
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        child: Text(
+                                          society.isJoined ? 'Leave' : 'Join',
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ],
