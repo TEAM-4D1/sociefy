@@ -23,9 +23,17 @@ class AuthService {
   /// Registers a new user with the provided [email] and [password].
   ///
   /// Returns a [UserCredential] if successful, or null otherwise.
+  /// Logs errors using debugPrint.
   Future<UserCredential?> register(String email, String password) async {
-    // TODO: Implement registration logic
-    return null;
+    try {
+      return await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } catch (e) {
+      debugPrint('register error: \$e');
+      return null;
+    }
   }
 
   /// Signs out the currently authenticated user.
