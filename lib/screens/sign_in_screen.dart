@@ -141,8 +141,12 @@ class _SignInScreenState extends State<SignInScreen> {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.login),
-                        label: const Text('Sign in with UoP'),
-                        onPressed: () => _signInWithUop(context),
+                        label: const Text('Sign In'),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            _signInWithUop(context);
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: AppColours.primaryPurple,
