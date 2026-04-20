@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'theme/colours.dart';
 import 'main_tabs.dart';
 
 /// Simplified sign-in screen: only a "Sign in with UoP" button.
@@ -90,6 +91,18 @@ class SignInScreen extends StatelessWidget {
                       icon: const Icon(Icons.login),
                       label: const Text('Sign in with UoP'),
                       onPressed: () => _signInWithUop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: AppColours.primaryPurple,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        textStyle: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
                   ),
                 ],
