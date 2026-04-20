@@ -1,16 +1,49 @@
-# sociefy
 
-A new Flutter project.
+# Sociefy
+
+Sociefy is a Flutter app for university students to discover, join, and interact with student societies.
+
+## App Features & Screens
+
+### Sign-In Screen
+- Simple sign-in with a "Sign in with UoP" button.
+- Branded gradient background.
+
+### Main Tabs
+- Home
+- Announcements
+- Messages
+
+### Home Screen
+- Scroll through posts and upcoming events from societies you follow.
+- Create and join societies.
+- Search bar, likes, comments, and chat/forum prompts.
+
+### Societies Screen
+- Search and browse all societies.
+- Each society is shown as a card with name, category, and join/leave button.
+- Tap a society to view its details.
+
+### Society Detail Screen
+- Society name, category, and description.
+- List of upcoming events for the society.
+- Join/leave society button at the bottom.
+
+### Announcements Screen
+- View and create announcements for societies.
+- Announcements show title, description, date, time, and venue.
+
+### Messages Screen
+- Forums and chats for society members.
+- Ask questions and communicate with committee members.
+
+---
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+1. Run `flutter pub get` to install dependencies.
+2. Run `flutter run` to launch the app.
 
-A few resources to get you started if this is your first Flutter project:
+---
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This project is built with Flutter and uses Provider for state management.
