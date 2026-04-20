@@ -14,7 +14,7 @@ class AppState extends ChangeNotifier {
   final List<String> _savedEventIds = [];
 
   // =====================
-  // SOCIETIES
+  // SOCIETIES (CLEAN MODEL)
   // =====================
 
   final List<Society> _societies = [
@@ -24,18 +24,12 @@ class AppState extends ChangeNotifier {
       category: 'Academic',
       description:
           'A society for students interested in computing, coding, and technology.',
-      contactName: 'Admin',
-      contactEmail: 'cs@society.com',
-      memberCount: 120,
     ),
     Society(
       id: 'drama',
       name: 'Drama Club',
       category: 'Arts',
       description: 'For those who love acting, theatre, and stage production.',
-      contactName: 'Admin',
-      contactEmail: 'drama@society.com',
-      memberCount: 80,
     ),
     Society(
       id: 'sports',
@@ -43,14 +37,11 @@ class AppState extends ChangeNotifier {
       category: 'Recreation',
       description:
           'Join to participate in a variety of sports and fitness activities.',
-      contactName: 'Admin',
-      contactEmail: 'sports@society.com',
-      memberCount: 150,
     ),
   ];
 
   // =====================
-  // EVENTS (MATCHES YOUR MODEL)
+  // EVENTS (MATCH YOUR EVENT MODEL)
   // =====================
 
   final List<Event> _events = [
