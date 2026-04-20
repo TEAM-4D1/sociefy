@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 class Announcement {
   final String title;
@@ -6,6 +7,8 @@ class Announcement {
   final DateTime date;
   final TimeOfDay time;
   final String venue;
+  final DateTime startDateTime;
+  final DateTime endDateTime;
 
   Announcement({
     required this.title,
@@ -13,15 +16,21 @@ class Announcement {
     required this.date,
     required this.time,
     required this.venue,
+    required this.startDateTime,
+    required this.endDateTime,
   });
 
   String get dateTimeVenueString {
     final dateStr =
-        "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+        "${startDateTime.year}-${startDateTime.month.toString().padLeft(2, '0')}-${startDateTime.day.toString().padLeft(2, '0')}";
     final timeStr =
-        "${time.hourOfPeriod.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')} ${time.period == DayPeriod.am ? 'AM' : 'PM'}";
-    return "$dateStr, $timeStr @ $venue";
+        "${startDateTime.hour.toString().padLeft(2, '0')}:${startDateTime.minute.toString().padLeft(2, '0')}";
+    final endTimeStr =
+        "${endDateTime.hour.toString().padLeft(2, '0')}:${endDateTime.minute.toString().padLeft(2, '0')}";
+    return "$dateStr, $timeStr - $endTimeStr @ $venue";
   }
+
+  bool get isExpired => DateTime.now().isAfter(endDateTime);
 }
 
 class AnnouncementHome extends StatefulWidget {
@@ -31,6 +40,35 @@ class AnnouncementHome extends StatefulWidget {
 
 class _AnnouncementHomeState extends State<AnnouncementHome> {
   final List<Announcement> _announcements = [];
+  final Map<Announcement, Timer> _timers = {};
+
+  @override
+  void dispose() {
+    for (final timer in _timers.values) {
+      timer.cancel();
+    }
+    super.dispose();
+  }
+
+  void _scheduleAutoRemove(Announcement announcement) {
+    final now = DateTime.now();
+    final ms = announcement.endDateTime.difference(now).inMilliseconds;
+    if (ms <= 0) {
+      _removeAnnouncement(announcement);
+      return;
+    }
+    final timer = Timer(Duration(milliseconds: ms), () {
+      _removeAnnouncement(announcement);
+    });
+    _timers[announcement] = timer;
+  }
+
+  void _removeAnnouncement(Announcement announcement) {
+    setState(() {
+      _announcements.remove(announcement);
+      _timers.remove(announcement)?.cancel();
+    });
+  }
 
   Future<void> _openCreatePage() async {
     final result = await Navigator.of(context).push<Announcement>(
@@ -137,10 +175,32 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
 
   void _save() {
     if (!_formKey.currentState!.validate()) return;
-    if (_selectedDate == null || _selectedTime == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Please pick date and time')));
+    if (_selectedDate == null || _startTime == null || _endTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please pick date, start time, and end time')),
+      );
+      return;
+    }
+
+    final startDateTime = DateTime(
+      _selectedDate!.year,
+      _selectedDate!.month,
+      _selectedDate!.day,
+      _startTime!.hour,
+      _startTime!.minute,
+    );
+    final endDateTime = DateTime(
+      _selectedDate!.year,
+      _selectedDate!.month,
+      _selectedDate!.day,
+      _endTime!.hour,
+      _endTime!.minute,
+    );
+    if (endDateTime.isBefore(startDateTime) ||
+        endDateTime.isAtSameMomentAs(startDateTime)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('End time must be after start time')),
+      );
       return;
     }
 
