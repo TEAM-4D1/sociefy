@@ -147,7 +147,7 @@ class _SocietiesScreenState extends State<SocietiesScreen> {
                                           final appState = context
                                               .read<AppState>();
                                           if (society.isJoined) {
-                                            appState.leaveSociety(society.id);
+                                            await appState.leaveSociety(society.id);
                                             ScaffoldMessenger.of(
                                               context,
                                             ).showSnackBar(
@@ -158,7 +158,7 @@ class _SocietiesScreenState extends State<SocietiesScreen> {
                                               ),
                                             );
                                           } else {
-                                            appState.joinSociety(society.id);
+                                            await appState.joinSociety(society.id);
                                             ScaffoldMessenger.of(
                                               context,
                                             ).showSnackBar(

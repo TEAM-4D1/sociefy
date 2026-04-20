@@ -19,7 +19,8 @@ class SignInScreen extends StatelessWidget {
     Future.delayed(const Duration(milliseconds: 500), () {
       // Give a short delay for UX
       final appState = Provider.of<AppState>(context, listen: false);
-      appState.login();
+      // Simulate userId assignment (replace with real auth in production)
+      appState.login(userId: 'user1');
     });
   }
 

@@ -147,14 +147,14 @@ class SocietyDetailScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(24),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     if (isJoined) {
-                      appState.leaveSociety(society.id);
+                      await appState.leaveSociety(society.id);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Left ${society.name}')),
                       );
                     } else {
-                      appState.joinSociety(society.id);
+                      await appState.joinSociety(society.id);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Joined ${society.name}')),
                       );
