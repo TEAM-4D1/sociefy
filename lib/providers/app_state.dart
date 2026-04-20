@@ -4,15 +4,22 @@ import '../models/event.dart';
 import '../data/sample_societies.dart';
 import '../data/sample_events.dart';
 
+
+import '../services/message_service.dart';
+
 class AppState extends ChangeNotifier {
   bool isAuthenticated = false;
-  void login() {
+  String? userId;
+
+  void login({String? userId}) {
     isAuthenticated = true;
+    this.userId = userId ?? this.userId;
     notifyListeners();
   }
 
   void logout() {
     isAuthenticated = false;
+    userId = null;
     notifyListeners();
   }
 
@@ -40,7 +47,7 @@ class AppState extends ChangeNotifier {
   List<Event> eventsForSociety(String societyId) =>
       _events.where((e) => e.societyId == societyId).toList();
 
-  void joinSociety(String id) {
+  Future<void> joinSociety(String id) async {
     final idx = _societies.indexWhere((s) => s.id == id);
     if (idx != -1 && !_societies[idx].isJoined) {
       _societies[idx] = _societies[idx].copyWith(isJoined: true);
@@ -49,17 +56,25 @@ class AppState extends ChangeNotifier {
       if (!_joinedChannels.contains(channelName)) {
         _joinedChannels.add(channelName);
       }
+      // Add user to message channel/forum
+      if (userId != null) {
+        await MessageService.instance.joinSociety(userId!, id);
+      }
       notifyListeners();
     }
   }
 
-  void leaveSociety(String id) {
+  Future<void> leaveSociety(String id) async {
     final idx = _societies.indexWhere((s) => s.id == id);
     if (idx != -1 && _societies[idx].isJoined) {
       _societies[idx] = _societies[idx].copyWith(isJoined: false);
       // Remove from joined channels
       final channelName = _societies[idx].name;
       _joinedChannels.remove(channelName);
+      // Remove user from message channel/forum
+      if (userId != null) {
+        await MessageService.instance.leaveSociety(userId!, id);
+      }
       notifyListeners();
     }
   }
