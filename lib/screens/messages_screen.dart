@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
-import 'providers/app_state.dart';
+import 'package:sociefy/providers/app_state.dart';
 
 class MessagesPage extends StatelessWidget {
   const MessagesPage({super.key});
