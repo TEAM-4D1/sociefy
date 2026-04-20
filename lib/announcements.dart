@@ -77,11 +77,18 @@ class _AnnouncementHomeState extends State<AnnouncementHome> {
 
     if (result != null) {
       setState(() => _announcements.insert(0, result));
+      _scheduleAutoRemove(result);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Schedule removal for any announcements that don't have a timer yet
+    for (final a in _announcements) {
+      if (!_timers.containsKey(a)) {
+        _scheduleAutoRemove(a);
+      }
+    }
     return Scaffold(
       appBar: AppBar(title: Text('Society Announcements')),
       body: _announcements.isEmpty
@@ -120,6 +127,11 @@ class _AnnouncementHomeState extends State<AnnouncementHome> {
                           a.dateTimeVenueString,
                           style: TextStyle(color: Colors.grey[700]),
                         ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Ends: ' + a.endDateTime.toString(),
+                          style: TextStyle(fontSize: 12, color: Colors.red),
+                        ),
                       ],
                     ),
                   ),
@@ -146,7 +158,8 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
   final _descCtrl = TextEditingController();
   final _venueCtrl = TextEditingController();
   DateTime? _selectedDate;
-  TimeOfDay? _selectedTime;
+  TimeOfDay? _startTime;
+  TimeOfDay? _endTime;
 
   @override
   void dispose() {
@@ -167,7 +180,13 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
     if (picked != null) setState(() => _selectedDate = picked);
   }
 
-  Future<void> _pickTime() async {
+  Future<void> _pickStartTime() async {
+    final now = TimeOfDay.now();
+    final picked = await showTimePicker(context: context, initialTime: now);
+    if (picked != null) setState(() => _startTime = picked);
+  }
+
+  Future<void> _pickEndTime() async {
     final now = TimeOfDay.now();
     final picked = await showTimePicker(context: context, initialTime: now);
     if (picked != null) setState(() => _selectedTime = picked);
@@ -210,6 +229,8 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
       date: _selectedDate!,
       time: _selectedTime!,
       venue: _venueCtrl.text.trim(),
+      startDateTime: startDateTime,
+      endDateTime: endDateTime,
     );
 
     Navigator.of(context).pop(announcement);
@@ -275,7 +296,18 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
                   SizedBox(width: 12),
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: _pickTime,
+                      onPressed: _pickStartTime,
+                      child: Text(
+                        _startTime == null
+                            ? 'Start time'
+                            : _startTime!.format(context),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _pickEndTime,
                       child: Text(
                         _selectedTime == null
                             ? 'Pick time'
