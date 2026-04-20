@@ -37,9 +37,8 @@ class SocietyDetailScreen extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 32,
-                        // ignore: deprecated_member_use
-                        backgroundColor: AppColours.primaryPurple.withOpacity(
-                          0.1,
+                        backgroundColor: AppColours.primaryPurple.withValues(
+                          alpha: 0.1,
                         ),
                         child: Icon(
                           Icons.groups,
@@ -69,6 +68,7 @@ class SocietyDetailScreen extends StatelessWidget {
                   Text(society.description, style: AppTextStyles.bodyRegular),
 
                   const SizedBox(height: 16),
+
                   OutlinedButton.icon(
                     icon: const Icon(Icons.contact_mail),
                     label: const Text('View Contact Info'),
@@ -81,6 +81,7 @@ class SocietyDetailScreen extends StatelessWidget {
                       );
                     },
                   ),
+
                   const SizedBox(height: 32),
 
                   const Text(
@@ -148,11 +149,12 @@ class SocietyDetailScreen extends StatelessWidget {
         ],
       ),
 
+      // =========================
+      // JOIN / LEAVE BUTTON FIXED
+      // =========================
       bottomNavigationBar: Consumer<AppState>(
         builder: (context, appState, _) {
-          final isJoined = appState.societies
-              .firstWhere((s) => s.id == society.id)
-              .isJoined;
+          final isJoined = appState.isJoined(society.id);
 
           return BottomAppBar(
             elevation: 8,
@@ -172,14 +174,16 @@ class SocietyDetailScreen extends StatelessWidget {
                     ),
                   ),
                   onPressed: () async {
+                    final messenger = ScaffoldMessenger.of(context);
+
                     if (isJoined) {
                       await appState.leaveSociety(society.id);
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      messenger.showSnackBar(
                         SnackBar(content: Text('Left ${society.name}')),
                       );
                     } else {
                       await appState.joinSociety(society.id);
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      messenger.showSnackBar(
                         SnackBar(content: Text('Joined ${society.name}')),
                       );
                     }
