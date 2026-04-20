@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'announcements.dart';
 import 'home_screen.dart';
 import 'screens/messages_screen.dart';
+import 'screens/feed_screen.dart';
 
 class MainTabs extends StatefulWidget {
   const MainTabs({super.key});
@@ -16,6 +17,7 @@ class _MainTabsState extends State<MainTabs> {
   final List<Widget> _pages = [
     const HomePage(),
     AnnouncementHome(),
+    const FeedScreen(),
     const MessagesPage(),
   ];
 
@@ -31,6 +33,10 @@ class _MainTabsState extends State<MainTabs> {
           BottomNavigationBarItem(
             icon: Icon(Icons.announcement),
             label: 'Announcements',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dynamic_feed),
+            label: 'Feed',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
         ],
