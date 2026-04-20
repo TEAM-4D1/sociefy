@@ -1,4 +1,4 @@
-import 'register_screen.dart';
+// import 'register_screen.dart';
 import 'package:flutter/material.dart';
 import '../theme/colours.dart';
 import 'package:provider/provider.dart';
@@ -15,15 +15,23 @@ class SignInScreen extends StatefulWidget {
   State<SignInScreen> createState() => _SignInScreenState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  // Registration modal state
+  bool _showRegister = false;
+  final _registerFormKey = GlobalKey<FormState>();
+  final TextEditingController _registerEmailController = TextEditingController();
+  final TextEditingController _registerPasswordController = TextEditingController();
+  String? _registerSuccessMsg;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _registerEmailController.dispose();
+    _registerPasswordController.dispose();
     super.dispose();
   }
 
@@ -42,147 +50,291 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Sign in')),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF4A148C), Color(0xFF7B1FA2)],
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 520),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // App icon
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.groups,
-                        color: Color(0xFF4A148C),
-                        size: 64,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Sociefy',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Your university societies, all in one place',
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 32),
-                    // Removed 'Sign in to continue' text
-                    const SizedBox(height: 24),
-                    TextFormField(
-                      controller: _emailController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter email';
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter password';
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    const SizedBox(height: 24),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const RegisterScreen(),
+      body: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFF4A148C), Color(0xFF7B1FA2)],
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 520),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // App icon
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
                           ),
-                        );
-                      },
-                      child: const Text(
-                        "Don't have an account? Register",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.login),
-                        label: const Text('Sign In'),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            _signInWithUop(context);
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: AppColours.primaryPurple,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                          child: const Icon(
+                            Icons.groups,
+                            color: Color(0xFF4A148C),
+                            size: 64,
                           ),
-                          textStyle: const TextStyle(
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Sociefy',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 36,
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
                           ),
                         ),
-                      ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Your university societies, all in one place',
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 32),
+                        // Removed 'Sign in to continue' text
+                        const SizedBox(height: 24),
+                        TextFormField(
+                          controller: _emailController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter email';
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: true,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter password';
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        const SizedBox(height: 24),
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _showRegister = true;
+                              _registerSuccessMsg = null;
+                              _registerEmailController.clear();
+                              _registerPasswordController.clear();
+                            });
+                          },
+                          child: const Text(
+                            "Don't have an account? Register",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            icon: const Icon(Icons.login),
+                            label: const Text('Sign In'),
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                _signInWithUop(context);
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: AppColours.primaryPurple,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
+          // Registration modal overlay
+          if (_showRegister)
+            Container(
+              color: Colors.black.withOpacity(0.7),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 520),
+                  child: Material(
+                    borderRadius: BorderRadius.circular(24),
+                    color: Colors.transparent,
+                    child: Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Form(
+                        key: _registerFormKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              'Register',
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF4A148C),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            TextFormField(
+                              controller: _registerEmailController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter email';
+                                }
+                                if (!value.contains('@')) {
+                                  return 'Enter a valid email';
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                labelText: 'Email',
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: _registerPasswordController,
+                              obscureText: true,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter password';
+                                }
+                                if (value.length < 6) {
+                                  return 'Password must be at least 6 characters';
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                labelText: 'Password',
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (_registerFormKey.currentState!.validate()) {
+                                    setState(() {
+                                      _registerSuccessMsg = 'Account created for ${_registerEmailController.text}!';
+                                    });
+                                    Future.delayed(const Duration(seconds: 2), () {
+                                      setState(() {
+                                        _showRegister = false;
+                                      });
+                                    });
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF4A148C),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  textStyle: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                child: const Text('Register'),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _showRegister = false;
+                                });
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                            if (_registerSuccessMsg != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 16.0),
+                                child: Text(
+                                  _registerSuccessMsg!,
+                                  style: const TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
