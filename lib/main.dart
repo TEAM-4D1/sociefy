@@ -4,8 +4,13 @@ import 'providers/app_state.dart';
 import 'screens/sign_in_screen.dart';
 import 'main_tabs.dart';
 import 'theme/app_theme.dart';
+import 'services/firebase_service.dart';
 
-void main() => runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FirebaseService.initialize();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
