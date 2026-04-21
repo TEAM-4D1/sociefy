@@ -1,6 +1,7 @@
 
 import '../models/society.dart';
 import '../models/event.dart';
+import '../models/announcement.dart';
 
 import 'package:flutter/foundation.dart';
 
@@ -74,6 +75,23 @@ class AppState extends ChangeNotifier {
     ),
   ];
 
+  final List<Announcement> _announcements = [
+    Announcement(
+      id: 'a1',
+      societyId: 'cs',
+      title: 'Welcome Back Meeting',
+      content: 'Join us this Friday to plan upcoming coding events.',
+      date: DateTime(2026, 4, 20),
+    ),
+    Announcement(
+      id: 'a2',
+      societyId: 'drama',
+      title: 'Audition Schedule Released',
+      content: 'Check the notice board for updated audition time slots.',
+      date: DateTime(2026, 4, 19),
+    ),
+  ];
+
   bool get isAuthenticated => _isAuthenticated;
 
   void login({String? userId, bool isAdmin = false}) {
@@ -94,6 +112,8 @@ class AppState extends ChangeNotifier {
 
   List<Society> get societies => _societies;
 
+  List<Announcement> get announcements => _announcements;
+
   bool isJoined(String id) => _joinedSocietyIds.contains(id);
 
   List<Society> get joinedSocieties =>
@@ -112,6 +132,51 @@ class AppState extends ChangeNotifier {
   Future<void> leaveSociety(String id) async {
     _joinedSocietyIds.remove(id);
     notifyListeners();
+  }
+
+  void createSociety({
+    required String name,
+    required String category,
+    required String description,
+  }) {
+    final id =
+        '${name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-')}-${DateTime.now().millisecondsSinceEpoch}';
+    _societies.add(
+      Society(
+        id: id,
+        name: name,
+        category: category,
+        description: description,
+      ),
+    );
+    notifyListeners();
+  }
+
+  void createAnnouncement({
+    required String societyId,
+    required String title,
+    required String content,
+  }) {
+    _announcements.insert(
+      0,
+      Announcement(
+        id: 'a-${DateTime.now().millisecondsSinceEpoch}',
+        societyId: societyId,
+        title: title,
+        content: content,
+        date: DateTime.now(),
+      ),
+    );
+    notifyListeners();
+  }
+
+  String societyNameById(String id) {
+    for (final society in _societies) {
+      if (society.id == id) {
+        return society.name;
+      }
+    }
+    return 'Society';
   }
 
   List<Event> get events => _events;
