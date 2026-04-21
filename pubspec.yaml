@@ -44,6 +44,7 @@ dependencies:
   cloud_firestore: ^5.0.0
   flutter_test:
     sdk: flutter
+  firebase_messaging: ^15.2.10
 
 
 # For information on the generic Dart part of this file, see the
