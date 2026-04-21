@@ -72,7 +72,10 @@ class FeedScreen extends StatelessWidget {
               children: [
                 if (isAdmin)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0,
+                      vertical: 8,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -107,7 +110,10 @@ class FeedScreen extends StatelessWidget {
             children: [
               if (isAdmin)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 8,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
