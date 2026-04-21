@@ -1,9 +1,9 @@
-
 import '../models/society.dart';
 import '../models/event.dart';
 import '../models/announcement.dart';
 
 import 'package:flutter/foundation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AppState extends ChangeNotifier {
   bool _isAuthenticated = false;
@@ -142,12 +142,7 @@ class AppState extends ChangeNotifier {
     final id =
         '${name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-')}-${DateTime.now().millisecondsSinceEpoch}';
     _societies.add(
-      Society(
-        id: id,
-        name: name,
-        category: category,
-        description: description,
-      ),
+      Society(id: id, name: name, category: category, description: description),
     );
     notifyListeners();
   }
@@ -199,5 +194,54 @@ class AppState extends ChangeNotifier {
   void unsaveEvent(String id) {
     _savedEventIds.remove(id);
     notifyListeners();
+  }
+
+  /// Persist a saved event to Firestore for the given user.
+  Future<void> persistSaveEvent(String userId, String eventId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('savedEvents')
+          .doc('${userId}_$eventId')
+          .set({
+            'eventId': eventId,
+            'userId': userId,
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+    } catch (e) {
+      debugPrint('persistSaveEvent error: $e');
+      rethrow;
+    }
+  }
+
+  /// Remove a saved event document for the given user/event.
+  Future<void> persistUnsaveEvent(String userId, String eventId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('savedEvents')
+          .doc('${userId}_$eventId')
+          .delete();
+    } catch (e) {
+      debugPrint('persistUnsaveEvent error: $e');
+      rethrow;
+    }
+  }
+
+  /// Load saved events for a user from Firestore into local state.
+  Future<void> loadSavedEvents(String userId) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('savedEvents')
+          .where('userId', isEqualTo: userId)
+          .get();
+      for (final doc in snapshot.docs) {
+        final eid = doc['eventId'] as String?;
+        if (eid != null && !_savedEventIds.contains(eid)) {
+          _savedEventIds.add(eid);
+        }
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint('loadSavedEvents error: $e');
+    }
   }
 }
