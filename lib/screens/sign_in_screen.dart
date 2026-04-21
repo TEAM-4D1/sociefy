@@ -136,6 +136,9 @@ class _SignInScreenState extends State<SignInScreen> {
                             if (value == null || value.isEmpty) {
                               return 'Please enter email';
                             }
+                            if (!value.contains('@')) {
+                              return 'Please enter a valid email address';
+                            }
                             return null;
                           },
                           decoration: InputDecoration(
