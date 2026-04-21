@@ -2,13 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/event.dart';
 
-class EventDetailScreen extends StatelessWidget {
+class EventDetailScreen extends StatefulWidget {
   final Event event;
 
   const EventDetailScreen({Key? key, required this.event}) : super(key: key);
 
   @override
+  State<EventDetailScreen> createState() => _EventDetailScreenState();
+}
+
+class _EventDetailScreenState extends State<EventDetailScreen> {
+  bool _hasRsvp = false;
+
+  @override
   Widget build(BuildContext context) {
+    final event = widget.event;
     return Scaffold(
       appBar: AppBar(title: Text(event.title)),
       body: Padding(
@@ -56,19 +64,43 @@ class EventDetailScreen extends StatelessWidget {
 
             const SizedBox(height: 32),
 
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.calendar_today),
-                label: const Text('Save to Calendar'),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Event saved to device calendar!'),
-                    ),
-                  );
-                },
-              ),
+            Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.how_to_reg),
+                    label: Text(_hasRsvp ? 'Cancel RSVP' : 'RSVP'),
+                    onPressed: () {
+                      setState(() {
+                        _hasRsvp = !_hasRsvp;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            _hasRsvp ? 'RSVP confirmed!' : 'RSVP removed',
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.calendar_today),
+                    label: const Text('Save to Calendar'),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Event saved to device calendar!'),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ],
         ),
