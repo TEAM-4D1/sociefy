@@ -162,7 +162,58 @@ class FeedScreen extends StatelessWidget {
                           icon: const Icon(Icons.group_add),
                           label: const Text('Create Society'),
                           onPressed: () {
-                            // TODO: Implement create society dialog
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                final _nameController = TextEditingController();
+                                final _categoryController =
+                                    TextEditingController();
+                                return AlertDialog(
+                                  title: const Text('Create Society'),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      TextField(
+                                        controller: _nameController,
+                                        decoration: const InputDecoration(
+                                          labelText: 'Society Name',
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      TextField(
+                                        controller: _categoryController,
+                                        decoration: const InputDecoration(
+                                          labelText: 'Category',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        // Here you would handle creating the society
+                                        Navigator.of(context).pop();
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Society created (demo only)',
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: const Text('Create'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                           },
                         ),
                       ],
