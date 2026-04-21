@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'screens/messages_screen.dart';
 // Removed unused imports
 import 'screens/feed_screen.dart';
 import 'screens/society_browser_screen.dart';
@@ -17,7 +18,7 @@ class _MainTabsState extends State<MainTabs> {
     const FeedScreen(),
     SocietyBrowserScreen(),
     // Placeholder for Messages
-    Center(child: Text('Messages coming soon!')),
+    MessagesPage(),
   ];
 
   @override
