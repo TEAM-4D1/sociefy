@@ -155,6 +155,7 @@ class _FeedScreenState extends State<FeedScreen> {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+
                 const Center(
                   child: Text(
                     "You haven't joined any societies yet. Explore to see updates here!",
@@ -168,7 +169,10 @@ class _FeedScreenState extends State<FeedScreen> {
             children: [
               if (isAdmin)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 8,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
