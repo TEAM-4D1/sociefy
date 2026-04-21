@@ -257,9 +257,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                       ),
                                     ),
                                   )
-                                : const Text(
-                                    'Are you a committee member or admin? Sign in here',
-                                  ),
+                                : const Text('Committee / Admin Sign In'),
                             onPressed: _isLoading
                                 ? null
                                 : () {
