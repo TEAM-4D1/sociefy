@@ -152,7 +152,7 @@ class _FeedScreenState extends State<FeedScreen> {
 
   Future<void> _showCreatePostDialog(BuildContext context) async {
     final appState = context.read<AppState>();
-    final societies = appState.societies;
+    final societies = List.of(appState.societies);
 
     if (societies.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -180,7 +180,7 @@ class _FeedScreenState extends State<FeedScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       DropdownButtonFormField<String>(
-                        initialValue: selectedSocietyId,
+                        value: selectedSocietyId,
                         decoration: const InputDecoration(labelText: 'Society'),
                         items: societies
                             .map(
@@ -190,6 +190,12 @@ class _FeedScreenState extends State<FeedScreen> {
                               ),
                             )
                             .toList(),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Select a society';
+                          }
+                          return null;
+                        },
                         onChanged: (value) {
                           if (value != null) {
                             setDialogState(() {
@@ -234,12 +240,23 @@ class _FeedScreenState extends State<FeedScreen> {
                     if (!formKey.currentState!.validate()) {
                       return;
                     }
+                    final selectedExists = societies.any(
+                      (society) => society.id == selectedSocietyId,
+                    );
+                    if (!selectedExists) {
+                      ScaffoldMessenger.of(dialogContext).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please select a valid society.'),
+                        ),
+                      );
+                      return;
+                    }
 
-                    context.read<AppState>().createAnnouncement(
-                          societyId: selectedSocietyId,
-                          title: titleController.text.trim(),
-                          content: contentController.text.trim(),
-                        );
+                    appState.createAnnouncement(
+                      societyId: selectedSocietyId,
+                      title: titleController.text.trim(),
+                      content: contentController.text.trim(),
+                    );
                     Navigator.of(dialogContext).pop(true);
                   },
                   child: const Text('Post'),
@@ -254,7 +271,11 @@ class _FeedScreenState extends State<FeedScreen> {
     titleController.dispose();
     contentController.dispose();
 
-    if (created == true && mounted) {
+    if (!mounted) {
+      return;
+    }
+
+    if (created == true) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Post created successfully.')),
       );
@@ -276,39 +297,13 @@ class _FeedScreenState extends State<FeedScreen> {
                   .where((a) => joinedSocietyIds.contains(a.societyId))
                   .toList();
 
-          if (joinedSocieties.isEmpty) {
+          if (!isAdmin && joinedSocieties.isEmpty) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (isAdmin)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton.icon(
-                          icon: const Icon(Icons.add),
-                          label: const Text('Add Post'),
-                          onPressed: () {
-                            _showCreatePostDialog(context);
-                          },
-                        ),
-                        const SizedBox(width: 16),
-                        ElevatedButton.icon(
-                          icon: const Icon(Icons.group_add),
-                          label: const Text('Create Society'),
-                          onPressed: () {
-                            _showCreateSocietyDialog(context);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                Center(
+                const Center(
                   child: Text(
-                    isAdmin
-                        ? 'No posts yet. Use Add Post to publish your first announcement.'
-                        : "You haven't joined any societies yet. Explore to see updates here!",
+                    "You haven't joined any societies yet. Explore to see updates here!",
                     textAlign: TextAlign.center,
                   ),
                 ),
