@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/event.dart';
 
 class EventDetailScreen extends StatefulWidget {
   final Event event;
+  final String userId;
 
-  const EventDetailScreen({Key? key, required this.event}) : super(key: key);
+  const EventDetailScreen({Key? key, required this.event, required this.userId})
+    : super(key: key);
 
   @override
   State<EventDetailScreen> createState() => _EventDetailScreenState();
@@ -71,10 +74,34 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.how_to_reg),
                     label: Text(_hasRsvp ? 'Cancel RSVP' : 'RSVP'),
-                    onPressed: () {
+                    onPressed: () async {
                       setState(() {
                         _hasRsvp = !_hasRsvp;
                       });
+                      try {
+                        final event = widget.event;
+                        final userId = widget.userId;
+                        final docId = '${userId}_${event.id}';
+                        if (_hasRsvp) {
+                          await FirebaseFirestore.instance
+                              .collection('rsvps')
+                              .doc(docId)
+                              .set({
+                                'eventId': event.id,
+                                'userId': userId,
+                                'createdAt': FieldValue.serverTimestamp(),
+                              });
+                        } else {
+                          await FirebaseFirestore.instance
+                              .collection('rsvps')
+                              .doc(docId)
+                              .delete();
+                        }
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error updating RSVP: $e')),
+                        );
+                      }
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
