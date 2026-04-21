@@ -62,9 +62,7 @@ class FeedScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('My Societies Feed')),
       body: Consumer<AppState>(
         builder: (context, appState, _) {
-          final joinedSocieties = appState.societies
-              .where((s) => s.isJoined)
-              .toList();
+          final joinedSocieties = appState.joinedSocieties;
           final isAdmin = appState.isAdmin;
           if (joinedSocieties.isEmpty) {
             return Column(
