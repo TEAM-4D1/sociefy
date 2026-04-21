@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'announcements.dart';
-import 'home_screen.dart';
-import 'messages_screen.dart';
+import 'screens/messages_screen.dart';
+// Removed unused imports
+import 'screens/feed_screen.dart';
+import 'screens/society_browser_screen.dart';
 
 class MainTabs extends StatefulWidget {
   const MainTabs({super.key});
@@ -14,9 +15,10 @@ class _MainTabsState extends State<MainTabs> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    const HomePage(),
-    AnnouncementHome(),
-    const MessagesPage(),
+    const FeedScreen(),
+    SocietyBrowserScreen(),
+    // Placeholder for Messages
+    MessagesPage(),
   ];
 
   @override
@@ -27,11 +29,11 @@ class _MainTabsState extends State<MainTabs> {
         currentIndex: _currentIndex,
         onTap: (i) => setState(() => _currentIndex = i),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.announcement),
-            label: 'Announcements',
+            icon: Icon(Icons.dynamic_feed),
+            label: 'Home/Feed',
           ),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Discover'),
           BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
         ],
       ),
