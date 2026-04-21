@@ -1,6 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/society.dart';
 import '../providers/app_state.dart';
+
+class _CreateSocietyResult {
+  final String name;
+  final String category;
+  final String description;
+
+  const _CreateSocietyResult({
+    required this.name,
+    required this.category,
+    required this.description,
+  });
+}
+
+class _CreatePostResult {
+  final String societyId;
+  final String title;
+  final String content;
+
+  const _CreatePostResult({
+    required this.societyId,
+    required this.title,
+    required this.content,
+  });
+}
 
 // Announcement card for feed
 class _AnnouncementCard extends StatelessWidget {
@@ -62,88 +87,17 @@ class FeedScreen extends StatefulWidget {
 
 class _FeedScreenState extends State<FeedScreen> {
   Future<void> _showCreateSocietyDialog(BuildContext context) async {
-    final formKey = GlobalKey<FormState>();
-    final nameController = TextEditingController();
-    final categoryController = TextEditingController();
-    final descriptionController = TextEditingController();
-
-    final created = await showDialog<bool>(
+    final result = await showDialog<_CreateSocietyResult>(
       context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Create Society'),
-          content: Form(
-            key: formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextFormField(
-                    controller: nameController,
-                    decoration: const InputDecoration(labelText: 'Society name'),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Enter a society name';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: categoryController,
-                    decoration: const InputDecoration(labelText: 'Category'),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Enter a category';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: descriptionController,
-                    decoration: const InputDecoration(labelText: 'Description'),
-                    minLines: 2,
-                    maxLines: 4,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Enter a description';
-                      }
-                      return null;
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (!formKey.currentState!.validate()) {
-                  return;
-                }
-
-                context.read<AppState>().createSociety(
-                      name: nameController.text.trim(),
-                      category: categoryController.text.trim(),
-                      description: descriptionController.text.trim(),
-                    );
-                Navigator.of(dialogContext).pop(true);
-              },
-              child: const Text('Create'),
-            ),
-          ],
-        );
-      },
+      builder: (_) => const _CreateSocietyDialog(),
     );
 
-    nameController.dispose();
-    categoryController.dispose();
-    descriptionController.dispose();
-
-    if (created == true && mounted) {
+    if (result != null && mounted) {
+      context.read<AppState>().createSociety(
+            name: result.name,
+            category: result.category,
+            description: result.description,
+          );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Society created successfully.')),
       );
@@ -161,121 +115,21 @@ class _FeedScreenState extends State<FeedScreen> {
       return;
     }
 
-    final formKey = GlobalKey<FormState>();
-    final titleController = TextEditingController();
-    final contentController = TextEditingController();
-    String selectedSocietyId = societies.first.id;
-
-    final created = await showDialog<bool>(
+    final result = await showDialog<_CreatePostResult>(
       context: context,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: const Text('Create Post'),
-              content: Form(
-                key: formKey,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      DropdownButtonFormField<String>(
-                        value: selectedSocietyId,
-                        decoration: const InputDecoration(labelText: 'Society'),
-                        items: societies
-                            .map(
-                              (society) => DropdownMenuItem<String>(
-                                value: society.id,
-                                child: Text(society.name),
-                              ),
-                            )
-                            .toList(),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Select a society';
-                          }
-                          return null;
-                        },
-                        onChanged: (value) {
-                          if (value != null) {
-                            setDialogState(() {
-                              selectedSocietyId = value;
-                            });
-                          }
-                        },
-                      ),
-                      TextFormField(
-                        controller: titleController,
-                        decoration: const InputDecoration(labelText: 'Post title'),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Enter a post title';
-                          }
-                          return null;
-                        },
-                      ),
-                      TextFormField(
-                        controller: contentController,
-                        decoration: const InputDecoration(labelText: 'Post content'),
-                        minLines: 3,
-                        maxLines: 5,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Enter post content';
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(dialogContext).pop(false),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    if (!formKey.currentState!.validate()) {
-                      return;
-                    }
-                    final selectedExists = societies.any(
-                      (society) => society.id == selectedSocietyId,
-                    );
-                    if (!selectedExists) {
-                      ScaffoldMessenger.of(dialogContext).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please select a valid society.'),
-                        ),
-                      );
-                      return;
-                    }
-
-                    appState.createAnnouncement(
-                      societyId: selectedSocietyId,
-                      title: titleController.text.trim(),
-                      content: contentController.text.trim(),
-                    );
-                    Navigator.of(dialogContext).pop(true);
-                  },
-                  child: const Text('Post'),
-                ),
-              ],
-            );
-          },
-        );
-      },
+      builder: (_) => _CreatePostDialog(societies: societies),
     );
-
-    titleController.dispose();
-    contentController.dispose();
 
     if (!mounted) {
       return;
     }
 
-    if (created == true) {
+    if (result != null) {
+      appState.createAnnouncement(
+        societyId: result.societyId,
+        title: result.title,
+        content: result.content,
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Post created successfully.')),
       );
@@ -361,6 +215,209 @@ class _FeedScreenState extends State<FeedScreen> {
           );
         },
       ),
+    );
+  }
+}
+
+class _CreateSocietyDialog extends StatefulWidget {
+  const _CreateSocietyDialog();
+
+  @override
+  State<_CreateSocietyDialog> createState() => _CreateSocietyDialogState();
+}
+
+class _CreateSocietyDialogState extends State<_CreateSocietyDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _categoryController = TextEditingController();
+  final _descriptionController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _categoryController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Create Society'),
+      content: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'Society name'),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Enter a society name';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _categoryController,
+                decoration: const InputDecoration(labelText: 'Category'),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Enter a category';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(labelText: 'Description'),
+                minLines: 2,
+                maxLines: 4,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Enter a description';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            if (!_formKey.currentState!.validate()) {
+              return;
+            }
+
+            Navigator.of(context).pop(
+              _CreateSocietyResult(
+                name: _nameController.text.trim(),
+                category: _categoryController.text.trim(),
+                description: _descriptionController.text.trim(),
+              ),
+            );
+          },
+          child: const Text('Create'),
+        ),
+      ],
+    );
+  }
+}
+
+class _CreatePostDialog extends StatefulWidget {
+  final List<Society> societies;
+
+  const _CreatePostDialog({required this.societies});
+
+  @override
+  State<_CreatePostDialog> createState() => _CreatePostDialogState();
+}
+
+class _CreatePostDialogState extends State<_CreatePostDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _titleController = TextEditingController();
+  final _contentController = TextEditingController();
+  late String _selectedSocietyId;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedSocietyId = widget.societies.first.id;
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _contentController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Create Post'),
+      content: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButtonFormField<String>(
+                value: _selectedSocietyId,
+                decoration: const InputDecoration(labelText: 'Society'),
+                items: widget.societies
+                    .map(
+                      (society) => DropdownMenuItem<String>(
+                        value: society.id,
+                        child: Text(society.name),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value == null) {
+                    return;
+                  }
+                  setState(() {
+                    _selectedSocietyId = value;
+                  });
+                },
+              ),
+              TextFormField(
+                controller: _titleController,
+                decoration: const InputDecoration(labelText: 'Post title'),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Enter a post title';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _contentController,
+                decoration: const InputDecoration(labelText: 'Post content'),
+                minLines: 3,
+                maxLines: 5,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Enter post content';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            if (!_formKey.currentState!.validate()) {
+              return;
+            }
+
+            Navigator.of(context).pop(
+              _CreatePostResult(
+                societyId: _selectedSocietyId,
+                title: _titleController.text.trim(),
+                content: _contentController.text.trim(),
+              ),
+            );
+          },
+          child: const Text('Post'),
+        ),
+      ],
     );
   }
 }
