@@ -1,7 +1,5 @@
 // import 'register_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:sociefy/providers/app_state.dart';
 import '../services/auth_service.dart';
 import '../main_tabs.dart';
 
