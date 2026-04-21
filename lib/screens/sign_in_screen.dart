@@ -28,6 +28,9 @@ class _SignInScreenState extends State<SignInScreen> {
       TextEditingController();
   String? _registerSuccessMsg;
 
+  // Loading state for sign-in
+  bool _isLoading = false;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -41,6 +44,9 @@ class _SignInScreenState extends State<SignInScreen> {
     BuildContext context, {
     bool isAdmin = false,
   }) async {
+    setState(() {
+      _isLoading = true;
+    });
     final messenger = ScaffoldMessenger.of(context);
     messenger.showSnackBar(
       const SnackBar(content: Text('Signing in with UoP...')),
@@ -50,6 +56,9 @@ class _SignInScreenState extends State<SignInScreen> {
     final password = _passwordController.text;
     final result = await authService.signIn(email, password);
     messenger.hideCurrentSnackBar();
+    setState(() {
+      _isLoading = false;
+    });
     if (result != null) {
       if (!mounted) return;
       Navigator.of(
@@ -182,12 +191,25 @@ class _SignInScreenState extends State<SignInScreen> {
                           width: double.infinity,
                           child: ElevatedButton.icon(
                             icon: const Icon(Icons.login),
-                            label: const Text('Sign In'),
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                _signInWithUop(context, isAdmin: false);
-                              }
-                            },
+                            label: _isLoading
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Color(0xFF4A148C),
+                                      ),
+                                    ),
+                                  )
+                                : const Text('Sign In'),
+                            onPressed: _isLoading
+                                ? null
+                                : () {
+                                    if (_formKey.currentState!.validate()) {
+                                      _signInWithUop(context, isAdmin: false);
+                                    }
+                                  },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
                               foregroundColor: const Color(0xFF4A148C),
@@ -207,14 +229,27 @@ class _SignInScreenState extends State<SignInScreen> {
                           width: double.infinity,
                           child: OutlinedButton.icon(
                             icon: const Icon(Icons.admin_panel_settings),
-                            label: const Text(
-                              'Are you a committee member or admin? Sign in here',
-                            ),
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                _signInWithUop(context, isAdmin: true);
-                              }
-                            },
+                            label: _isLoading
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                : const Text(
+                                    'Are you a committee member or admin? Sign in here',
+                                  ),
+                            onPressed: _isLoading
+                                ? null
+                                : () {
+                                    if (_formKey.currentState!.validate()) {
+                                      _signInWithUop(context, isAdmin: true);
+                                    }
+                                  },
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.white,
                               side: const BorderSide(color: Color(0xFF4A148C)),
