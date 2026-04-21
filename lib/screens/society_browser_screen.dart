@@ -11,6 +11,7 @@ class SocietyBrowserScreen extends StatefulWidget {
 }
 
 class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
+  String _searchQuery = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,12 +30,19 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
                 filled: true,
                 fillColor: Colors.white,
               ),
+              onChanged: (value) {
+                setState(() => _searchQuery = value);
+              },
             ),
           ),
           Expanded(
             child: Consumer<AppState>(
               builder: (context, appState, _) {
-                final societies = appState.societies;
+                final societies = appState.societies.where((society) {
+                  final query = _searchQuery.toLowerCase();
+                  return society.name.toLowerCase().contains(query) ||
+                      society.category.toLowerCase().contains(query);
+                }).toList();
                 return ListView.builder(
                   itemCount: societies.length,
                   itemBuilder: (context, index) {
