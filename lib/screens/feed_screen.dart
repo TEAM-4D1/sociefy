@@ -2,6 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
 
+// Static map of announcements per society
+const Map<String, Map<String, String>> _societyAnnouncements = {
+  'cs': {
+    'title': 'CS Society Hackathon',
+    'date': 'April 25, 2026',
+    'content':
+        'Join our annual hackathon! Prizes and pizza for all participants.',
+  },
+  'drama': {
+    'title': 'Drama Night',
+    'date': 'April 28, 2026',
+    'content': 'Don\'t miss our spring performance in the main auditorium.',
+  },
+  'sports': {
+    'title': 'Sports Day',
+    'date': 'May 2, 2026',
+    'content': 'Compete or cheer at the inter-society sports day!',
+  },
+};
+
 // Announcement card for feed
 class _AnnouncementCard extends StatelessWidget {
   final String societyName;
@@ -62,9 +82,7 @@ class FeedScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('My Societies Feed')),
       body: Consumer<AppState>(
         builder: (context, appState, _) {
-          final joinedSocieties = appState.societies
-              .where((s) => s.isJoined)
-              .toList();
+          final joinedSocieties = appState.joinedSocieties;
           final isAdmin = appState.isAdmin;
           if (joinedSocieties.isEmpty) {
             return Column(
@@ -72,7 +90,10 @@ class FeedScreen extends StatelessWidget {
               children: [
                 if (isAdmin)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0,
+                      vertical: 8,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -107,7 +128,10 @@ class FeedScreen extends StatelessWidget {
             children: [
               if (isAdmin)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 8,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -135,13 +159,20 @@ class FeedScreen extends StatelessWidget {
                   itemCount: joinedSocieties.length,
                   itemBuilder: (context, index) {
                     final society = joinedSocieties[index];
-                    // Fake announcement data for demonstration
+                    // Use announcement data from map or fallback to generic
+                    final ann =
+                        _societyAnnouncements[society.id] ??
+                        {
+                          'title': 'Society Update',
+                          'date': 'See details',
+                          'content':
+                              'Stay tuned for the latest news and events!',
+                        };
                     return _AnnouncementCard(
                       societyName: society.name,
-                      title: 'Weekly Meeting',
-                      date: 'Every Friday, 5pm',
-                      content:
-                          'Join us in Room 1.04 for our weekly catch-up and planning session! All members welcome.',
+                      title: ann['title']!,
+                      date: ann['date']!,
+                      content: ann['content']!,
                     );
                   },
                 ),
