@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sociefy/providers/app_state.dart';
+import 'package:sociefy/main_tabs.dart';
 
 class CommitteeSignInScreen extends StatefulWidget {
   const CommitteeSignInScreen({super.key});
@@ -26,15 +27,18 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
       const SnackBar(content: Text('Signing in as committee/admin...')),
     );
 
-    Future.delayed(const Duration(milliseconds: 500), () {
-      final appState = Provider.of<AppState>(context, listen: false);
-      appState.login(
-        userId: _emailController.text.isNotEmpty
-            ? _emailController.text
-            : 'committee_user',
-        isAdmin: true,
-      );
-    });
+    final appState = Provider.of<AppState>(context, listen: false);
+    appState.login(
+      userId: _emailController.text.isNotEmpty
+          ? _emailController.text
+          : 'committee_user',
+      isAdmin: true,
+    );
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute<void>(builder: (_) => const MainTabs()),
+      (route) => false,
+    );
   }
 
   @override
