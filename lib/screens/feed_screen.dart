@@ -53,8 +53,213 @@ class _AnnouncementCard extends StatelessWidget {
   }
 }
 
-class FeedScreen extends StatelessWidget {
+class FeedScreen extends StatefulWidget {
   const FeedScreen({Key? key}) : super(key: key);
+
+  @override
+  State<FeedScreen> createState() => _FeedScreenState();
+}
+
+class _FeedScreenState extends State<FeedScreen> {
+  Future<void> _showCreateSocietyDialog(BuildContext context) async {
+    final formKey = GlobalKey<FormState>();
+    final nameController = TextEditingController();
+    final categoryController = TextEditingController();
+    final descriptionController = TextEditingController();
+
+    final created = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Create Society'),
+          content: Form(
+            key: formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: nameController,
+                    decoration: const InputDecoration(labelText: 'Society name'),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Enter a society name';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: categoryController,
+                    decoration: const InputDecoration(labelText: 'Category'),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Enter a category';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: descriptionController,
+                    decoration: const InputDecoration(labelText: 'Description'),
+                    minLines: 2,
+                    maxLines: 4,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Enter a description';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (!formKey.currentState!.validate()) {
+                  return;
+                }
+
+                context.read<AppState>().createSociety(
+                      name: nameController.text.trim(),
+                      category: categoryController.text.trim(),
+                      description: descriptionController.text.trim(),
+                    );
+                Navigator.of(dialogContext).pop(true);
+              },
+              child: const Text('Create'),
+            ),
+          ],
+        );
+      },
+    );
+
+    nameController.dispose();
+    categoryController.dispose();
+    descriptionController.dispose();
+
+    if (created == true && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Society created successfully.')),
+      );
+    }
+  }
+
+  Future<void> _showCreatePostDialog(BuildContext context) async {
+    final appState = context.read<AppState>();
+    final societies = appState.societies;
+
+    if (societies.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Create a society before adding posts.')),
+      );
+      return;
+    }
+
+    final formKey = GlobalKey<FormState>();
+    final titleController = TextEditingController();
+    final contentController = TextEditingController();
+    String selectedSocietyId = societies.first.id;
+
+    final created = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Create Post'),
+              content: Form(
+                key: formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      DropdownButtonFormField<String>(
+                        initialValue: selectedSocietyId,
+                        decoration: const InputDecoration(labelText: 'Society'),
+                        items: societies
+                            .map(
+                              (society) => DropdownMenuItem<String>(
+                                value: society.id,
+                                child: Text(society.name),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setDialogState(() {
+                              selectedSocietyId = value;
+                            });
+                          }
+                        },
+                      ),
+                      TextFormField(
+                        controller: titleController,
+                        decoration: const InputDecoration(labelText: 'Post title'),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Enter a post title';
+                          }
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        controller: contentController,
+                        decoration: const InputDecoration(labelText: 'Post content'),
+                        minLines: 3,
+                        maxLines: 5,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Enter post content';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (!formKey.currentState!.validate()) {
+                      return;
+                    }
+
+                    context.read<AppState>().createAnnouncement(
+                          societyId: selectedSocietyId,
+                          title: titleController.text.trim(),
+                          content: contentController.text.trim(),
+                        );
+                    Navigator.of(dialogContext).pop(true);
+                  },
+                  child: const Text('Post'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    titleController.dispose();
+    contentController.dispose();
+
+    if (created == true && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Post created successfully.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,10 +267,15 @@ class FeedScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('My Societies Feed')),
       body: Consumer<AppState>(
         builder: (context, appState, _) {
-          final joinedSocieties = appState.societies
-              .where((s) => s.isJoined)
-              .toList();
+          final joinedSocieties = appState.joinedSocieties;
+          final joinedSocietyIds = joinedSocieties.map((s) => s.id).toSet();
           final isAdmin = appState.isAdmin;
+          final visibleAnnouncements = isAdmin
+              ? appState.announcements
+              : appState.announcements
+                  .where((a) => joinedSocietyIds.contains(a.societyId))
+                  .toList();
+
           if (joinedSocieties.isEmpty) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -80,7 +290,7 @@ class FeedScreen extends StatelessWidget {
                           icon: const Icon(Icons.add),
                           label: const Text('Add Post'),
                           onPressed: () {
-                            // TODO: Implement add post dialog
+                            _showCreatePostDialog(context);
                           },
                         ),
                         const SizedBox(width: 16),
@@ -88,15 +298,17 @@ class FeedScreen extends StatelessWidget {
                           icon: const Icon(Icons.group_add),
                           label: const Text('Create Society'),
                           onPressed: () {
-                            // TODO: Implement create society dialog
+                            _showCreateSocietyDialog(context);
                           },
                         ),
                       ],
                     ),
                   ),
-                const Center(
+                Center(
                   child: Text(
-                    "You haven't joined any societies yet. Explore to see updates here!",
+                    isAdmin
+                        ? 'No posts yet. Use Add Post to publish your first announcement.'
+                        : "You haven't joined any societies yet. Explore to see updates here!",
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -115,7 +327,7 @@ class FeedScreen extends StatelessWidget {
                         icon: const Icon(Icons.add),
                         label: const Text('Add Post'),
                         onPressed: () {
-                          // TODO: Implement add post dialog
+                          _showCreatePostDialog(context);
                         },
                       ),
                       const SizedBox(width: 16),
@@ -123,30 +335,34 @@ class FeedScreen extends StatelessWidget {
                         icon: const Icon(Icons.group_add),
                         label: const Text('Create Society'),
                         onPressed: () {
-                          // TODO: Implement create society dialog
+                          _showCreateSocietyDialog(context);
                         },
                       ),
                     ],
                   ),
                 ),
               Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(24.0),
-                  itemCount: joinedSocieties.length,
-                  itemBuilder: (context, index) {
-                    final society = joinedSocieties[index];
-                    // Fake announcement data for demonstration
-                    return _AnnouncementCard(
-                      societyName: society.name,
-                      title: 'Weekly Meeting',
-                      date: 'Every Friday, 5pm',
-                      content:
-                          'Join us in Room 1.04 for our weekly catch-up and planning session! All members welcome.',
-                    );
-                  },
+                child: visibleAnnouncements.isEmpty
+                    ? const Center(
+                        child: Text('No announcements yet.'),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(24.0),
+                        itemCount: visibleAnnouncements.length,
+                        itemBuilder: (context, index) {
+                          final announcement = visibleAnnouncements[index];
+                          return _AnnouncementCard(
+                            societyName:
+                                appState.societyNameById(announcement.societyId),
+                            title: announcement.title,
+                            date:
+                                '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
+                            content: announcement.content,
+                          );
+                        },
+                      ),
                 ),
-              ),
-            ],
+          ],
           );
         },
       ),
