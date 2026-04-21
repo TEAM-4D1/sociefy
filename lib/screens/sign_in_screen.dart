@@ -19,6 +19,9 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  // Password visibility state
+  bool _obscurePassword = true;
+
   // Registration modal state
   bool _showRegister = false;
   final _registerFormKey = GlobalKey<FormState>();
@@ -151,7 +154,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _passwordController,
-                          obscureText: true,
+                          obscureText: _obscurePassword,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter password';
@@ -168,6 +171,18 @@ class _SignInScreenState extends State<SignInScreen> {
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
                               vertical: 12,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscurePassword = !_obscurePassword;
+                                });
+                              },
                             ),
                           ),
                         ),
