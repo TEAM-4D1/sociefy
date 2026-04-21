@@ -1,3 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:sociefy/main_tabs.dart';
+
+class SignInScreen extends StatefulWidget {
+  const SignInScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
 class _SignInScreenState extends State<SignInScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
@@ -5,7 +15,6 @@ class _SignInScreenState extends State<SignInScreen>
   late Animation<Color?> _color2;
 
   final _formKey = GlobalKey<FormState>();
-  final _registerFormKey = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -16,8 +25,6 @@ class _SignInScreenState extends State<SignInScreen>
 
   bool _obscurePassword = true;
   bool _isLoading = false;
-  bool _showRegister = false;
-  String? _registerSuccessMsg;
 
   @override
   void initState() {
