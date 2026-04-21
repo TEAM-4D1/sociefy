@@ -129,7 +129,6 @@ class _SignInScreenState extends State<SignInScreen> {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 32),
-                        const SizedBox(height: 24),
                         TextFormField(
                           controller: _emailController,
                           validator: (value) {
