@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sociefy/main_tabs.dart';
+import 'package:sociefy/screens/committee_sign_in_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -164,19 +165,31 @@ class _SignInScreenState extends State<SignInScreen>
                         ),
 
                         const SizedBox(height: 12),
-
-                        /// ADMIN
-                        OutlinedButton(
-                          onPressed: _isLoading
-                              ? null
-                              : () {
-                                  if (_formKey.currentState!.validate()) {
-                                    _signInWithUop(context, isAdmin: true);
-                                  }
-                                },
-                          child: _isLoading
-                              ? const CircularProgressIndicator()
-                              : const Text('Committee / Admin Sign In'),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            icon: const Icon(Icons.admin_panel_settings),
+                            label: const Text('Are you a committee member or admin? Sign in here'),
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => const CommitteeSignInScreen(),
+                                ),
+                              );
+                            },
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              side: const BorderSide(color: Color(0xFF4A148C)),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
