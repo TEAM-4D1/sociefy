@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sociefy/providers/app_state.dart';
+import 'package:sociefy/screens/committee_sign_in_screen.dart';
 
 /// Simplified sign-in screen: only a "Sign in with UoP" button.
 /// Pressing the button immediately calls [onSignedIn] so the app can navigate
@@ -200,9 +201,11 @@ class _SignInScreenState extends State<SignInScreen> {
                             icon: const Icon(Icons.admin_panel_settings),
                             label: const Text('Are you a committee member or admin? Sign in here'),
                             onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                _signInWithUop(context, isAdmin: true);
-                              }
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => const CommitteeSignInScreen(),
+                                ),
+                              );
                             },
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.white,
