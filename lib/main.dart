@@ -8,7 +8,11 @@ import 'services/firebase_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FirebaseService.initialize();
+  try {
+    await FirebaseService.initialize();
+  } catch (e) {
+    debugPrint('Error initializing Firebase: $e');
+  }
   runApp(const MyApp());
 }
 
