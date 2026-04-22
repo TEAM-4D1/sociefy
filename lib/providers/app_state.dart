@@ -85,6 +85,13 @@ class AppState extends ChangeNotifier {
     this.userId = userId ?? this.userId;
     this.isAdmin = isAdmin;
     notifyListeners();
+
+    loadSocieties();
+    loadEvents();
+    loadAnnouncements();
+    if (this.userId != null) {
+      loadSavedEvents(this.userId!);
+    }
   }
 
   void logout() {
