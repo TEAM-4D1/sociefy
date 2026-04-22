@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +9,19 @@ class FirebaseService {
   ///
   /// This method must be called before using any Firebase services.
   static Future<void> initialize() async {
-    await Firebase.initializeApp();
+    try {
+      await Firebase.initializeApp();
+    } on FirebaseException catch (e) {
+      if (e.code == 'duplicate-app') {
+        // do nothing
+      } else {
+        debugPrint('FirebaseInit error: $e');
+        rethrow;
+      }
+    } catch (e) {
+      debugPrint('FirebaseInit error: $e');
+      rethrow;
+    }
   }
 
   /// Provides an instance of [FirebaseAuth] for authentication operations.
