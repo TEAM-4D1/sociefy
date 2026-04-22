@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sociefy/main_tabs.dart';
+import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/screens/committee_sign_in_screen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -66,6 +68,9 @@ class _SignInScreenState extends State<SignInScreen>
     await Future.delayed(const Duration(seconds: 2));
 
     setState(() => _isLoading = false);
+
+    final appState = Provider.of<AppState>(context, listen: false);
+    appState.login(userId: _emailController.text, isAdmin: isAdmin);
 
     Navigator.pushReplacement(
       context,
@@ -169,7 +174,9 @@ class _SignInScreenState extends State<SignInScreen>
                           width: double.infinity,
                           child: OutlinedButton.icon(
                             icon: const Icon(Icons.admin_panel_settings),
-                            label: const Text('Are you a committee member or admin? Sign in here'),
+                            label: const Text(
+                              'Are you a committee member or admin? Sign in here',
+                            ),
                             onPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute<void>(
