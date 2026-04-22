@@ -13,84 +13,70 @@ class AppState extends ChangeNotifier {
   final List<String> _joinedSocietyIds = [];
   final List<String> _savedEventIds = [];
 
-  final List<Society> _societies = [
-    Society(
-      id: 'cs',
-      name: 'Computer Science Society',
-      category: 'Academic',
-      description:
-          'A society for students interested in computing, coding, and technology.',
-    ),
-    Society(
-      id: 'drama',
-      name: 'Drama Club',
-      category: 'Arts',
-      description: 'For those who love acting, theatre, and stage production.',
-    ),
-    Society(
-      id: 'sports',
-      name: 'Sports Society',
-      category: 'Recreation',
-      description:
-          'Join to participate in a variety of sports and fitness activities.',
-    ),
-  ];
+  List<Society> _societies = [];
 
-  final List<Event> _events = [
-    Event(
-      id: 'e1',
-      societyId: 'cs',
-      societyName: 'Computer Science Society',
-      title: 'Hackathon 2026',
-      description: 'A 24-hour coding competition for all skill levels.',
-      date: DateTime(2026, 5, 10),
-      startTime: '10:00 AM',
-      endTime: '4:00 PM',
-      venue: 'Engineering Building, Room 101',
-      isSaved: false,
-    ),
-    Event(
-      id: 'e2',
-      societyId: 'drama',
-      societyName: 'Drama Club',
-      title: 'Spring Play Auditions',
-      description: 'Open auditions for our annual spring production.',
-      date: DateTime(2026, 4, 25),
-      startTime: '7:00 PM',
-      endTime: '9:00 PM',
-      venue: 'Main Auditorium',
-      isSaved: false,
-    ),
-    Event(
-      id: 'e3',
-      societyId: 'sports',
-      societyName: 'Sports Society',
-      title: 'Inter-University Football Match',
-      description: 'Cheer for our team in the big match!',
-      date: DateTime(2026, 6, 2),
-      startTime: '5:00 PM',
-      endTime: '7:00 PM',
-      venue: 'University Stadium',
-      isSaved: false,
-    ),
-  ];
+  List<Event> _events = [];
 
-  final List<Announcement> _announcements = [
-    Announcement(
-      id: 'a1',
-      societyId: 'cs',
-      title: 'Welcome Back Meeting',
-      content: 'Join us this Friday to plan upcoming coding events.',
-      date: DateTime(2026, 4, 20),
-    ),
-    Announcement(
-      id: 'a2',
-      societyId: 'drama',
-      title: 'Audition Schedule Released',
-      content: 'Check the notice board for updated audition time slots.',
-      date: DateTime(2026, 4, 19),
-    ),
-  ];
+  List<Announcement> _announcements = [];
+
+  Future<void> loadSocieties() async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('societies')
+        .get();
+    _societies = querySnapshot.docs.map((doc) {
+      final data = doc.data();
+      return Society(
+        id: doc.id,
+        name: data['name'] ?? 'Unknown Society',
+        category: data['category'] ?? 'General',
+        description: data['description'] ?? '',
+      );
+    }).toList();
+    notifyListeners();
+  }
+
+  Future<void> loadEvents() async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('events')
+        .get();
+    _events = querySnapshot.docs.map((doc) {
+      final data = doc.data();
+      return Event(
+        id: doc.id,
+        societyId: data['societyId'] ?? '',
+        societyName: data['societyName'] ?? 'Unknown Society',
+        title: data['title'] ?? 'Untitled Event',
+        description: data['description'] ?? '',
+        date: data['date'] != null
+            ? (data['date'] as Timestamp).toDate()
+            : DateTime.now(),
+        startTime: data['startTime'] ?? '',
+        endTime: data['endTime'] ?? '',
+        venue: data['venue'] ?? '',
+        isSaved: false,
+      );
+    }).toList();
+    notifyListeners();
+  }
+
+  Future<void> loadAnnouncements() async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('announcements')
+        .get();
+    _announcements = querySnapshot.docs.map((doc) {
+      final data = doc.data();
+      return Announcement(
+        id: doc.id,
+        societyId: data['societyId'] ?? '',
+        title: data['title'] ?? 'Untitled',
+        content: data['content'] ?? '',
+        date: data['date'] != null
+            ? (data['date'] as Timestamp).toDate()
+            : DateTime.now(),
+      );
+    }).toList();
+    notifyListeners();
+  }
 
   bool get isAuthenticated => _isAuthenticated;
 
