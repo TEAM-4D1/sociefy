@@ -134,7 +134,8 @@ class SocietyDetailScreen extends StatelessWidget {
                                   MaterialPageRoute(
                                     builder: (_) => EventDetailScreen(
                                       event: event,
-                                      userId: userId,
+                                      userId: userId ?? '',
+                                      isSaved: appState.isEventSaved(event.id),
                                     ),
                                   ),
                                 );

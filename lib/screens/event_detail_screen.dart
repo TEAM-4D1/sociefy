@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-import '../providers/app_state.dart';
 import '../models/event.dart';
+import '../providers/app_state.dart';
 
 class EventDetailScreen extends StatefulWidget {
   final Event event;
@@ -130,35 +130,51 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    icon: _isSaved
-                        ? const Icon(Icons.event_available)
-                        : const Icon(Icons.calendar_today),
+                    icon: Icon(
+                      _isSaved ? Icons.event_available : Icons.calendar_today,
+                    ),
                     label: Text(
                       _isSaved ? 'Saved to Calendar' : 'Save to Calendar',
                     ),
                     onPressed: () async {
-                      final event = widget.event;
-                      final userId = widget.userId;
                       setState(() {
                         _isSaved = !_isSaved;
                       });
+
+                      final appState = context.read<AppState>();
+                      final eventId = widget.event.id;
+                      final userId = widget.userId;
+
                       try {
                         if (_isSaved) {
-                          context.read<AppState>().saveEvent(event.id);
-                          await context.read<AppState>().persistSaveEvent(
-                            userId,
-                            event.id,
-                          );
+                          appState.saveEvent(eventId);
+                          await appState.persistSaveEvent(userId, eventId);
                         } else {
-                          context.read<AppState>().unsaveEvent(event.id);
-                          await context.read<AppState>().persistUnsaveEvent(
-                            userId,
-                            event.id,
-                          );
+                          appState.unsaveEvent(eventId);
+                          await appState.persistUnsaveEvent(userId, eventId);
                         }
                       } catch (e) {
+                        // Revert local state if network call fails
+                        setState(() {
+                          _isSaved = !_isSaved;
+                        });
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                        }
+                        return;
+                      }
+
+                      if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Error saving event: $e')),
+                          SnackBar(
+                            content: Text(
+                              _isSaved
+                                  ? 'Event saved to calendar!'
+                                  : 'Event removed from calendar!',
+                            ),
+                          ),
                         );
                       }
                     },
