@@ -4,13 +4,10 @@ import 'providers/app_state.dart';
 import 'screens/sign_in_screen.dart';
 import 'main_tabs.dart';
 import 'theme/app_theme.dart';
-import 'services/firebase_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
-    await FirebaseService.initialize();
-  } catch (e) {
+  try {} catch (e) {
     debugPrint('Error initializing Firebase: $e');
   }
   runApp(const MyApp());
