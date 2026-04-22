@@ -36,3 +36,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+lib/firebase_options.dart
+google-services.json
