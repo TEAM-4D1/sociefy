@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:sociefy/main_tabs.dart';
 import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/screens/committee_sign_in_screen.dart';
+import 'package:sociefy/screens/register_screen.dart';
+import 'package:sociefy/services/auth_service.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -64,18 +66,17 @@ class _SignInScreenState extends State<SignInScreen>
     required bool isAdmin,
   }) async {
     setState(() => _isLoading = true);
-
-    await Future.delayed(const Duration(seconds: 2));
-
-    setState(() => _isLoading = false);
-
-    final appState = Provider.of<AppState>(context, listen: false);
-    appState.login(userId: _emailController.text, isAdmin: isAdmin);
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const MainTabs()),
+    final result = await AuthService().signIn(
+      _emailController.text.trim(),
+      _passwordController.text.trim(),
     );
+    setState(() => _isLoading = false);
+    if (result == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid email or password')),
+      );
+    }
+    // Navigation now handled by authStateChanges in AppState.
   }
 
   @override
@@ -170,6 +171,30 @@ class _SignInScreenState extends State<SignInScreen>
                         ),
 
                         const SizedBox(height: 12),
+                        TextButton(
+                          onPressed: () async {
+                            final appState = Provider.of<AppState>(
+                              context,
+                              listen: false,
+                            );
+                            await appState.login(
+                              userId: 'guest',
+                              isAdmin: false,
+                            );
+                          },
+                          child: const Text('Continue as Guest'),
+                        ),
+                        const SizedBox(height: 12),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => const RegisterScreen(),
+                              ),
+                            );
+                          },
+                          child: const Text("Don't have an account? Register"),
+                        ),
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton.icon(

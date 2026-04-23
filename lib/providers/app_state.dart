@@ -1,14 +1,28 @@
 import '../models/society.dart';
 import '../models/event.dart';
 import '../models/announcement.dart';
+import '../services/society_service.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AppState extends ChangeNotifier {
-  bool _isAuthenticated = false;
   String? userId;
   bool isAdmin = false;
+  bool _isLoading = false;
+
+  bool get isLoading => _isLoading;
+
+  AppState() {
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user != null) {
+        login(userId: user.uid);
+      } else {
+        logout();
+      }
+    });
+  }
 
   final List<String> _joinedSocietyIds = [];
   final List<String> _savedEventIds = [];
@@ -78,24 +92,42 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool get isAuthenticated => _isAuthenticated;
+  bool get isAuthenticated => userId != null;
 
-  void login({String? userId, bool isAdmin = false}) {
-    _isAuthenticated = true;
+  Future<void> loadJoinedSocieties(String userId) async {
+    try {
+      final ids = await SocietyService().getJoinedSocietyIds(userId);
+      _joinedSocietyIds.clear();
+      _joinedSocietyIds.addAll(ids);
+      notifyListeners();
+    } catch (e) {
+      debugPrint('loadJoinedSocieties error: $e');
+    }
+  }
+
+  Future<void> login({String? userId, bool isAdmin = false}) async {
     this.userId = userId ?? this.userId;
     this.isAdmin = isAdmin;
     notifyListeners();
 
-    loadSocieties();
-    loadEvents();
-    loadAnnouncements();
-    if (this.userId != null) {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final futures = [loadSocieties(), loadEvents(), loadAnnouncements()];
+      if (this.userId != null && !this.userId!.startsWith('guest')) {
+        futures.add(loadJoinedSocieties(this.userId!));
+      }
+      await Future.wait(futures);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+    if (this.userId != null && !this.userId!.startsWith('guest')) {
       loadSavedEvents(this.userId!);
     }
   }
 
   void logout() {
-    _isAuthenticated = false;
     userId = null;
     isAdmin = false;
     _joinedSocietyIds.clear();
@@ -120,11 +152,25 @@ class AppState extends ChangeNotifier {
       _joinedSocietyIds.add(id);
       notifyListeners();
     }
+    if (userId != null && !userId!.startsWith('guest')) {
+      try {
+        await SocietyService().joinSociety(userId!, id);
+      } catch (e) {
+        debugPrint('joinSociety Firestore error: $e');
+      }
+    }
   }
 
   Future<void> leaveSociety(String id) async {
     _joinedSocietyIds.remove(id);
     notifyListeners();
+    if (userId != null && !userId!.startsWith('guest')) {
+      try {
+        await SocietyService().leaveSociety(userId!, id);
+      } catch (e) {
+        debugPrint('leaveSociety Firestore error: $e');
+      }
+    }
   }
 
   void createSociety({
@@ -138,6 +184,16 @@ class AppState extends ChangeNotifier {
       Society(id: id, name: name, category: category, description: description),
     );
     notifyListeners();
+
+    try {
+      FirebaseFirestore.instance.collection('societies').doc(id).set({
+        'name': name,
+        'category': category,
+        'description': description,
+      });
+    } catch (e) {
+      debugPrint('createSociety Firestore error: $e');
+    }
   }
 
   void createAnnouncement({
@@ -156,6 +212,17 @@ class AppState extends ChangeNotifier {
       ),
     );
     notifyListeners();
+
+    try {
+      FirebaseFirestore.instance.collection('announcements').add({
+        'societyId': societyId,
+        'title': title,
+        'content': content,
+        'date': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      debugPrint('createAnnouncement Firestore error: $e');
+    }
   }
 
   String societyNameById(String id) {
@@ -182,11 +249,25 @@ class AppState extends ChangeNotifier {
       _savedEventIds.add(id);
       notifyListeners();
     }
+    if (userId != null && !userId!.startsWith('guest')) {
+      try {
+        persistSaveEvent(userId!, id);
+      } catch (e) {
+        debugPrint('saveEvent Firestore error: $e');
+      }
+    }
   }
 
   void unsaveEvent(String id) {
     _savedEventIds.remove(id);
     notifyListeners();
+    if (userId != null && !userId!.startsWith('guest')) {
+      try {
+        persistUnsaveEvent(userId!, id);
+      } catch (e) {
+        debugPrint('unsaveEvent Firestore error: $e');
+      }
+    }
   }
 
   /// Persist a saved event to Firestore for the given user.
