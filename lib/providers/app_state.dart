@@ -94,6 +94,17 @@ class AppState extends ChangeNotifier {
 
   bool get isAuthenticated => userId != null;
 
+  Future<void> loadJoinedSocieties(String userId) async {
+    try {
+      final ids = await SocietyService().getJoinedSocietyIds(userId);
+      _joinedSocietyIds.clear();
+      _joinedSocietyIds.addAll(ids);
+      notifyListeners();
+    } catch (e) {
+      debugPrint('loadJoinedSocieties error: $e');
+    }
+  }
+
   Future<void> login({String? userId, bool isAdmin = false}) async {
     this.userId = userId ?? this.userId;
     this.isAdmin = isAdmin;
@@ -102,7 +113,11 @@ class AppState extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      await Future.wait([loadSocieties(), loadEvents(), loadAnnouncements()]);
+      final futures = [loadSocieties(), loadEvents(), loadAnnouncements()];
+      if (this.userId != null && !this.userId!.startsWith('guest')) {
+        futures.add(loadJoinedSocieties(this.userId!));
+      }
+      await Future.wait(futures);
     } finally {
       _isLoading = false;
       notifyListeners();
