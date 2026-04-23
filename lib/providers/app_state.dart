@@ -184,6 +184,16 @@ class AppState extends ChangeNotifier {
       Society(id: id, name: name, category: category, description: description),
     );
     notifyListeners();
+
+    try {
+      FirebaseFirestore.instance.collection('societies').doc(id).set({
+        'name': name,
+        'category': category,
+        'description': description,
+      });
+    } catch (e) {
+      debugPrint('createSociety Firestore error: $e');
+    }
   }
 
   void createAnnouncement({
