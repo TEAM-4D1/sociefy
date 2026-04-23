@@ -1,6 +1,7 @@
 import '../models/society.dart';
 import '../models/event.dart';
 import '../models/announcement.dart';
+import '../services/society_service.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -136,11 +137,25 @@ class AppState extends ChangeNotifier {
       _joinedSocietyIds.add(id);
       notifyListeners();
     }
+    if (userId != null && !userId!.startsWith('guest')) {
+      try {
+        await SocietyService().joinSociety(userId!, id);
+      } catch (e) {
+        debugPrint('joinSociety Firestore error: $e');
+      }
+    }
   }
 
   Future<void> leaveSociety(String id) async {
     _joinedSocietyIds.remove(id);
     notifyListeners();
+    if (userId != null && !userId!.startsWith('guest')) {
+      try {
+        await SocietyService().leaveSociety(userId!, id);
+      } catch (e) {
+        debugPrint('leaveSociety Firestore error: $e');
+      }
+    }
   }
 
   void createSociety({
