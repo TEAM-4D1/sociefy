@@ -168,12 +168,12 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           final appState = Provider.of<AppState>(
                             context,
                             listen: false,
                           );
-                          appState.login(
+                          await appState.login(
                             userId: 'guest-committee',
                             isAdmin: true,
                           );
