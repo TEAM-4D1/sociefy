@@ -106,7 +106,7 @@ class AppState extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
-    if (this.userId != null) {
+    if (this.userId != null && !this.userId!.startsWith('guest')) {
       loadSavedEvents(this.userId!);
     }
   }

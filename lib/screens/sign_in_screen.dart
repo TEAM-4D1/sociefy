@@ -171,12 +171,15 @@ class _SignInScreenState extends State<SignInScreen>
 
                         const SizedBox(height: 12),
                         TextButton(
-                          onPressed: () {
+                          onPressed: () async {
                             final appState = Provider.of<AppState>(
                               context,
                               listen: false,
                             );
-                            appState.login(userId: 'guest', isAdmin: false);
+                            await appState.login(
+                              userId: 'guest',
+                              isAdmin: false,
+                            );
                           },
                           child: const Text('Continue as Guest'),
                         ),
