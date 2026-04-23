@@ -228,11 +228,25 @@ class AppState extends ChangeNotifier {
       _savedEventIds.add(id);
       notifyListeners();
     }
+    if (userId != null && !userId!.startsWith('guest')) {
+      try {
+        persistSaveEvent(userId!, id);
+      } catch (e) {
+        debugPrint('saveEvent Firestore error: $e');
+      }
+    }
   }
 
   void unsaveEvent(String id) {
     _savedEventIds.remove(id);
     notifyListeners();
+    if (userId != null && !userId!.startsWith('guest')) {
+      try {
+        persistUnsaveEvent(userId!, id);
+      } catch (e) {
+        debugPrint('unsaveEvent Firestore error: $e');
+      }
+    }
   }
 
   /// Persist a saved event to Firestore for the given user.
