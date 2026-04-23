@@ -38,10 +38,7 @@ class _MainTabsState extends State<MainTabs> {
           ),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Discover'),
           BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'Calendar',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: 'Saved'),
         ],
       ),
     );
