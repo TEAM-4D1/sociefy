@@ -1,14 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 import '../models/event.dart';
+import '../providers/app_state.dart';
 
-class EventDetailScreen extends StatelessWidget {
+class EventDetailScreen extends StatefulWidget {
   final Event event;
+  final String userId;
+  final bool isSaved;
 
-  const EventDetailScreen({Key? key, required this.event}) : super(key: key);
+  const EventDetailScreen({
+    Key? key,
+    required this.event,
+    required this.userId,
+    required this.isSaved,
+  }) : super(key: key);
+
+  @override
+  State<EventDetailScreen> createState() => _EventDetailScreenState();
+}
+
+class _EventDetailScreenState extends State<EventDetailScreen> {
+  bool _hasRsvp = false;
+  bool _isSaved = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isSaved = widget.isSaved;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final event = widget.event;
     return Scaffold(
       appBar: AppBar(title: Text(event.title)),
       body: Padding(
@@ -56,19 +81,106 @@ class EventDetailScreen extends StatelessWidget {
 
             const SizedBox(height: 32),
 
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.calendar_today),
-                label: const Text('Save to Calendar'),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Event saved to device calendar!'),
+            Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.how_to_reg),
+                    label: Text(_hasRsvp ? 'Cancel RSVP' : 'RSVP'),
+                    onPressed: () async {
+                      setState(() {
+                        _hasRsvp = !_hasRsvp;
+                      });
+                      try {
+                        final event = widget.event;
+                        final userId = widget.userId;
+                        final docId = '${userId}_${event.id}';
+                        if (_hasRsvp) {
+                          await FirebaseFirestore.instance
+                              .collection('rsvps')
+                              .doc(docId)
+                              .set({
+                                'eventId': event.id,
+                                'userId': userId,
+                                'createdAt': FieldValue.serverTimestamp(),
+                              });
+                        } else {
+                          await FirebaseFirestore.instance
+                              .collection('rsvps')
+                              .doc(docId)
+                              .delete();
+                        }
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error updating RSVP: $e')),
+                        );
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            _hasRsvp ? 'RSVP confirmed!' : 'RSVP removed',
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    icon: Icon(
+                      _isSaved ? Icons.event_available : Icons.calendar_today,
                     ),
-                  );
-                },
-              ),
+                    label: Text(
+                      _isSaved ? 'Saved to Calendar' : 'Save to Calendar',
+                    ),
+                    onPressed: () async {
+                      setState(() {
+                        _isSaved = !_isSaved;
+                      });
+
+                      final appState = context.read<AppState>();
+                      final eventId = widget.event.id;
+                      final userId = widget.userId;
+
+                      try {
+                        if (_isSaved) {
+                          appState.saveEvent(eventId);
+                          await appState.persistSaveEvent(userId, eventId);
+                        } else {
+                          appState.unsaveEvent(eventId);
+                          await appState.persistUnsaveEvent(userId, eventId);
+                        }
+                      } catch (e) {
+                        // Revert local state if network call fails
+                        setState(() {
+                          _isSaved = !_isSaved;
+                        });
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                        }
+                        return;
+                      }
+
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              _isSaved
+                                  ? 'Event saved to calendar!'
+                                  : 'Event removed from calendar!',
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
             ),
           ],
         ),

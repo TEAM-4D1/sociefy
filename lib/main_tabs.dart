@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/messages_screen.dart';
+import 'screens/saved_events_screen.dart';
 // Removed unused imports
 import 'screens/feed_screen.dart';
 import 'screens/society_browser_screen.dart';
@@ -19,6 +20,7 @@ class _MainTabsState extends State<MainTabs> {
     SocietyBrowserScreen(),
     // Placeholder for Messages
     MessagesPage(),
+    const SavedEventsScreen(),
   ];
 
   @override
@@ -26,6 +28,7 @@ class _MainTabsState extends State<MainTabs> {
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
         onTap: (i) => setState(() => _currentIndex = i),
         items: const [
@@ -35,6 +38,10 @@ class _MainTabsState extends State<MainTabs> {
           ),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Discover'),
           BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month),
+            label: 'Calendar',
+          ),
         ],
       ),
     );
