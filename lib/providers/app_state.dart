@@ -9,6 +9,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AppState extends ChangeNotifier {
   String? userId;
   bool isAdmin = false;
+  bool _isLoading = false;
+
+  bool get isLoading => _isLoading;
 
   AppState() {
     FirebaseAuth.instance.authStateChanges().listen((user) {
@@ -90,12 +93,19 @@ class AppState extends ChangeNotifier {
 
   bool get isAuthenticated => userId != null;
 
-  void login({String? userId, bool isAdmin = false}) {
+  Future<void> login({String? userId, bool isAdmin = false}) async {
     this.userId = userId ?? this.userId;
     this.isAdmin = isAdmin;
     notifyListeners();
 
-    Future.wait([loadSocieties(), loadEvents(), loadAnnouncements()]);
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await Future.wait([loadSocieties(), loadEvents(), loadAnnouncements()]);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
     if (this.userId != null) {
       loadSavedEvents(this.userId!);
     }
