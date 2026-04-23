@@ -128,11 +128,15 @@ class SocietyDetailScreen extends StatelessWidget {
                                 ],
                               ),
                               onTap: () {
+                                final userId = context.read<AppState>().userId;
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) =>
-                                        EventDetailScreen(event: event),
+                                    builder: (_) => EventDetailScreen(
+                                      event: event,
+                                      userId: userId ?? '',
+                                      isSaved: appState.isEventSaved(event.id),
+                                    ),
                                   ),
                                 );
                               },

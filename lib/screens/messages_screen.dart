@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sociefy/providers/app_state.dart';
+import 'package:sociefy/screens/society_chat_screen.dart';
 
 class MessagesPage extends StatelessWidget {
   const MessagesPage({super.key});
@@ -30,8 +31,11 @@ class MessagesPage extends StatelessWidget {
                 title: Text(society.name),
                 subtitle: Text(society.category),
                 onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Open channel: ${society.name}')),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SocietyChatScreen(society: society),
+                    ),
                   );
                 },
               );
