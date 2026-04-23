@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sociefy/main_tabs.dart';
 import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/screens/committee_sign_in_screen.dart';
+import 'package:sociefy/screens/register_screen.dart';
 import 'package:sociefy/services/auth_service.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -182,6 +183,17 @@ class _SignInScreenState extends State<SignInScreen>
                             );
                           },
                           child: const Text('Continue as Guest'),
+                        ),
+                        const SizedBox(height: 12),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => const RegisterScreen(),
+                              ),
+                            );
+                          },
+                          child: const Text("Don't have an account? Register"),
                         ),
                         SizedBox(
                           width: double.infinity,
