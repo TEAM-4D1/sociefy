@@ -177,6 +177,14 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
                             userId: 'guest-committee',
                             isAdmin: true,
                           );
+                          if (mounted) {
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute<void>(
+                                builder: (_) => const MainTabs(),
+                              ),
+                              (route) => false,
+                            );
+                          }
                         },
                         child: const Text('Continue as Guest Committee'),
                       ),
