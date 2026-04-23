@@ -4,11 +4,21 @@ import '../models/announcement.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AppState extends ChangeNotifier {
-  bool _isAuthenticated = false;
   String? userId;
   bool isAdmin = false;
+
+  AppState() {
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user != null) {
+        login(userId: user.uid);
+      } else {
+        logout();
+      }
+    });
+  }
 
   final List<String> _joinedSocietyIds = [];
   final List<String> _savedEventIds = [];
@@ -78,10 +88,9 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool get isAuthenticated => _isAuthenticated;
+  bool get isAuthenticated => userId != null;
 
   void login({String? userId, bool isAdmin = false}) {
-    _isAuthenticated = true;
     this.userId = userId ?? this.userId;
     this.isAdmin = isAdmin;
     notifyListeners();
@@ -95,7 +104,6 @@ class AppState extends ChangeNotifier {
   }
 
   void logout() {
-    _isAuthenticated = false;
     userId = null;
     isAdmin = false;
     _joinedSocietyIds.clear();
