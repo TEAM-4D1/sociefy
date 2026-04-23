@@ -156,6 +156,20 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: () {
+                        final appState = Provider.of<AppState>(
+                          context,
+                          listen: false,
+                        );
+                        appState.login(
+                          userId: 'guest-committee',
+                          isAdmin: true,
+                        );
+                      },
+                      child: const Text('Continue as Guest Committee'),
+                    ),
                   ],
                 ),
               ),
