@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../models/society.dart';
 import '../providers/app_state.dart';
@@ -20,7 +21,10 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
-    final userId = context.read<AppState>().userId ?? 'User';
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final senderName = (currentUser?.displayName?.isNotEmpty ?? false)
+        ? currentUser!.displayName!
+        : (currentUser?.email ?? 'User');
 
     _messageController.clear();
 
@@ -31,7 +35,7 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
           .collection('messages')
           .add({
             'text': text,
-            'senderName': userId,
+            'senderName': senderName,
             'createdAt': FieldValue.serverTimestamp(),
           });
     } catch (e) {

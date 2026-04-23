@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/main_tabs.dart';
+import 'package:sociefy/services/auth_service.dart';
 
 class CommitteeSignInScreen extends StatefulWidget {
   const CommitteeSignInScreen({super.key});
@@ -22,23 +23,30 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
     super.dispose();
   }
 
-  void _signInAsCommitteeOrAdmin(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Signing in as committee/admin...')),
+  Future<void> _signInAsCommitteeOrAdmin(BuildContext context) async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final result = await AuthService().signIn(
+      _emailController.text.trim(),
+      _passwordController.text.trim(),
     );
+
+    if (result == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Invalid credentials')));
+      return;
+    }
 
     final appState = Provider.of<AppState>(context, listen: false);
-    appState.login(
-      userId: _emailController.text.isNotEmpty
-          ? _emailController.text
-          : 'committee_user',
-      isAdmin: true,
-    );
+    await appState.login(isAdmin: true);
 
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute<void>(builder: (_) => const MainTabs()),
-      (route) => false,
-    );
+    if (mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute<void>(builder: (_) => const MainTabs()),
+        (route) => false,
+      );
+    }
   }
 
   @override
@@ -154,6 +162,39 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
                             fontSize: 16,
                           ),
                         ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          side: const BorderSide(color: Colors.white),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        onPressed: () async {
+                          final appState = Provider.of<AppState>(
+                            context,
+                            listen: false,
+                          );
+                          await appState.login(
+                            userId: 'guest-committee',
+                            isAdmin: true,
+                          );
+                          if (mounted) {
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute<void>(
+                                builder: (_) => const MainTabs(),
+                              ),
+                              (route) => false,
+                            );
+                          }
+                        },
+                        child: const Text('Continue as Guest Committee'),
                       ),
                     ),
                   ],
