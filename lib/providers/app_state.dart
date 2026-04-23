@@ -95,9 +95,7 @@ class AppState extends ChangeNotifier {
     this.isAdmin = isAdmin;
     notifyListeners();
 
-    loadSocieties();
-    loadEvents();
-    loadAnnouncements();
+    Future.wait([loadSocieties(), loadEvents(), loadAnnouncements()]);
     if (this.userId != null) {
       loadSavedEvents(this.userId!);
     }
