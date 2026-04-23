@@ -25,19 +25,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
     final messenger = ScaffoldMessenger.of(context);
     final authService = AuthService();
-    final email = _emailController.text;
-    final password = _passwordController.text;
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
     final result = await authService.register(email, password);
-    if (result != null) {
-      if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const SignInScreen()),
-      );
-    } else {
+    if (result == null) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Registration failed. Please try again.')),
+        const SnackBar(content: Text('Registration failed')),
       );
     }
+    // On success, do nothing; authStateChanges will handle navigation.
   }
 
   @override
