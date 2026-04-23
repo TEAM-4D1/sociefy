@@ -212,6 +212,17 @@ class AppState extends ChangeNotifier {
       ),
     );
     notifyListeners();
+
+    try {
+      FirebaseFirestore.instance.collection('announcements').add({
+        'societyId': societyId,
+        'title': title,
+        'content': content,
+        'date': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      debugPrint('createAnnouncement Firestore error: $e');
+    }
   }
 
   String societyNameById(String id) {
