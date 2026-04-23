@@ -161,6 +161,8 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
 
+  get _selectedTime => null;
+
   @override
   void dispose() {
     _titleCtrl.dispose();
@@ -189,7 +191,7 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
   Future<void> _pickEndTime() async {
     final now = TimeOfDay.now();
     final picked = await showTimePicker(context: context, initialTime: now);
-    if (picked != null) setState(() => _selectedTime = picked);
+    if (picked != null) setState(() => _endTime = picked);
   }
 
   void _save() {
@@ -309,9 +311,9 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
                     child: OutlinedButton(
                       onPressed: _pickEndTime,
                       child: Text(
-                        _selectedTime == null
+                        _endTime == null
                             ? 'Pick time'
-                            : '${_selectedTime!.format(context)}',
+                            : '${_endTime!.format(context)}',
                       ),
                     ),
                   ),

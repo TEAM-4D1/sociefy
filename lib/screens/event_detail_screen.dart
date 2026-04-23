@@ -29,7 +29,7 @@ class EventDetailScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 24),
-            Text(event.description ?? 'No description provided.'),
+            Text(event.description),
           ],
         ),
       ),

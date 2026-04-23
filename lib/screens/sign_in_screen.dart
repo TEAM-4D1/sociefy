@@ -1,4 +1,3 @@
-import 'register_screen.dart';
 import 'package:flutter/material.dart';
 import '../theme/colours.dart';
 import 'package:provider/provider.dart';
@@ -185,4 +184,8 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
     );
   }
+}
+
+class RegisterScreen {
+  const RegisterScreen();
 }
