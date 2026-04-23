@@ -159,7 +159,15 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
                     const SizedBox(height: 12),
                     SizedBox(
                       width: double.infinity,
-                      child: TextButton(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          side: const BorderSide(color: Colors.white),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
                         onPressed: () {
                           final appState = Provider.of<AppState>(
                             context,
