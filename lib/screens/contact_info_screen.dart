@@ -25,7 +25,13 @@ class ContactInfoScreen extends StatelessWidget {
                 subtitle: const Text('Alex Johnson'),
                 trailing: IconButton(
                   icon: const Icon(Icons.email),
-                  onPressed: () {},
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Contact feature coming soon'),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -36,7 +42,13 @@ class ContactInfoScreen extends StatelessWidget {
                 subtitle: const Text('Jamie Lee'),
                 trailing: IconButton(
                   icon: const Icon(Icons.email),
-                  onPressed: () {},
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Contact feature coming soon'),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -47,7 +59,13 @@ class ContactInfoScreen extends StatelessWidget {
                 subtitle: const Text('Morgan Smith'),
                 trailing: IconButton(
                   icon: const Icon(Icons.email),
-                  onPressed: () {},
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Contact feature coming soon'),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
