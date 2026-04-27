@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import '../models/society.dart';
+import '../providers/app_state.dart';
 
 class SocietyChatScreen extends StatefulWidget {
   final Society society;
@@ -56,6 +58,8 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.read<AppState>();
+
     return Scaffold(
       appBar: AppBar(title: Text(widget.society.name)),
       body: Column(
@@ -180,26 +184,39 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _messageController,
-                      decoration: const InputDecoration(
-                        hintText: 'Type a message...',
-                        border: OutlineInputBorder(),
+              child: appState.isGuest
+                  ? Container(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: const Center(
+                        child: Text(
+                          'Sign in to participate in society chats',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
                       ),
-                      onSubmitted: (_) => _sendMessage(),
+                    )
+                  : Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _messageController,
+                            decoration: const InputDecoration(
+                              hintText: 'Type a message...',
+                              border: OutlineInputBorder(),
+                            ),
+                            onSubmitted: (_) => _sendMessage(),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton(
+                          icon: const Icon(Icons.send),
+                          color: Theme.of(context).primaryColor,
+                          onPressed: _sendMessage,
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    icon: const Icon(Icons.send),
-                    color: Theme.of(context).primaryColor,
-                    onPressed: _sendMessage,
-                  ),
-                ],
-              ),
             ),
           ),
         ],
