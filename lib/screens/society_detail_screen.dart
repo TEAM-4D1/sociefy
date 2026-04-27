@@ -172,9 +172,6 @@ class SocietyDetailScreen extends StatelessWidget {
         ],
       ),
 
-      // =========================
-      // JOIN / LEAVE BUTTON FIXED
-      // =========================
       bottomNavigationBar: Consumer<AppState>(
         builder: (context, appState, _) {
           final isJoined = appState.isJoined(society.id);
@@ -230,7 +227,8 @@ class SocietyDetailScreen extends StatelessWidget {
     final endTimeController = TextEditingController();
     DateTime? selectedDate;
 
-    showDialog(
+    // Dispose all controllers when the dialog closes, regardless of outcome
+    showDialog<void>(
       context: context,
       builder: (dialogContext) {
         return StatefulBuilder(
@@ -355,7 +353,7 @@ class SocietyDetailScreen extends StatelessWidget {
                             return 'Please enter end time';
                           }
                           if (!RegExp(r'^\d{2}:\d{2}$').hasMatch(value)) {
-                            return 'Use HH:MM format (e.g. 14:30)';
+                            return 'Use HH:MM format (e.g. 16:00)';
                           }
                           return null;
                         },
@@ -399,7 +397,8 @@ class SocietyDetailScreen extends StatelessWidget {
           },
         );
       },
-    ).then((_) {
+    ).whenComplete(() {
+      // Dispose all controllers after dialog closes to prevent memory leak
       titleController.dispose();
       descriptionController.dispose();
       venueController.dispose();
