@@ -12,6 +12,8 @@ class SocietyBrowserScreen extends StatefulWidget {
 
 class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
   String _searchQuery = '';
+  String? _selectedCategory;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,13 +37,54 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
               },
             ),
           ),
+          Consumer<AppState>(
+            builder: (context, appState, _) {
+              final categories = appState.societies
+                  .map((s) => s.category)
+                  .toSet()
+                  .toList();
+
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Wrap(
+                    spacing: 8,
+                    children: [
+                      FilterChip(
+                        label: const Text('All'),
+                        selected: _selectedCategory == null,
+                        onSelected: (_) {
+                          setState(() => _selectedCategory = null);
+                        },
+                      ),
+                      ...categories.map(
+                        (category) => FilterChip(
+                          label: Text(category),
+                          selected: _selectedCategory == category,
+                          onSelected: (_) {
+                            setState(() => _selectedCategory = category);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
           Expanded(
             child: Consumer<AppState>(
               builder: (context, appState, _) {
                 final societies = appState.societies.where((society) {
                   final query = _searchQuery.toLowerCase();
-                  return society.name.toLowerCase().contains(query) ||
+                  final matchesSearch =
+                      society.name.toLowerCase().contains(query) ||
                       society.category.toLowerCase().contains(query);
+                  final matchesCategory =
+                      _selectedCategory == null ||
+                      society.category == _selectedCategory;
+                  return matchesSearch && matchesCategory;
                 }).toList();
                 return ListView.builder(
                   itemCount: societies.length,
