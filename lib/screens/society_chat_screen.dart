@@ -14,6 +14,7 @@ class SocietyChatScreen extends StatefulWidget {
 
 class _SocietyChatScreenState extends State<SocietyChatScreen> {
   final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   Future<void> _sendMessage() async {
     final text = _messageController.text.trim();
@@ -49,6 +50,7 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
   @override
   void dispose() {
     _messageController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -65,6 +67,7 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
                   .doc(widget.society.id)
                   .collection('messages')
                   .orderBy('createdAt', descending: false)
+                  .limit(100)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
@@ -81,7 +84,17 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
                   );
                 }
 
+                // Schedule scroll to bottom after frame is rendered
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _scrollController.animateTo(
+                    _scrollController.position.maxScrollExtent,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOut,
+                  );
+                });
+
                 return ListView.builder(
+                  controller: _scrollController,
                   itemCount: docs.length,
                   itemBuilder: (context, index) {
                     final data = docs[index].data() as Map<String, dynamic>;
