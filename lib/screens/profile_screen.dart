@@ -47,9 +47,17 @@ class ProfileScreen extends StatelessWidget {
               icon: const Icon(Icons.logout),
               label: const Text('Sign Out'),
               onPressed: () async {
-                await AuthService().signOut();
-                if (context.mounted) {
-                  context.read<AppState>().logout();
+                final appState = context.read<AppState>();
+
+                // Skip Firebase signOut for guest users
+                if (appState.userId == 'guest' ||
+                    appState.userId == 'guest-committee') {
+                  appState.logout();
+                } else {
+                  await AuthService().signOut();
+                  if (context.mounted) {
+                    appState.logout();
+                  }
                 }
               },
             ),
