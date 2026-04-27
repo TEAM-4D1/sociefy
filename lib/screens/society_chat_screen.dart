@@ -58,7 +58,7 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final appState = context.read<AppState>();
+    final appState = context.watch<AppState>();
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.society.name)),
@@ -182,22 +182,23 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
             ),
           ),
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: appState.isGuest
-                  ? Container(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: const Center(
-                        child: Text(
-                          'Sign in to participate in society chats',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontStyle: FontStyle.italic,
-                          ),
+            child: appState.isGuest
+                ? Container(
+                    color: Colors.grey.shade200,
+                    padding: const EdgeInsets.all(16),
+                    child: const Center(
+                      child: Text(
+                        'Sign in to participate in society chats',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontStyle: FontStyle.italic,
                         ),
                       ),
-                    )
-                  : Row(
+                    ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
                       children: [
                         Expanded(
                           child: TextField(
@@ -217,7 +218,7 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
                         ),
                       ],
                     ),
-            ),
+                  ),
           ),
         ],
       ),
