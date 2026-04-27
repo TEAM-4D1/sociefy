@@ -26,20 +26,26 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
   Future<void> _signInAsCommitteeOrAdmin(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
 
+    // Set admin pending flag before Firebase auth
+    final appState = Provider.of<AppState>(context, listen: false);
+    appState.setAdminPending(true);
+
     final result = await AuthService().signIn(
       _emailController.text.trim(),
       _passwordController.text.trim(),
     );
 
     if (result == null) {
+      appState.setAdminPending(false);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Invalid credentials')));
       return;
     }
 
-    final appState = Provider.of<AppState>(context, listen: false);
-    await appState.login(isAdmin: true);
+    // Let authStateChanges listener handle login with admin flag
+    // Wait a bit for the listener to fire
+    await Future.delayed(const Duration(milliseconds: 300));
 
     if (mounted) {
       Navigator.of(context).pushAndRemoveUntil(
