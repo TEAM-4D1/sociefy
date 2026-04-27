@@ -187,6 +187,12 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
                             context,
                             listen: false,
                           );
+
+                          // Guard: don't reload if already guest-committee
+                          if (appState.userId == 'guest-committee') {
+                            return;
+                          }
+
                           await appState.login(
                             userId: 'guest-committee',
                             isAdmin: true,
