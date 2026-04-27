@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 import 'sign_in_screen.dart';
 
@@ -37,7 +38,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       messenger.showSnackBar(
         const SnackBar(content: Text('Registration failed')),
       );
+      return;
     }
+    await result.user?.updateDisplayName(displayName);
     // On success, do nothing; authStateChanges will handle navigation.
   }
 
