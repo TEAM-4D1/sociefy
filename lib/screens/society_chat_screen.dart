@@ -34,6 +34,7 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
           .add({
             'text': text,
             'senderName': senderName,
+            'senderId': FirebaseAuth.instance.currentUser?.uid ?? '',
             'createdAt': FieldValue.serverTimestamp(),
           });
     } catch (e) {
@@ -88,6 +89,7 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
                     final senderName =
                         data['senderName'] as String? ?? 'Unknown';
                     final createdAt = data['createdAt'] as Timestamp?;
+                    final senderId = data['senderId'] as String? ?? '';
 
                     String formattedTime = '';
                     if (createdAt != null) {
@@ -96,40 +98,62 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
                           '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
                     }
 
+                    final currentUserId =
+                        FirebaseAuth.instance.currentUser?.uid;
+                    final isOwnMessage = senderId == currentUserId;
+
                     return Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12.0,
                         vertical: 8.0,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Row(
+                        mainAxisAlignment: isOwnMessage
+                            ? MainAxisAlignment.end
+                            : MainAxisAlignment.start,
                         children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              color: Colors.purple.shade100,
-                            ),
-                            padding: const EdgeInsets.all(10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  senderName,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
+                          Flexible(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: isOwnMessage
+                                    ? Colors.purple.shade300
+                                    : Colors.purple.shade100,
+                              ),
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    senderName,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: isOwnMessage
+                                          ? Colors.white
+                                          : Colors.black87,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(text),
-                                const SizedBox(height: 4),
-                                Text(
-                                  formattedTime,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey.shade600,
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    text,
+                                    style: TextStyle(
+                                      color: isOwnMessage
+                                          ? Colors.white
+                                          : Colors.black87,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    formattedTime,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: isOwnMessage
+                                          ? Colors.white70
+                                          : Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
