@@ -66,7 +66,7 @@ class _SignInScreenState extends State<SignInScreen>
         const SnackBar(content: Text('Invalid email or password')),
       );
     }
-    // Navigation now handled by authStateChanges in AppState.
+    // Navigation handled by authStateChanges in AppState.
   }
 
   @override
