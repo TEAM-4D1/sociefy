@@ -153,6 +153,16 @@ class AppState extends ChangeNotifier {
     isAdmin = false;
     _joinedSocietyIds.clear();
     _savedEventIds.clear();
+
+    // Clear all cached data so fresh user gets a clean slate
+    _societies.clear();
+    _events.clear();
+    _announcements.clear();
+
+    // Cancel announcements stream subscription
+    _announcementsSubscription?.cancel();
+    _announcementsSubscription = null;
+
     notifyListeners();
   }
 
