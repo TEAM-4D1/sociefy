@@ -126,8 +126,12 @@ class _SignInScreenState extends State<SignInScreen>
                         TextFormField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
-                          validator: (value) =>
-                              value!.isEmpty ? 'Enter password' : null,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Enter password';
+                            }
+                            return null;
+                          },
                           decoration: _inputDecoration('Password').copyWith(
                             suffixIcon: IconButton(
                               icon: Icon(
