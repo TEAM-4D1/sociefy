@@ -54,6 +54,13 @@ class AppState extends ChangeNotifier {
     if (_events.isNotEmpty) return;
     final querySnapshot = await FirebaseFirestore.instance
         .collection('events')
+        .where(
+          'date',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(
+            DateTime.now().subtract(Duration(days: 1)),
+          ),
+        )
+        .limit(100)
         .get();
     _events = querySnapshot.docs.map((doc) {
       final data = doc.data();
