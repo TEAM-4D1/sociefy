@@ -135,6 +135,12 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  Future<void> refreshFeed() async {
+    // Clear and reload events
+    _events.clear();
+    await loadEvents();
+  }
+
   void logout() {
     userId = null;
     isAdmin = false;
