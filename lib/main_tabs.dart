@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/messages_screen.dart';
 import 'screens/saved_events_screen.dart';
+import 'screens/profile_screen.dart';
 // Removed unused imports
 import 'screens/feed_screen.dart';
 import 'screens/society_browser_screen.dart';
@@ -21,6 +22,7 @@ class _MainTabsState extends State<MainTabs> {
     // Placeholder for Messages
     MessagesPage(),
     const SavedEventsScreen(),
+    const ProfileScreen(),
   ];
 
   @override
@@ -39,6 +41,7 @@ class _MainTabsState extends State<MainTabs> {
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Discover'),
           BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
           BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: 'Saved'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
     );
