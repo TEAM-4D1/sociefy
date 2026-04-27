@@ -69,15 +69,34 @@ class SocietyDetailScreen extends StatelessWidget {
 
                   const SizedBox(height: 16),
 
-                  OutlinedButton.icon(
-                    icon: const Icon(Icons.contact_mail),
-                    label: const Text('View Contact Info'),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ContactInfoScreen(society: society),
-                        ),
+                  Consumer<AppState>(
+                    builder: (context, appState, _) {
+                      return Column(
+                        children: [
+                          OutlinedButton.icon(
+                            icon: const Icon(Icons.contact_mail),
+                            label: const Text('View Contact Info'),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      ContactInfoScreen(society: society),
+                                ),
+                              );
+                            },
+                          ),
+                          if (appState.isAdmin) ...[
+                            const SizedBox(height: 12),
+                            ElevatedButton.icon(
+                              icon: const Icon(Icons.event),
+                              label: const Text('Create Event'),
+                              onPressed: () {
+                                _showCreateEventDialog(context, appState);
+                              },
+                            ),
+                          ],
+                        ],
                       );
                     },
                   ),
@@ -153,9 +172,6 @@ class SocietyDetailScreen extends StatelessWidget {
         ],
       ),
 
-      // =========================
-      // JOIN / LEAVE BUTTON FIXED
-      // =========================
       bottomNavigationBar: Consumer<AppState>(
         builder: (context, appState, _) {
           final isJoined = appState.isJoined(society.id);
@@ -200,5 +216,194 @@ class SocietyDetailScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  void _showCreateEventDialog(BuildContext context, AppState appState) {
+    final formKey = GlobalKey<FormState>();
+    final titleController = TextEditingController();
+    final descriptionController = TextEditingController();
+    final venueController = TextEditingController();
+    final startTimeController = TextEditingController();
+    final endTimeController = TextEditingController();
+    DateTime? selectedDate;
+
+    // Dispose all controllers when the dialog closes, regardless of outcome
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (statefulContext, setState) {
+            return AlertDialog(
+              title: const Text('Create Event'),
+              content: SingleChildScrollView(
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: titleController,
+                        decoration: const InputDecoration(
+                          labelText: 'Event Title',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter event title';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: descriptionController,
+                        decoration: const InputDecoration(
+                          labelText: 'Description',
+                          border: OutlineInputBorder(),
+                        ),
+                        maxLines: 3,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter description';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: venueController,
+                        decoration: const InputDecoration(
+                          labelText: 'Venue',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter venue';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Date',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 8),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    final pickedDate = await showDatePicker(
+                                      context: statefulContext,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime.now(),
+                                      lastDate: DateTime.now().add(
+                                        const Duration(days: 365),
+                                      ),
+                                    );
+                                    if (pickedDate != null) {
+                                      setState(() {
+                                        selectedDate = pickedDate;
+                                      });
+                                    }
+                                  },
+                                  child: Text(
+                                    selectedDate == null
+                                        ? 'Pick Date'
+                                        : '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: startTimeController,
+                        keyboardType: TextInputType.datetime,
+                        decoration: const InputDecoration(
+                          labelText: 'Start Time (HH:MM)',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter start time';
+                          }
+                          if (!RegExp(r'^\d{2}:\d{2}$').hasMatch(value)) {
+                            return 'Use HH:MM format (e.g. 14:30)';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: endTimeController,
+                        keyboardType: TextInputType.datetime,
+                        decoration: const InputDecoration(
+                          labelText: 'End Time (HH:MM)',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter end time';
+                          }
+                          if (!RegExp(r'^\d{2}:\d{2}$').hasMatch(value)) {
+                            return 'Use HH:MM format (e.g. 16:00)';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (formKey.currentState!.validate() &&
+                        selectedDate != null) {
+                      appState.createEvent(
+                        societyId: society.id,
+                        title: titleController.text,
+                        description: descriptionController.text,
+                        date: selectedDate!,
+                        startTime: startTimeController.text,
+                        endTime: endTimeController.text,
+                        venue: venueController.text,
+                      );
+                      Navigator.pop(dialogContext);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Event created!')),
+                      );
+                    } else if (selectedDate == null) {
+                      ScaffoldMessenger.of(statefulContext).showSnackBar(
+                        const SnackBar(content: Text('Please pick a date')),
+                      );
+                    }
+                  },
+                  child: const Text('Create'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    ).whenComplete(() {
+      // Dispose all controllers after dialog closes to prevent memory leak
+      titleController.dispose();
+      descriptionController.dispose();
+      venueController.dispose();
+      startTimeController.dispose();
+      endTimeController.dispose();
+    });
   }
 }

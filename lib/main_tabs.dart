@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/messages_screen.dart';
 import 'screens/saved_events_screen.dart';
-// Removed unused imports
+import 'screens/profile_screen.dart';
 import 'screens/feed_screen.dart';
 import 'screens/society_browser_screen.dart';
 
@@ -17,10 +17,10 @@ class _MainTabsState extends State<MainTabs> {
 
   final List<Widget> _pages = [
     const FeedScreen(),
-    SocietyBrowserScreen(),
-    // Placeholder for Messages
-    MessagesPage(),
+    const SocietyBrowserScreen(),
+    const MessagesPage(),
     const SavedEventsScreen(),
+    const ProfileScreen(),
   ];
 
   @override
@@ -39,6 +39,7 @@ class _MainTabsState extends State<MainTabs> {
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Discover'),
           BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
           BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: 'Saved'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
     );

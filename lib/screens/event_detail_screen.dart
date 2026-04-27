@@ -29,11 +29,34 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   void initState() {
     super.initState();
     _isSaved = widget.isSaved;
+    _checkRsvpStatus();
+  }
+
+  Future<void> _checkRsvpStatus() async {
+    // Skip Firestore lookup for guest users — userId is empty or 'guest'
+    if (widget.userId.isEmpty || widget.userId.startsWith('guest')) return;
+
+    try {
+      final docSnapshot = await FirebaseFirestore.instance
+          .collection('rsvps')
+          .doc('${widget.userId}_${widget.event.id}')
+          .get();
+      if (docSnapshot.exists) {
+        setState(() {
+          _hasRsvp = true;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error checking RSVP status: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final event = widget.event;
+    final appState = context.watch<AppState>();
+    final isGuest = appState.isGuest;
+
     return Scaffold(
       appBar: AppBar(title: Text(event.title)),
       body: Padding(
@@ -87,43 +110,63 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.how_to_reg),
-                    label: Text(_hasRsvp ? 'Cancel RSVP' : 'RSVP'),
-                    onPressed: () async {
-                      setState(() {
-                        _hasRsvp = !_hasRsvp;
-                      });
-                      try {
-                        final event = widget.event;
-                        final userId = widget.userId;
-                        final docId = '${userId}_${event.id}';
-                        if (_hasRsvp) {
-                          await FirebaseFirestore.instance
-                              .collection('rsvps')
-                              .doc(docId)
-                              .set({
-                                'eventId': event.id,
-                                'userId': userId,
-                                'createdAt': FieldValue.serverTimestamp(),
+                    // Guests see a disabled button with a sign-in prompt
+                    label: Text(
+                      isGuest
+                          ? 'Sign in to RSVP'
+                          : (_hasRsvp ? 'Cancel RSVP' : 'RSVP'),
+                    ),
+                    onPressed: isGuest
+                        ? null
+                        : () async {
+                            setState(() {
+                              _hasRsvp = !_hasRsvp;
+                            });
+                            try {
+                              final event = widget.event;
+                              final userId = widget.userId;
+                              final docId = '${userId}_${event.id}';
+                              if (_hasRsvp) {
+                                await FirebaseFirestore.instance
+                                    .collection('rsvps')
+                                    .doc(docId)
+                                    .set({
+                                      'eventId': event.id,
+                                      'userId': userId,
+                                      'createdAt': FieldValue.serverTimestamp(),
+                                    });
+                              } else {
+                                await FirebaseFirestore.instance
+                                    .collection('rsvps')
+                                    .doc(docId)
+                                    .delete();
+                              }
+                            } catch (e) {
+                              // Revert local state if Firestore call fails
+                              setState(() {
+                                _hasRsvp = !_hasRsvp;
                               });
-                        } else {
-                          await FirebaseFirestore.instance
-                              .collection('rsvps')
-                              .doc(docId)
-                              .delete();
-                        }
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Error updating RSVP: $e')),
-                        );
-                      }
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            _hasRsvp ? 'RSVP confirmed!' : 'RSVP removed',
-                          ),
-                        ),
-                      );
-                    },
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Error updating RSVP: $e'),
+                                  ),
+                                );
+                              }
+                              return;
+                            }
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    _hasRsvp
+                                        ? 'RSVP confirmed!'
+                                        : 'RSVP removed',
+                                  ),
+                                ),
+                              );
+                            }
+                          },
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -143,18 +186,17 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
                       final appState = context.read<AppState>();
                       final eventId = widget.event.id;
-                      final userId = widget.userId;
 
                       try {
+                        // saveEvent and unsaveEvent already handle Firestore
+                        // persistence internally — no need to call persist* again
                         if (_isSaved) {
                           appState.saveEvent(eventId);
-                          await appState.persistSaveEvent(userId, eventId);
                         } else {
                           appState.unsaveEvent(eventId);
-                          await appState.persistUnsaveEvent(userId, eventId);
                         }
                       } catch (e) {
-                        // Revert local state if network call fails
+                        // Revert local state if the call fails
                         setState(() {
                           _isSaved = !_isSaved;
                         });

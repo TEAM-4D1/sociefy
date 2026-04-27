@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 import 'sign_in_screen.dart';
 
@@ -11,17 +12,22 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _displayNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
   void dispose() {
+    _displayNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  Future<void> _register(BuildContext context) async {
+  Future<void> _register(
+    BuildContext context, {
+    required String displayName,
+  }) async {
     if (!_formKey.currentState!.validate()) return;
     final messenger = ScaffoldMessenger.of(context);
     final authService = AuthService();
@@ -32,7 +38,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       messenger.showSnackBar(
         const SnackBar(content: Text('Registration failed')),
       );
+      return;
     }
+    await result.user?.updateDisplayName(displayName);
+    // Reload the user so authStateChanges sees the updated displayName
+    // before it fires and navigates to the profile screen.
+    await result.user?.reload();
     // On success, do nothing; authStateChanges will handle navigation.
   }
 
@@ -47,6 +58,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              TextFormField(
+                controller: _displayNameController,
+                decoration: const InputDecoration(labelText: 'Display Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your display name';
+                  }
+                  if (value.length < 2) {
+                    return 'Display name must be at least 2 characters';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
@@ -80,7 +105,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () => _register(context),
+                  onPressed: () => _register(
+                    context,
+                    displayName: _displayNameController.text.trim(),
+                  ),
                   child: const Text('Register'),
                 ),
               ),
