@@ -136,9 +136,16 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> refreshFeed() async {
-    // Clear and reload events
+    // Clear all data lists
+    _societies.clear();
     _events.clear();
-    await loadEvents();
+    _announcements.clear();
+
+    // Reload loadSocieties and loadEvents in parallel, then load announcements
+    await Future.wait<void>([loadSocieties(), loadEvents()]);
+
+    // loadAnnouncements is stream-based, just call it
+    loadAnnouncements();
   }
 
   void logout() {
