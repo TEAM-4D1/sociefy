@@ -10,22 +10,22 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appState = context.read<AppState>();
+    final appState = context.watch<AppState>();
     final currentUser = FirebaseAuth.instance.currentUser;
 
-    // Determine display name and email based on user type
-    late String displayName;
-    late String email;
+    // Determine display name and subtitle based on user type
+    String displayName;
+    String subtitle;
 
     if (appState.userId == 'guest-committee') {
       displayName = 'Guest Committee';
-      email = 'Committee preview mode';
+      subtitle = 'Committee preview mode';
     } else if (appState.isGuest) {
       displayName = 'Guest User';
-      email = 'Browsing as guest';
+      subtitle = 'Browsing as guest';
     } else {
       displayName = currentUser?.displayName ?? 'User';
-      email = currentUser?.email ?? 'No email';
+      subtitle = currentUser?.email ?? 'No email';
     }
 
     final firstLetter = displayName.isNotEmpty
@@ -41,12 +41,12 @@ class ProfileScreen extends StatelessWidget {
             CircleAvatar(
               radius: 50,
               backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Colors.white,
               child: Text(
                 firstLetter,
                 style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -57,7 +57,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              email,
+              subtitle,
               style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 32),
@@ -67,7 +67,6 @@ class ProfileScreen extends StatelessWidget {
               onPressed: () async {
                 final appState = context.read<AppState>();
 
-                // Skip Firebase signOut for guest users
                 if (appState.userId == 'guest' ||
                     appState.userId == 'guest-committee') {
                   appState.logout();
@@ -76,7 +75,7 @@ class ProfileScreen extends StatelessWidget {
                   appState.logout();
                 }
 
-                // Navigate to SignInScreen
+                // Clear the entire navigation stack and go back to SignInScreen
                 if (context.mounted) {
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute<void>(
