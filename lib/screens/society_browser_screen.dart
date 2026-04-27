@@ -74,45 +74,50 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
             },
           ),
           Expanded(
-            child: Consumer<AppState>(
-              builder: (context, appState, _) {
-                final societies = appState.societies.where((society) {
-                  final query = _searchQuery.toLowerCase();
-                  final matchesSearch =
-                      society.name.toLowerCase().contains(query) ||
-                      society.category.toLowerCase().contains(query);
-                  final matchesCategory =
-                      _selectedCategory == null ||
-                      society.category == _selectedCategory;
-                  return matchesSearch && matchesCategory;
-                }).toList();
-                return ListView.builder(
-                  itemCount: societies.length,
-                  itemBuilder: (context, index) {
-                    final society = societies[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      child: ListTile(
-                        title: Text(society.name),
-                        subtitle: Text(society.category),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  SocietyDetailScreen(society: society),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                );
+            child: RefreshIndicator(
+              onRefresh: () async {
+                await context.read<AppState>().refreshFeed();
               },
+              child: Consumer<AppState>(
+                builder: (context, appState, _) {
+                  final societies = appState.societies.where((society) {
+                    final query = _searchQuery.toLowerCase();
+                    final matchesSearch =
+                        society.name.toLowerCase().contains(query) ||
+                        society.category.toLowerCase().contains(query);
+                    final matchesCategory =
+                        _selectedCategory == null ||
+                        society.category == _selectedCategory;
+                    return matchesSearch && matchesCategory;
+                  }).toList();
+                  return ListView.builder(
+                    itemCount: societies.length,
+                    itemBuilder: (context, index) {
+                      final society = societies[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: ListTile(
+                          title: Text(society.name),
+                          subtitle: Text(society.category),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    SocietyDetailScreen(society: society),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ),
         ],
