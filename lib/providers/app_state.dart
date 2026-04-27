@@ -31,6 +31,7 @@ class AppState extends ChangeNotifier {
   List<Announcement> _announcements = [];
 
   Future<void> loadSocieties() async {
+    if (_societies.isNotEmpty) return;
     final querySnapshot = await FirebaseFirestore.instance
         .collection('societies')
         .get();
@@ -47,6 +48,7 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> loadEvents() async {
+    if (_events.isNotEmpty) return;
     final querySnapshot = await FirebaseFirestore.instance
         .collection('events')
         .get();
@@ -71,6 +73,7 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> loadAnnouncements() async {
+    if (_announcements.isNotEmpty) return;
     final querySnapshot = await FirebaseFirestore.instance
         .collection('announcements')
         .get();
