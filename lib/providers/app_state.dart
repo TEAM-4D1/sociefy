@@ -11,17 +11,23 @@ import 'dart:async';
 class AppState extends ChangeNotifier {
   String? userId;
   bool isAdmin = false;
+  bool _pendingAdminLogin = false;
 
   StreamSubscription<QuerySnapshot>? _announcementsSubscription;
 
   AppState() {
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
-        login(userId: user.uid);
+        login(userId: user.uid, isAdmin: _pendingAdminLogin);
+        _pendingAdminLogin = false;
       } else {
         logout();
       }
     });
+  }
+
+  void setAdminPending(bool value) {
+    _pendingAdminLogin = value;
   }
 
   final List<String> _joinedSocietyIds = [];
