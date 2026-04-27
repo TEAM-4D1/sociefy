@@ -10,9 +10,24 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
     final currentUser = FirebaseAuth.instance.currentUser;
-    final displayName = currentUser?.displayName ?? 'User';
-    final email = currentUser?.email ?? 'No email';
+
+    // Determine display name and email based on user type
+    late String displayName;
+    late String email;
+
+    if (appState.userId == 'guest-committee') {
+      displayName = 'Guest Committee';
+      email = 'Committee preview mode';
+    } else if (appState.isGuest) {
+      displayName = 'Guest User';
+      email = 'Browsing as guest';
+    } else {
+      displayName = currentUser?.displayName ?? 'User';
+      email = currentUser?.email ?? 'No email';
+    }
+
     final firstLetter = displayName.isNotEmpty
         ? displayName[0].toUpperCase()
         : '?';
