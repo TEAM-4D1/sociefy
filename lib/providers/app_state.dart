@@ -6,10 +6,13 @@ import '../services/society_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:async';
 
 class AppState extends ChangeNotifier {
   String? userId;
   bool isAdmin = false;
+
+  StreamSubscription<QuerySnapshot>? _announcementsSubscription;
 
   AppState() {
     FirebaseAuth.instance.authStateChanges().listen((user) {
@@ -72,24 +75,28 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadAnnouncements() async {
-    if (_announcements.isNotEmpty) return;
-    final querySnapshot = await FirebaseFirestore.instance
+  void loadAnnouncements() {
+    _announcementsSubscription?.cancel();
+    _announcementsSubscription = FirebaseFirestore.instance
         .collection('announcements')
-        .get();
-    _announcements = querySnapshot.docs.map((doc) {
-      final data = doc.data();
-      return Announcement(
-        id: doc.id,
-        societyId: data['societyId'] ?? '',
-        title: data['title'] ?? 'Untitled',
-        content: data['content'] ?? '',
-        date: data['date'] != null
-            ? (data['date'] as Timestamp).toDate()
-            : DateTime.now(),
-      );
-    }).toList();
-    notifyListeners();
+        .orderBy('date', descending: true)
+        .limit(50)
+        .snapshots()
+        .listen((querySnapshot) {
+          _announcements = querySnapshot.docs.map((doc) {
+            final data = doc.data();
+            return Announcement(
+              id: doc.id,
+              societyId: data['societyId'] ?? '',
+              title: data['title'] ?? 'Untitled',
+              content: data['content'] ?? '',
+              date: data['date'] != null
+                  ? (data['date'] as Timestamp).toDate()
+                  : DateTime.now(),
+            );
+          }).toList();
+          notifyListeners();
+        });
   }
 
   bool get isAuthenticated => userId != null;
@@ -127,6 +134,12 @@ class AppState extends ChangeNotifier {
     _joinedSocietyIds.clear();
     _savedEventIds.clear();
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _announcementsSubscription?.cancel();
+    super.dispose();
   }
 
   List<Society> get societies => _societies;
