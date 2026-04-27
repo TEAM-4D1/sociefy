@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/provider.dart';
 import '../models/society.dart';
-import '../providers/app_state.dart';
 
 class SocietyChatScreen extends StatefulWidget {
   final Society society;
@@ -89,10 +87,53 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
                     final text = data['text'] as String? ?? '';
                     final senderName =
                         data['senderName'] as String? ?? 'Unknown';
+                    final createdAt = data['createdAt'] as Timestamp?;
 
-                    return ListTile(
-                      title: Text(text),
-                      subtitle: Text(senderName),
+                    String formattedTime = '';
+                    if (createdAt != null) {
+                      final dateTime = createdAt.toDate();
+                      formattedTime =
+                          '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+                    }
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12.0,
+                        vertical: 8.0,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              color: Colors.purple.shade100,
+                            ),
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  senderName,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(text),
+                                const SizedBox(height: 4),
+                                Text(
+                                  formattedTime,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   },
                 );
