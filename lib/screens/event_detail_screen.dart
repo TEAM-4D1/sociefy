@@ -29,6 +29,23 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   void initState() {
     super.initState();
     _isSaved = widget.isSaved;
+    _checkRsvpStatus();
+  }
+
+  Future<void> _checkRsvpStatus() async {
+    try {
+      final docSnapshot = await FirebaseFirestore.instance
+          .collection('rsvps')
+          .doc('${widget.userId}_${widget.event.id}')
+          .get();
+      if (docSnapshot.exists) {
+        setState(() {
+          _hasRsvp = true;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error checking RSVP status: $e');
+    }
   }
 
   @override
