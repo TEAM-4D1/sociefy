@@ -41,6 +41,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
     await result.user?.updateDisplayName(displayName);
+    // Reload the user so authStateChanges sees the updated displayName
+    // before it fires and navigates to the profile screen.
     await result.user?.reload();
     // On success, do nothing; authStateChanges will handle navigation.
   }
