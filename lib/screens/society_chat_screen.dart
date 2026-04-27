@@ -59,6 +59,7 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
+    final isGuest = appState.isGuest;
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.society.name)),
@@ -84,11 +85,11 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
                 final docs = snapshot.data?.docs ?? [];
                 if (docs.isEmpty) {
                   return const Center(
-                    child: Text('No messages yet. start the conversation!'),
+                    child: Text('No messages yet. Start the conversation!'),
                   );
                 }
 
-                // Schedule scroll to bottom after frame is rendered
+                // Only scroll to bottom if the controller is attached
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   if (_scrollController.hasClients) {
                     _scrollController.animateTo(
@@ -183,45 +184,48 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
               },
             ),
           ),
-          SafeArea(
-            child: appState.isGuest
-                ? Container(
-                    color: Colors.grey.shade200,
-                    padding: const EdgeInsets.all(16),
-                    child: const Center(
-                      child: Text(
-                        'Sign in to participate in society chats',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontStyle: FontStyle.italic,
+
+          // Show sign-in prompt for guests, input row for real users
+          if (isGuest)
+            Container(
+              width: double.infinity,
+              color: Colors.grey.shade200,
+              padding: const EdgeInsets.all(16),
+              child: const Text(
+                'Sign in to participate in society chats',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            )
+          else
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _messageController,
+                        decoration: const InputDecoration(
+                          hintText: 'Type a message...',
+                          border: OutlineInputBorder(),
                         ),
+                        onSubmitted: (_) => _sendMessage(),
                       ),
                     ),
-                  )
-                : Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _messageController,
-                            decoration: const InputDecoration(
-                              hintText: 'Type a message...',
-                              border: OutlineInputBorder(),
-                            ),
-                            onSubmitted: (_) => _sendMessage(),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          icon: const Icon(Icons.send),
-                          color: Theme.of(context).primaryColor,
-                          onPressed: _sendMessage,
-                        ),
-                      ],
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: const Icon(Icons.send),
+                      color: Theme.of(context).primaryColor,
+                      onPressed: _sendMessage,
                     ),
-                  ),
-          ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );
