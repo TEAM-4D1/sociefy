@@ -33,6 +33,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   }
 
   Future<void> _checkRsvpStatus() async {
+    // Skip Firestore lookup for guest users — userId is empty or 'guest'
+    if (widget.userId.isEmpty || widget.userId.startsWith('guest')) return;
+
     try {
       final docSnapshot = await FirebaseFirestore.instance
           .collection('rsvps')
@@ -50,8 +53,10 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final appState = context.watch<AppState>();
     final event = widget.event;
+    final appState = context.watch<AppState>();
+    final isGuest = appState.isGuest;
+
     return Scaffold(
       appBar: AppBar(title: Text(event.title)),
       body: Padding(
@@ -105,12 +110,13 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.how_to_reg),
+                    // Guests see a disabled button with a sign-in prompt
                     label: Text(
-                      appState.isGuest
+                      isGuest
                           ? 'Sign in to RSVP'
                           : (_hasRsvp ? 'Cancel RSVP' : 'RSVP'),
                     ),
-                    onPressed: appState.isGuest
+                    onPressed: isGuest
                         ? null
                         : () async {
                             setState(() {
@@ -136,19 +142,30 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                     .delete();
                               }
                             } catch (e) {
+                              // Revert local state if Firestore call fails
+                              setState(() {
+                                _hasRsvp = !_hasRsvp;
+                              });
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Error updating RSVP: $e'),
+                                  ),
+                                );
+                              }
+                              return;
+                            }
+                            if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Error updating RSVP: $e'),
+                                  content: Text(
+                                    _hasRsvp
+                                        ? 'RSVP confirmed!'
+                                        : 'RSVP removed',
+                                  ),
                                 ),
                               );
                             }
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  _hasRsvp ? 'RSVP confirmed!' : 'RSVP removed',
-                                ),
-                              ),
-                            );
                           },
                   ),
                 ),
@@ -171,13 +188,15 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       final eventId = widget.event.id;
 
                       try {
+                        // saveEvent and unsaveEvent already handle Firestore
+                        // persistence internally — no need to call persist* again
                         if (_isSaved) {
                           appState.saveEvent(eventId);
                         } else {
                           appState.unsaveEvent(eventId);
                         }
                       } catch (e) {
-                        // Revert local state if network call fails
+                        // Revert local state if the call fails
                         setState(() {
                           _isSaved = !_isSaved;
                         });
