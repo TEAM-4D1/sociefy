@@ -55,9 +55,7 @@ class ProfileScreen extends StatelessWidget {
                   appState.logout();
                 } else {
                   await AuthService().signOut();
-                  if (context.mounted) {
-                    appState.logout();
-                  }
+                  appState.logout();
                 }
               },
             ),
