@@ -89,7 +89,11 @@ class AppState extends ChangeNotifier {
   }
 
   void loadAnnouncements() {
+    // Cancel any existing subscription to prevent duplicates
     _announcementsSubscription?.cancel();
+    _announcementsSubscription = null;
+
+    // Set up new snapshots listener
     _announcementsSubscription = FirebaseFirestore.instance
         .collection('announcements')
         .orderBy('date', descending: true)
