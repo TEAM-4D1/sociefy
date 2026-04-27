@@ -5,48 +5,49 @@ admin.initializeApp();
 const db = admin.firestore();
 
 /**
- * Triggered when a membership document is created at:
- *   memberships/{membershipId}
+ * Triggered when a membership document is created in the 'memberships'
+ * collection. The app writes flat documents with id '{userId}_{societyId}'
+ * and fields: userId, societyId, joinedAt.
  *
- * Behavior:
- * - Ensure the society exists.
- * - Ensure a group chat document exists at groupChats/{societyId} with the same name as the society.
- * - Add the userId to the chat's participants (arrayUnion).
+ * Behaviour:
+ * - Read societyId and userId from the document data.
+ * - Ensure a group chat document exists at groupChats/{societyId}.
+ * - Add the userId to the chat's participants array (idempotent arrayUnion).
  */
-exports.onSocMemberAdded = functions
-  .region('us-central1') // Choose region as needed
+exports.onMembershipCreated = functions
+  .region('us-central1')
   .firestore.document('memberships/{membershipId}')
-  .onCreate(async (snap, context) => {
+  .onCreate(async (snap) => {
     const data = snap.data();
-    const { societyId, userId } = data;
+    const societyId = data && data.societyId;
+    const userId = data && data.userId;
+
     if (!societyId || !userId) {
       console.error('Missing societyId or userId in membership document', data);
       return null;
     }
 
     try {
-      const societyRef = db.collection('societies').doc(societyId);
-      const societySnap = await societyRef.get();
-      if (!societySnap.exists) {
-        console.error(`Society ${societyId} not found for member ${userId}`);
-        return null;
-      }
-      const societyData = societySnap.data() || {};
+      // Look up the society name from the 'societies' collection
+      const socRef = db.collection('societies').doc(societyId);
+      const socSnap = await socRef.get();
+      const socData = socSnap.exists ? (socSnap.data() || {}) : {};
+      const societyName = socData.name || `Society ${societyId}`;
 
-      // Ensure the group chat exists
+      // Ensure the group chat document exists and add the user as a participant
       const chatRef = db.collection('groupChats').doc(societyId);
       await db.runTransaction(async (tx) => {
         const chatDoc = await tx.get(chatRef);
         if (chatDoc.exists) {
-          // Chat exists -> add participant idempotently
+          // Chat already exists — add participant idempotently
           tx.update(chatRef, {
             participants: admin.firestore.FieldValue.arrayUnion(userId),
             lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
           });
         } else {
-          // Chat doesn't exist -> create it with this user as the first participant
+          // First member — create the chat document
           tx.set(chatRef, {
-            name: societyData.name || `Society ${societyId}`,
+            name: societyName,
             participants: [userId],
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             lastMessageAt: null,
@@ -54,10 +55,10 @@ exports.onSocMemberAdded = functions
         }
       });
 
-      console.log(`User ${userId} added to chat ${societyId} (society ${societyId})`);
+      console.log(`User ${userId} added to groupChat ${societyId}`);
       return null;
     } catch (err) {
-      console.error('Error in onSocMemberAdded:', err);
+      console.error('Error in onMembershipCreated:', err);
       return null;
     }
   });
