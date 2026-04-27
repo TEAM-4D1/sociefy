@@ -225,6 +225,51 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  void createEvent({
+    required String societyId,
+    required String title,
+    required String description,
+    required DateTime date,
+    required String startTime,
+    required String endTime,
+    required String venue,
+  }) {
+    final eventId = 'e-${DateTime.now().millisecondsSinceEpoch}';
+    final societyName = societyNameById(societyId);
+
+    _events.insert(
+      0,
+      Event(
+        id: eventId,
+        societyId: societyId,
+        societyName: societyName,
+        title: title,
+        description: description,
+        date: date,
+        startTime: startTime,
+        endTime: endTime,
+        venue: venue,
+        isSaved: false,
+      ),
+    );
+    notifyListeners();
+
+    try {
+      FirebaseFirestore.instance.collection('events').doc(eventId).set({
+        'societyId': societyId,
+        'societyName': societyName,
+        'title': title,
+        'description': description,
+        'date': Timestamp.fromDate(date),
+        'startTime': startTime,
+        'endTime': endTime,
+        'venue': venue,
+      });
+    } catch (e) {
+      debugPrint('createEvent Firestore error: $e');
+    }
+  }
+
   String societyNameById(String id) {
     for (final society in _societies) {
       if (society.id == id) {
