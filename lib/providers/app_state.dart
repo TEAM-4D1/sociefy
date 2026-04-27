@@ -118,6 +118,8 @@ class AppState extends ChangeNotifier {
 
   bool get isAuthenticated => userId != null;
 
+  bool get isGuest => userId != null && userId!.startsWith('guest');
+
   Future<void> loadJoinedSocieties(String userId) async {
     try {
       final ids = await SocietyService().getJoinedSocietyIds(userId);
@@ -139,7 +141,7 @@ class AppState extends ChangeNotifier {
     loadEvents();
     loadAnnouncements();
 
-    if (this.userId != null && !this.userId!.startsWith('guest')) {
+    if (!isGuest) {
       loadJoinedSocieties(this.userId!);
       loadSavedEvents(this.userId!);
     }
@@ -199,7 +201,7 @@ class AppState extends ChangeNotifier {
       _joinedSocietyIds.add(id);
       notifyListeners();
     }
-    if (userId != null && !userId!.startsWith('guest')) {
+    if (!isGuest) {
       try {
         await SocietyService().joinSociety(userId!, id);
       } catch (e) {
@@ -211,7 +213,7 @@ class AppState extends ChangeNotifier {
   Future<void> leaveSociety(String id) async {
     _joinedSocietyIds.remove(id);
     notifyListeners();
-    if (userId != null && !userId!.startsWith('guest')) {
+    if (!isGuest) {
       try {
         await SocietyService().leaveSociety(userId!, id);
       } catch (e) {
@@ -341,7 +343,7 @@ class AppState extends ChangeNotifier {
       _savedEventIds.add(id);
       notifyListeners();
     }
-    if (userId != null && !userId!.startsWith('guest')) {
+    if (!isGuest) {
       try {
         persistSaveEvent(userId!, id);
       } catch (e) {
@@ -353,7 +355,7 @@ class AppState extends ChangeNotifier {
   void unsaveEvent(String id) {
     _savedEventIds.remove(id);
     notifyListeners();
-    if (userId != null && !userId!.startsWith('guest')) {
+    if (!isGuest) {
       try {
         persistUnsaveEvent(userId!, id);
       } catch (e) {
