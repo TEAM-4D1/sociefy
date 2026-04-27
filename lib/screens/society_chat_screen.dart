@@ -90,11 +90,13 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
 
                 // Schedule scroll to bottom after frame is rendered
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _scrollController.animateTo(
-                    _scrollController.position.maxScrollExtent,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeOut,
-                  );
+                  if (_scrollController.hasClients) {
+                    _scrollController.animateTo(
+                      _scrollController.position.maxScrollExtent,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                    );
+                  }
                 });
 
                 return ListView.builder(
