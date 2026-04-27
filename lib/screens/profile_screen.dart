@@ -10,7 +10,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appState = context.watch<AppState>();
+    final appState = context.read<AppState>();
     final currentUser = FirebaseAuth.instance.currentUser;
 
     // Determine display name and email based on user type
@@ -40,6 +40,8 @@ class ProfileScreen extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 50,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Colors.white,
               child: Text(
                 firstLetter,
                 style: const TextStyle(
