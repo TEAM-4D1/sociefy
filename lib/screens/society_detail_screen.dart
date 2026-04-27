@@ -69,15 +69,33 @@ class SocietyDetailScreen extends StatelessWidget {
 
                   const SizedBox(height: 16),
 
-                  OutlinedButton.icon(
-                    icon: const Icon(Icons.contact_mail),
-                    label: const Text('View Contact Info'),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ContactInfoScreen(society: society),
-                        ),
+                  Consumer<AppState>(
+                    builder: (context, appState, _) {
+                      return Column(
+                        children: [
+                          OutlinedButton.icon(
+                            icon: const Icon(Icons.contact_mail),
+                            label: const Text('View Contact Info'),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ContactInfoScreen(society: society),
+                                ),
+                              );
+                            },
+                          ),
+                          if (appState.isAdmin) ...[
+                            const SizedBox(height: 12),
+                            ElevatedButton.icon(
+                              icon: const Icon(Icons.event),
+                              label: const Text('Create Event'),
+                              onPressed: () {
+                                _showCreateEventDialog(context, appState);
+                              },
+                            ),
+                          ],
+                        ],
                       );
                     },
                   ),
