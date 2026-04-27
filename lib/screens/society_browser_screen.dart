@@ -1,7 +1,7 @@
-import 'society_detail_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
-import 'package:flutter/material.dart';
+import 'society_detail_screen.dart';
 
 class SocietyBrowserScreen extends StatefulWidget {
   const SocietyBrowserScreen({super.key});
@@ -80,6 +80,26 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
               },
               child: Consumer<AppState>(
                 builder: (context, appState, _) {
+                  // Show shimmer placeholders while societies are loading
+                  if (appState.societies.isEmpty) {
+                    return ListView.builder(
+                      itemCount: 5,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          height: 72,
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        );
+                      },
+                    );
+                  }
+
                   final societies = appState.societies.where((society) {
                     final query = _searchQuery.toLowerCase();
                     final matchesSearch =
@@ -90,6 +110,11 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
                         society.category == _selectedCategory;
                     return matchesSearch && matchesCategory;
                   }).toList();
+
+                  if (societies.isEmpty) {
+                    return const Center(child: Text('No societies found.'));
+                  }
+
                   return ListView.builder(
                     itemCount: societies.length,
                     itemBuilder: (context, index) {
