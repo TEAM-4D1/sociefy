@@ -32,11 +32,6 @@ class MyApp extends StatelessWidget {
         home: Consumer<AppState>(
           builder: (context, appState, _) {
             if (appState.isAuthenticated) {
-              if (appState.isLoading) {
-                return const Scaffold(
-                  body: Center(child: CircularProgressIndicator()),
-                );
-              }
               return const MainTabs();
             } else {
               return const SignInScreen();

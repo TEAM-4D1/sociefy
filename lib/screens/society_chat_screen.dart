@@ -16,6 +16,7 @@ class SocietyChatScreen extends StatefulWidget {
 
 class _SocietyChatScreenState extends State<SocietyChatScreen> {
   final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   Future<void> _sendMessage() async {
     final text = _messageController.text.trim();
@@ -36,6 +37,7 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
           .add({
             'text': text,
             'senderName': senderName,
+            'senderId': FirebaseAuth.instance.currentUser?.uid ?? '',
             'createdAt': FieldValue.serverTimestamp(),
           });
     } catch (e) {
@@ -50,11 +52,15 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
   @override
   void dispose() {
     _messageController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+    final isGuest = appState.isGuest;
+
     return Scaffold(
       appBar: AppBar(title: Text(widget.society.name)),
       body: Column(
@@ -66,6 +72,7 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
                   .doc(widget.society.id)
                   .collection('messages')
                   .orderBy('createdAt', descending: false)
+                  .limit(100)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
@@ -78,52 +85,147 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
                 final docs = snapshot.data?.docs ?? [];
                 if (docs.isEmpty) {
                   return const Center(
-                    child: Text('No messages yet. start the conversation!'),
+                    child: Text('No messages yet. Start the conversation!'),
                   );
                 }
 
+                // Only scroll to bottom if the controller is attached
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (_scrollController.hasClients) {
+                    _scrollController.animateTo(
+                      _scrollController.position.maxScrollExtent,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                    );
+                  }
+                });
+
                 return ListView.builder(
+                  controller: _scrollController,
                   itemCount: docs.length,
                   itemBuilder: (context, index) {
                     final data = docs[index].data() as Map<String, dynamic>;
                     final text = data['text'] as String? ?? '';
                     final senderName =
                         data['senderName'] as String? ?? 'Unknown';
+                    final createdAt = data['createdAt'] as Timestamp?;
+                    final senderId = data['senderId'] as String? ?? '';
 
-                    return ListTile(
-                      title: Text(text),
-                      subtitle: Text(senderName),
+                    String formattedTime = '';
+                    if (createdAt != null) {
+                      final dateTime = createdAt.toDate();
+                      formattedTime =
+                          '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+                    }
+
+                    final currentUserId =
+                        FirebaseAuth.instance.currentUser?.uid;
+                    final isOwnMessage = senderId == currentUserId;
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12.0,
+                        vertical: 8.0,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: isOwnMessage
+                            ? MainAxisAlignment.end
+                            : MainAxisAlignment.start,
+                        children: [
+                          Flexible(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: isOwnMessage
+                                    ? Colors.purple.shade300
+                                    : Colors.purple.shade100,
+                              ),
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    senderName,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: isOwnMessage
+                                          ? Colors.white
+                                          : Colors.black87,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    text,
+                                    style: TextStyle(
+                                      color: isOwnMessage
+                                          ? Colors.white
+                                          : Colors.black87,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    formattedTime,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: isOwnMessage
+                                          ? Colors.white70
+                                          : Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   },
                 );
               },
             ),
           ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _messageController,
-                      decoration: const InputDecoration(
-                        hintText: 'Type a message...',
-                        border: OutlineInputBorder(),
+
+          // Show sign-in prompt for guests, input row for real users
+          if (isGuest)
+            Container(
+              width: double.infinity,
+              color: Colors.grey.shade200,
+              padding: const EdgeInsets.all(16),
+              child: const Text(
+                'Sign in to participate in society chats',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            )
+          else
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _messageController,
+                        decoration: const InputDecoration(
+                          hintText: 'Type a message...',
+                          border: OutlineInputBorder(),
+                        ),
+                        onSubmitted: (_) => _sendMessage(),
                       ),
-                      onSubmitted: (_) => _sendMessage(),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    icon: const Icon(Icons.send),
-                    color: Theme.of(context).primaryColor,
-                    onPressed: _sendMessage,
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: const Icon(Icons.send),
+                      color: Theme.of(context).primaryColor,
+                      onPressed: _sendMessage,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
         ],
       ),
     );

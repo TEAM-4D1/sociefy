@@ -5,6 +5,12 @@ class ContactInfoScreen extends StatelessWidget {
   final Society society;
   const ContactInfoScreen({Key? key, required this.society}) : super(key: key);
 
+  void _showComingSoon(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Contact feature coming soon')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +31,7 @@ class ContactInfoScreen extends StatelessWidget {
                 subtitle: const Text('Alex Johnson'),
                 trailing: IconButton(
                   icon: const Icon(Icons.email),
-                  onPressed: () {},
+                  onPressed: () => _showComingSoon(context),
                 ),
               ),
             ),
@@ -36,7 +42,7 @@ class ContactInfoScreen extends StatelessWidget {
                 subtitle: const Text('Jamie Lee'),
                 trailing: IconButton(
                   icon: const Icon(Icons.email),
-                  onPressed: () {},
+                  onPressed: () => _showComingSoon(context),
                 ),
               ),
             ),
@@ -47,7 +53,7 @@ class ContactInfoScreen extends StatelessWidget {
                 subtitle: const Text('Morgan Smith'),
                 trailing: IconButton(
                   icon: const Icon(Icons.email),
-                  onPressed: () {},
+                  onPressed: () => _showComingSoon(context),
                 ),
               ),
             ),

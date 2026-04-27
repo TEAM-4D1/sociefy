@@ -6,22 +6,28 @@ import '../services/society_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:async';
 
 class AppState extends ChangeNotifier {
   String? userId;
   bool isAdmin = false;
-  bool _isLoading = false;
+  bool _pendingAdminLogin = false;
 
-  bool get isLoading => _isLoading;
+  StreamSubscription<QuerySnapshot>? _announcementsSubscription;
 
   AppState() {
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
-        login(userId: user.uid);
+        login(userId: user.uid, isAdmin: _pendingAdminLogin);
+        _pendingAdminLogin = false;
       } else {
         logout();
       }
     });
+  }
+
+  void setAdminPending(bool value) {
+    _pendingAdminLogin = value;
   }
 
   final List<String> _joinedSocietyIds = [];
@@ -34,6 +40,7 @@ class AppState extends ChangeNotifier {
   List<Announcement> _announcements = [];
 
   Future<void> loadSocieties() async {
+    if (_societies.isNotEmpty) return;
     final querySnapshot = await FirebaseFirestore.instance
         .collection('societies')
         .get();
@@ -50,8 +57,16 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> loadEvents() async {
+    if (_events.isNotEmpty) return;
     final querySnapshot = await FirebaseFirestore.instance
         .collection('events')
+        .where(
+          'date',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(
+            DateTime.now().subtract(Duration(days: 1)),
+          ),
+        )
+        .limit(100)
         .get();
     _events = querySnapshot.docs.map((doc) {
       final data = doc.data();
@@ -73,26 +88,37 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadAnnouncements() async {
-    final querySnapshot = await FirebaseFirestore.instance
+  void loadAnnouncements() {
+    // Cancel any existing subscription to prevent duplicates
+    _announcementsSubscription?.cancel();
+    _announcementsSubscription = null;
+
+    // Set up new snapshots listener
+    _announcementsSubscription = FirebaseFirestore.instance
         .collection('announcements')
-        .get();
-    _announcements = querySnapshot.docs.map((doc) {
-      final data = doc.data();
-      return Announcement(
-        id: doc.id,
-        societyId: data['societyId'] ?? '',
-        title: data['title'] ?? 'Untitled',
-        content: data['content'] ?? '',
-        date: data['date'] != null
-            ? (data['date'] as Timestamp).toDate()
-            : DateTime.now(),
-      );
-    }).toList();
-    notifyListeners();
+        .orderBy('date', descending: true)
+        .limit(50)
+        .snapshots()
+        .listen((querySnapshot) {
+          _announcements = querySnapshot.docs.map((doc) {
+            final data = doc.data();
+            return Announcement(
+              id: doc.id,
+              societyId: data['societyId'] ?? '',
+              title: data['title'] ?? 'Untitled',
+              content: data['content'] ?? '',
+              date: data['date'] != null
+                  ? (data['date'] as Timestamp).toDate()
+                  : DateTime.now(),
+            );
+          }).toList();
+          notifyListeners();
+        });
   }
 
   bool get isAuthenticated => userId != null;
+
+  bool get isGuest => userId != null && userId!.startsWith('guest');
 
   Future<void> loadJoinedSocieties(String userId) async {
     try {
@@ -110,21 +136,28 @@ class AppState extends ChangeNotifier {
     this.isAdmin = isAdmin;
     notifyListeners();
 
-    _isLoading = true;
-    notifyListeners();
-    try {
-      final futures = [loadSocieties(), loadEvents(), loadAnnouncements()];
-      if (this.userId != null && !this.userId!.startsWith('guest')) {
-        futures.add(loadJoinedSocieties(this.userId!));
-      }
-      await Future.wait(futures);
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-    if (this.userId != null && !this.userId!.startsWith('guest')) {
+    // Fire all data loads without awaiting
+    loadSocieties();
+    loadEvents();
+    loadAnnouncements();
+
+    if (!isGuest) {
+      loadJoinedSocieties(this.userId!);
       loadSavedEvents(this.userId!);
     }
+  }
+
+  Future<void> refreshFeed() async {
+    // Clear all data lists
+    _societies.clear();
+    _events.clear();
+    _announcements.clear();
+
+    // Reload loadSocieties and loadEvents in parallel, then load announcements
+    await Future.wait<void>([loadSocieties(), loadEvents()]);
+
+    // loadAnnouncements is stream-based, just call it
+    loadAnnouncements();
   }
 
   void logout() {
@@ -132,7 +165,23 @@ class AppState extends ChangeNotifier {
     isAdmin = false;
     _joinedSocietyIds.clear();
     _savedEventIds.clear();
+
+    // Clear all cached data so fresh user gets a clean slate
+    _societies.clear();
+    _events.clear();
+    _announcements.clear();
+
+    // Cancel announcements stream subscription
+    _announcementsSubscription?.cancel();
+    _announcementsSubscription = null;
+
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _announcementsSubscription?.cancel();
+    super.dispose();
   }
 
   List<Society> get societies => _societies;
@@ -152,7 +201,7 @@ class AppState extends ChangeNotifier {
       _joinedSocietyIds.add(id);
       notifyListeners();
     }
-    if (userId != null && !userId!.startsWith('guest')) {
+    if (!isGuest) {
       try {
         await SocietyService().joinSociety(userId!, id);
       } catch (e) {
@@ -164,7 +213,7 @@ class AppState extends ChangeNotifier {
   Future<void> leaveSociety(String id) async {
     _joinedSocietyIds.remove(id);
     notifyListeners();
-    if (userId != null && !userId!.startsWith('guest')) {
+    if (!isGuest) {
       try {
         await SocietyService().leaveSociety(userId!, id);
       } catch (e) {
@@ -225,6 +274,51 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  void createEvent({
+    required String societyId,
+    required String title,
+    required String description,
+    required DateTime date,
+    required String startTime,
+    required String endTime,
+    required String venue,
+  }) {
+    final eventId = 'e-${DateTime.now().millisecondsSinceEpoch}';
+    final societyName = societyNameById(societyId);
+
+    _events.insert(
+      0,
+      Event(
+        id: eventId,
+        societyId: societyId,
+        societyName: societyName,
+        title: title,
+        description: description,
+        date: date,
+        startTime: startTime,
+        endTime: endTime,
+        venue: venue,
+        isSaved: false,
+      ),
+    );
+    notifyListeners();
+
+    try {
+      FirebaseFirestore.instance.collection('events').doc(eventId).set({
+        'societyId': societyId,
+        'societyName': societyName,
+        'title': title,
+        'description': description,
+        'date': Timestamp.fromDate(date),
+        'startTime': startTime,
+        'endTime': endTime,
+        'venue': venue,
+      });
+    } catch (e) {
+      debugPrint('createEvent Firestore error: $e');
+    }
+  }
+
   String societyNameById(String id) {
     for (final society in _societies) {
       if (society.id == id) {
@@ -249,7 +343,7 @@ class AppState extends ChangeNotifier {
       _savedEventIds.add(id);
       notifyListeners();
     }
-    if (userId != null && !userId!.startsWith('guest')) {
+    if (!isGuest) {
       try {
         persistSaveEvent(userId!, id);
       } catch (e) {
@@ -261,7 +355,7 @@ class AppState extends ChangeNotifier {
   void unsaveEvent(String id) {
     _savedEventIds.remove(id);
     notifyListeners();
-    if (userId != null && !userId!.startsWith('guest')) {
+    if (!isGuest) {
       try {
         persistUnsaveEvent(userId!, id);
       } catch (e) {

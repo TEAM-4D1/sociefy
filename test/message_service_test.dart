@@ -1,6 +1,6 @@
 // Quick test to exercise MessageService (create this file and run `dart run` or integrate into your app)
 import 'dart:async';
-import 'package:sociefy/services/message_service.dart'; // adjust import path if needed
+import '../lib/services/message_service.dart';
 
 Future<void> main() async {
   final userId = 'user1';

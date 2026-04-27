@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sociefy/main_tabs.dart';
 import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/screens/committee_sign_in_screen.dart';
 import 'package:sociefy/screens/register_screen.dart';
@@ -23,10 +22,6 @@ class _SignInScreenState extends State<SignInScreen>
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _registerEmailController =
-      TextEditingController();
-  final TextEditingController _registerPasswordController =
-      TextEditingController();
 
   bool _obscurePassword = true;
   bool _isLoading = false;
@@ -56,15 +51,10 @@ class _SignInScreenState extends State<SignInScreen>
     _controller.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _registerEmailController.dispose();
-    _registerPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _signInWithUop(
-    BuildContext context, {
-    required bool isAdmin,
-  }) async {
+  Future<void> _signInWithUop(BuildContext context) async {
     setState(() => _isLoading = true);
     final result = await AuthService().signIn(
       _emailController.text.trim(),
@@ -76,7 +66,7 @@ class _SignInScreenState extends State<SignInScreen>
         const SnackBar(content: Text('Invalid email or password')),
       );
     }
-    // Navigation now handled by authStateChanges in AppState.
+    // Navigation handled by authStateChanges in AppState.
   }
 
   @override
@@ -136,8 +126,12 @@ class _SignInScreenState extends State<SignInScreen>
                         TextFormField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
-                          validator: (value) =>
-                              value!.isEmpty ? 'Enter password' : null,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Enter password';
+                            }
+                            return null;
+                          },
                           decoration: _inputDecoration('Password').copyWith(
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -162,7 +156,7 @@ class _SignInScreenState extends State<SignInScreen>
                               ? null
                               : () {
                                   if (_formKey.currentState!.validate()) {
-                                    _signInWithUop(context, isAdmin: false);
+                                    _signInWithUop(context);
                                   }
                                 },
                           child: _isLoading
