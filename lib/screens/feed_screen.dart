@@ -194,50 +194,55 @@ class _FeedScreenState extends State<FeedScreen> {
                   ),
                 ),
               Expanded(
-                child: () {
-                  final isDataLoaded =
-                      appState.announcements.isNotEmpty ||
-                      appState.societies.isNotEmpty;
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    await context.read<AppState>().refreshFeed();
+                  },
+                  child: () {
+                    final isDataLoaded =
+                        appState.announcements.isNotEmpty ||
+                        appState.societies.isNotEmpty;
 
-                  if (!isDataLoaded) {
-                    // Show placeholder shimmer cards while data loads
+                    if (!isDataLoaded) {
+                      // Show placeholder shimmer cards while data loads
+                      return ListView.builder(
+                        padding: const EdgeInsets.all(24.0),
+                        itemCount: 4,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            height: 80,
+                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          );
+                        },
+                      );
+                    }
+
+                    if (visibleAnnouncements.isEmpty) {
+                      return const Center(child: Text('No announcements yet.'));
+                    }
+
                     return ListView.builder(
                       padding: const EdgeInsets.all(24.0),
-                      itemCount: 4,
+                      itemCount: visibleAnnouncements.length,
                       itemBuilder: (context, index) {
-                        return Container(
-                          height: 80,
-                          margin: const EdgeInsets.symmetric(vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(12),
+                        final announcement = visibleAnnouncements[index];
+                        return _AnnouncementCard(
+                          societyName: appState.societyNameById(
+                            announcement.societyId,
                           ),
+                          title: announcement.title,
+                          date:
+                              '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
+                          content: announcement.content,
                         );
                       },
                     );
-                  }
-
-                  if (visibleAnnouncements.isEmpty) {
-                    return const Center(child: Text('No announcements yet.'));
-                  }
-
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(24.0),
-                    itemCount: visibleAnnouncements.length,
-                    itemBuilder: (context, index) {
-                      final announcement = visibleAnnouncements[index];
-                      return _AnnouncementCard(
-                        societyName: appState.societyNameById(
-                          announcement.societyId,
-                        ),
-                        title: announcement.title,
-                        date:
-                            '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
-                        content: announcement.content,
-                      );
-                    },
-                  );
-                }(),
+                  }(),
+                ),
               ),
             ],
           );
