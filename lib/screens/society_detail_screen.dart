@@ -327,6 +327,7 @@ class SocietyDetailScreen extends StatelessWidget {
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: startTimeController,
+                        keyboardType: TextInputType.datetime,
                         decoration: const InputDecoration(
                           labelText: 'Start Time (HH:MM)',
                           border: OutlineInputBorder(),
@@ -335,12 +336,16 @@ class SocietyDetailScreen extends StatelessWidget {
                           if (value == null || value.isEmpty) {
                             return 'Please enter start time';
                           }
+                          if (!RegExp(r'^\d{2}:\d{2}$').hasMatch(value)) {
+                            return 'Use HH:MM format (e.g. 14:30)';
+                          }
                           return null;
                         },
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: endTimeController,
+                        keyboardType: TextInputType.datetime,
                         decoration: const InputDecoration(
                           labelText: 'End Time (HH:MM)',
                           border: OutlineInputBorder(),
@@ -348,6 +353,9 @@ class SocietyDetailScreen extends StatelessWidget {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter end time';
+                          }
+                          if (!RegExp(r'^\d{2}:\d{2}$').hasMatch(value)) {
+                            return 'Use HH:MM format (e.g. 14:30)';
                           }
                           return null;
                         },
