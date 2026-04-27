@@ -4,7 +4,7 @@ import '../providers/app_state.dart';
 import 'package:flutter/material.dart';
 
 class SocietyBrowserScreen extends StatefulWidget {
-  const SocietyBrowserScreen({Key? key}) : super(key: key);
+  const SocietyBrowserScreen({super.key});
 
   @override
   State<SocietyBrowserScreen> createState() => _SocietyBrowserScreenState();
