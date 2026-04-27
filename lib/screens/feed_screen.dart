@@ -94,10 +94,10 @@ class _FeedScreenState extends State<FeedScreen> {
 
     if (result != null && mounted) {
       context.read<AppState>().createSociety(
-            name: result.name,
-            category: result.category,
-            description: result.description,
-          );
+        name: result.name,
+        category: result.category,
+        description: result.description,
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Society created successfully.')),
       );
@@ -148,14 +148,13 @@ class _FeedScreenState extends State<FeedScreen> {
           final visibleAnnouncements = isAdmin
               ? appState.announcements
               : appState.announcements
-                  .where((a) => joinedSocietyIds.contains(a.societyId))
-                  .toList();
+                    .where((a) => joinedSocietyIds.contains(a.societyId))
+                    .toList();
 
           if (!isAdmin && joinedSocieties.isEmpty) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-
                 const Center(
                   child: Text(
                     "You haven't joined any societies yet. Explore to see updates here!",
@@ -195,27 +194,52 @@ class _FeedScreenState extends State<FeedScreen> {
                   ),
                 ),
               Expanded(
-                child: visibleAnnouncements.isEmpty
-                    ? const Center(
-                        child: Text('No announcements yet.'),
-                      )
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(24.0),
-                        itemCount: visibleAnnouncements.length,
-                        itemBuilder: (context, index) {
-                          final announcement = visibleAnnouncements[index];
-                          return _AnnouncementCard(
-                            societyName:
-                                appState.societyNameById(announcement.societyId),
-                            title: announcement.title,
-                            date:
-                                '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
-                            content: announcement.content,
-                          );
-                        },
-                      ),
-                ),
-          ],
+                child: () {
+                  final isDataLoaded =
+                      appState.announcements.isNotEmpty ||
+                      appState.societies.isNotEmpty;
+
+                  if (!isDataLoaded) {
+                    // Show placeholder shimmer cards while data loads
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(24.0),
+                      itemCount: 4,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          height: 80,
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        );
+                      },
+                    );
+                  }
+
+                  if (visibleAnnouncements.isEmpty) {
+                    return const Center(child: Text('No announcements yet.'));
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(24.0),
+                    itemCount: visibleAnnouncements.length,
+                    itemBuilder: (context, index) {
+                      final announcement = visibleAnnouncements[index];
+                      return _AnnouncementCard(
+                        societyName: appState.societyNameById(
+                          announcement.societyId,
+                        ),
+                        title: announcement.title,
+                        date:
+                            '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
+                        content: announcement.content,
+                      );
+                    },
+                  );
+                }(),
+              ),
+            ],
           );
         },
       ),
