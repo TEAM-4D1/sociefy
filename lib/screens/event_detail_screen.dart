@@ -50,6 +50,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
     final event = widget.event;
     return Scaffold(
       appBar: AppBar(title: Text(event.title)),
@@ -104,43 +105,51 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.how_to_reg),
-                    label: Text(_hasRsvp ? 'Cancel RSVP' : 'RSVP'),
-                    onPressed: () async {
-                      setState(() {
-                        _hasRsvp = !_hasRsvp;
-                      });
-                      try {
-                        final event = widget.event;
-                        final userId = widget.userId;
-                        final docId = '${userId}_${event.id}';
-                        if (_hasRsvp) {
-                          await FirebaseFirestore.instance
-                              .collection('rsvps')
-                              .doc(docId)
-                              .set({
-                                'eventId': event.id,
-                                'userId': userId,
-                                'createdAt': FieldValue.serverTimestamp(),
-                              });
-                        } else {
-                          await FirebaseFirestore.instance
-                              .collection('rsvps')
-                              .doc(docId)
-                              .delete();
-                        }
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Error updating RSVP: $e')),
-                        );
-                      }
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            _hasRsvp ? 'RSVP confirmed!' : 'RSVP removed',
-                          ),
-                        ),
-                      );
-                    },
+                    label: Text(
+                      appState.isGuest
+                          ? 'Sign in to RSVP'
+                          : (_hasRsvp ? 'Cancel RSVP' : 'RSVP'),
+                    ),
+                    onPressed: appState.isGuest
+                        ? null
+                        : () async {
+                            setState(() {
+                              _hasRsvp = !_hasRsvp;
+                            });
+                            try {
+                              final event = widget.event;
+                              final userId = widget.userId;
+                              final docId = '${userId}_${event.id}';
+                              if (_hasRsvp) {
+                                await FirebaseFirestore.instance
+                                    .collection('rsvps')
+                                    .doc(docId)
+                                    .set({
+                                      'eventId': event.id,
+                                      'userId': userId,
+                                      'createdAt': FieldValue.serverTimestamp(),
+                                    });
+                              } else {
+                                await FirebaseFirestore.instance
+                                    .collection('rsvps')
+                                    .doc(docId)
+                                    .delete();
+                              }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error updating RSVP: $e'),
+                                ),
+                              );
+                            }
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  _hasRsvp ? 'RSVP confirmed!' : 'RSVP removed',
+                                ),
+                              ),
+                            );
+                          },
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -160,15 +169,12 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
                       final appState = context.read<AppState>();
                       final eventId = widget.event.id;
-                      final userId = widget.userId;
 
                       try {
                         if (_isSaved) {
                           appState.saveEvent(eventId);
-                          await appState.persistSaveEvent(userId, eventId);
                         } else {
                           appState.unsaveEvent(eventId);
-                          await appState.persistUnsaveEvent(userId, eventId);
                         }
                       } catch (e) {
                         // Revert local state if network call fails
