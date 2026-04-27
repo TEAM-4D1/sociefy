@@ -152,16 +152,14 @@ class _FeedScreenState extends State<FeedScreen> {
                     .toList();
 
           if (!isAdmin && joinedSocieties.isEmpty) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Center(
-                  child: Text(
-                    "You haven't joined any societies yet. Explore to see updates here!",
-                    textAlign: TextAlign.center,
-                  ),
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Center(
+                child: Text(
+                  "You haven't joined any societies yet. Explore to see updates here!",
+                  textAlign: TextAlign.center,
                 ),
-              ],
+              ),
             );
           }
           return Column(
