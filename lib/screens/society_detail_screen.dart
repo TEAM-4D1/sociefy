@@ -391,6 +391,12 @@ class SocietyDetailScreen extends StatelessWidget {
           },
         );
       },
-    );
+    ).then((_) {
+      titleController.dispose();
+      descriptionController.dispose();
+      venueController.dispose();
+      startTimeController.dispose();
+      endTimeController.dispose();
+    });
   }
 }
