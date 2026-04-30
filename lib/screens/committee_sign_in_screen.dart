@@ -19,6 +19,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -150,7 +151,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _passwordController,
-                      obscureText: true,
+                      obscureText: _obscurePassword,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter committee/admin password';
@@ -161,6 +162,18 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
                         labelText: 'Committee/Admin Password',
                         filled: true,
                         fillColor: Colors.white,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
