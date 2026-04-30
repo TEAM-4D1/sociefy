@@ -55,6 +55,7 @@ class _SignInScreenState extends State<SignInScreen>
   }
 
   Future<void> _signInWithUop(BuildContext context) async {
+    if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
     final result = await AuthService().signIn(
       _emailController.text.trim(),
@@ -62,9 +63,12 @@ class _SignInScreenState extends State<SignInScreen>
     );
     setState(() => _isLoading = false);
     if (result == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid email or password')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid email or password')),
+        );
+      }
+      return;
     }
     // Navigation handled by authStateChanges in AppState.
   }
