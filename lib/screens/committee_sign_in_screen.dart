@@ -43,16 +43,9 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
       return;
     }
 
-    // Let authStateChanges listener handle login with admin flag
-    // Wait a bit for the listener to fire
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    if (mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute<void>(builder: (_) => const MainTabs()),
-        (route) => false,
-      );
-    }
+    // Navigation handled by Consumer<AppState> in main.dart
+    // The admin flag is already set, so authStateChanges will trigger
+    // and the Consumer will show MainTabs automatically
   }
 
   @override
