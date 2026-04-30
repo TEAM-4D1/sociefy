@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sociefy/providers/app_state.dart';
-import 'package:sociefy/main_tabs.dart';
 import 'package:sociefy/services/auth_service.dart';
 
 class CommitteeSignInScreen extends StatefulWidget {
@@ -161,45 +160,6 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
                             fontSize: 16,
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          side: const BorderSide(color: Colors.white),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        onPressed: () async {
-                          final appState = Provider.of<AppState>(
-                            context,
-                            listen: false,
-                          );
-
-                          // Guard: don't reload if already guest-committee
-                          if (appState.userId == 'guest-committee') {
-                            return;
-                          }
-
-                          await appState.login(
-                            userId: 'guest-committee',
-                            isAdmin: true,
-                          );
-                          if (mounted) {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute<void>(
-                                builder: (_) => const MainTabs(),
-                              ),
-                              (route) => false,
-                            );
-                          }
-                        },
-                        child: const Text('Continue as Guest Committee'),
                       ),
                     ),
                   ],

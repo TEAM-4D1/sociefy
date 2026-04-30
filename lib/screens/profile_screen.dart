@@ -16,10 +16,7 @@ class ProfileScreen extends StatelessWidget {
     String displayName;
     String subtitle;
 
-    if (appState.userId == 'guest-committee') {
-      displayName = 'Guest Committee';
-      subtitle = 'Committee preview mode';
-    } else if (appState.isGuest) {
+    if (appState.isGuest) {
       displayName = 'Guest User';
       subtitle = 'Browsing as guest';
     } else {
@@ -66,8 +63,7 @@ class ProfileScreen extends StatelessWidget {
               onPressed: () async {
                 final appState = context.read<AppState>();
 
-                if (appState.userId == 'guest' ||
-                    appState.userId == 'guest-committee') {
+                if (appState.isGuest) {
                   appState.logout();
                 } else {
                   await AuthService().signOut();
