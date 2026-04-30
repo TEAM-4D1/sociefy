@@ -14,6 +14,8 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen>
     with SingleTickerProviderStateMixin {
+  static const String _committeeAdminEmail = 'jburfoot12@gmail.com';
+
   late AnimationController _controller;
   late Animation<Color?> _color1;
   late Animation<Color?> _color2;
@@ -56,6 +58,17 @@ class _SignInScreenState extends State<SignInScreen>
 
   Future<void> _signInWithUop(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
+
+    final enteredEmail = _emailController.text.trim().toLowerCase();
+    if (enteredEmail == _committeeAdminEmail) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please use the admin sign in portal')),
+        );
+      }
+      return;
+    }
+
     setState(() => _isLoading = true);
     final result = await AuthService().signIn(
       _emailController.text.trim(),
