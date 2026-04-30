@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sociefy/screens/sign_in_screen.dart';
 import '../services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -51,7 +52,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Register')),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute<void>(
+                builder: (_) => const SignInScreen(),
+              ),
+            );
+          },
+        ),
+        title: const Text('Register'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
