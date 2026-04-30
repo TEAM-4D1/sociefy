@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sociefy/main_tabs.dart';
 import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/services/auth_service.dart';
 
@@ -11,9 +12,13 @@ class CommitteeSignInScreen extends StatefulWidget {
 }
 
 class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
+  static const String _adminEmail = 'jburfoot12@gmail.com';
+  static const String _adminPassword = '111444';
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -25,14 +30,41 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
   Future<void> _signInAsCommitteeOrAdmin(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
 
+    final enteredEmail = _emailController.text.trim();
+    final enteredPassword = _passwordController.text.trim();
+
+    if (enteredEmail.toLowerCase().contains('myport')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('MyPort emails are not allowed on committee sign in.'),
+        ),
+      );
+      return;
+    }
+
+    if (enteredEmail.toLowerCase() != _adminEmail ||
+        enteredPassword != _adminPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Only the authorized committee admin can sign in here.'),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
     // Set admin pending flag before Firebase auth
     final appState = Provider.of<AppState>(context, listen: false);
     appState.setAdminPending(true);
 
     final result = await AuthService().signIn(
-      _emailController.text.trim(),
-      _passwordController.text.trim(),
+      enteredEmail,
+      enteredPassword,
     );
+
+    if (!mounted) return;
+    setState(() => _isLoading = false);
 
     if (result == null) {
       appState.setAdminPending(false);
@@ -42,9 +74,10 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
       return;
     }
 
-    // Navigation handled by Consumer<AppState> in main.dart
-    // The admin flag is already set, so authStateChanges will trigger
-    // and the Consumer will show MainTabs automatically
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute<void>(builder: (_) => const MainTabs()),
+      (route) => false,
+    );
   }
 
   @override
@@ -141,13 +174,25 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () {
+                        onPressed: _isLoading
+                            ? null
+                            : () {
                           if (_formKey.currentState!.validate()) {
                             _signInAsCommitteeOrAdmin(context);
                           }
                         },
-                        icon: const Icon(Icons.login),
-                        label: const Text('Sign in as Committee/Admin'),
+                        icon: _isLoading
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Icon(Icons.login),
+                        label: Text(
+                          _isLoading
+                              ? 'Signing in...'
+                              : 'Sign in as Committee/Admin',
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: const Color(0xFF4A148C),

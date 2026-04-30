@@ -9,6 +9,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 
 class AppState extends ChangeNotifier {
+  static const String _committeeAdminEmail = 'jburfoot12@gmail.com';
+
   String? userId;
   bool isAdmin = false;
   bool _pendingAdminLogin = false;
@@ -18,7 +20,12 @@ class AppState extends ChangeNotifier {
   AppState() {
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
-        login(userId: user.uid, isAdmin: _pendingAdminLogin);
+        final normalizedEmail = user.email?.trim().toLowerCase();
+        final isCommitteeAdmin = normalizedEmail == _committeeAdminEmail;
+        login(
+          userId: user.uid,
+          isAdmin: _pendingAdminLogin || isCommitteeAdmin,
+        );
         _pendingAdminLogin = false;
       } else {
         logout();
