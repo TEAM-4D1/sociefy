@@ -1,9 +1,7 @@
-//This will be the main area for forums and chats, where users of societies can message each other and ask questions to members of committee in the socities they have joined.
-
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
 import 'package:sociefy/providers/app_state.dart';
+import 'package:sociefy/screens/society_chat_screen.dart';
 
 class MessagesPage extends StatelessWidget {
   const MessagesPage({super.key});
@@ -14,23 +12,30 @@ class MessagesPage extends StatelessWidget {
       appBar: AppBar(title: const Text('Messages')),
       body: Consumer<AppState>(
         builder: (context, appState, _) {
-          final channels = appState.joinedChannels;
-          if (channels.isEmpty) {
+          // ✅ derive joined societies instead of joinedChannels
+          final joinedSocieties = appState.joinedSocieties;
+
+          if (joinedSocieties.isEmpty) {
             return const Center(
               child: Text('Join a society to access its message channel.'),
             );
           }
+
           return ListView.builder(
-            itemCount: channels.length,
+            itemCount: joinedSocieties.length,
             itemBuilder: (context, index) {
-              final channel = channels[index];
+              final society = joinedSocieties[index];
+
               return ListTile(
                 leading: const Icon(Icons.forum),
-                title: Text(channel),
+                title: Text(society.name),
+                subtitle: Text(society.category),
                 onTap: () {
-                  // Placeholder for entering the channel
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Open channel: $channel')),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SocietyChatScreen(society: society),
+                    ),
                   );
                 },
               );
