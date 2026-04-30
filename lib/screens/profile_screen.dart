@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../providers/app_state.dart';
-import 'sign_in_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -74,16 +73,7 @@ class ProfileScreen extends StatelessWidget {
                   await AuthService().signOut();
                   appState.logout();
                 }
-
-                // Clear the entire navigation stack and go back to SignInScreen
-                if (context.mounted) {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const SignInScreen(),
-                    ),
-                    (route) => false,
-                  );
-                }
+                // Navigation handled by Consumer<AppState> in main.dart
               },
             ),
           ],

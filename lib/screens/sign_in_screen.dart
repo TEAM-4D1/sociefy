@@ -185,7 +185,7 @@ class _SignInScreenState extends State<SignInScreen>
                         const SizedBox(height: 12),
                         TextButton(
                           onPressed: () {
-                            Navigator.of(context).push(
+                            Navigator.of(context).pushReplacement(
                               MaterialPageRoute<void>(
                                 builder: (_) => const RegisterScreen(),
                               ),
@@ -201,7 +201,7 @@ class _SignInScreenState extends State<SignInScreen>
                               'Are you a committee member or admin? Sign in here',
                             ),
                             onPressed: () {
-                              Navigator.of(context).push(
+                              Navigator.of(context).pushReplacement(
                                 MaterialPageRoute<void>(
                                   builder: (_) => const CommitteeSignInScreen(),
                                 ),

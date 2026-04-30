@@ -13,6 +13,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _displayNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -27,22 +28,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
     required String displayName,
   }) async {
     if (!_formKey.currentState!.validate()) return;
+    setState(() => _isLoading = true);
     final messenger = ScaffoldMessenger.of(context);
     final authService = AuthService();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
     final result = await authService.register(email, password);
+    setState(() => _isLoading = false);
     if (result == null) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Registration failed')),
-      );
+      if (mounted) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Registration failed')),
+        );
+      }
       return;
     }
     await result.user?.updateDisplayName(displayName);
-    // Reload the user so authStateChanges sees the updated displayName
-    // before it fires and navigates to the profile screen.
     await result.user?.reload();
-    // On success, do nothing; authStateChanges will handle navigation.
+    // Navigation handled by authStateChanges in AppState
   }
 
   @override
@@ -103,11 +106,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () => _register(
-                    context,
-                    displayName: _displayNameController.text.trim(),
-                  ),
-                  child: const Text('Register'),
+                  onPressed: _isLoading
+                      ? null
+                      : () => _register(
+                            context,
+                            displayName: _displayNameController.text.trim(),
+                          ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text('Register'),
                 ),
               ),
             ],
