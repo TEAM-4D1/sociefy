@@ -15,7 +15,7 @@ class AuthService {
       );
     } catch (e) {
       // ignore: avoid_print
-      debugPrint('signIn error: \$e');
+      debugPrint('signIn error: $e');
       return null;
     }
   }
@@ -31,7 +31,7 @@ class AuthService {
         password: password,
       );
     } catch (e) {
-      debugPrint('register error: \$e');
+      debugPrint('register error: $e');
       return null;
     }
   }
