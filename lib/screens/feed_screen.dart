@@ -382,7 +382,7 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<String>(
-                value: _selectedSocietyId,
+                initialValue: _selectedSocietyId,
                 decoration: const InputDecoration(labelText: 'Society'),
                 items: widget.societies
                     .map(
