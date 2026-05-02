@@ -11,7 +11,14 @@ void main() {
       final stopwatch = Stopwatch()..start();
 
       // Start the app
-      binding.attachRootWidget(MaterialApp(home: app.MyApp()));
+      binding.attachRootWidget(MaterialApp(
+        home: Builder(
+          builder: (context) => MediaQuery(
+            data: MediaQueryData(),
+            child: app.MyApp(),
+          ),
+        ),
+      ));
       await tester.pumpAndSettle();
 
       // Navigate to Messages tab
@@ -27,7 +34,14 @@ void main() {
       final stopwatch = Stopwatch()..start();
 
       // Start the app
-      binding.attachRootWidget(MaterialApp(home: app.MyApp()));
+      binding.attachRootWidget(MaterialApp(
+        home: Builder(
+          builder: (context) => MediaQuery(
+            data: MediaQueryData(),
+            child: app.MyApp(),
+          ),
+        ),
+      ));
       await tester.pumpAndSettle();
 
       // Simulate joining a society
@@ -43,7 +57,14 @@ void main() {
   group('Usability Tests', () {
     testWidgets('UI is accessible', (tester) async {
       // Start the app
-      binding.attachRootWidget(MaterialApp(home: app.MyApp()));
+      binding.attachRootWidget(MaterialApp(
+        home: Builder(
+          builder: (context) => MediaQuery(
+            data: MediaQueryData(),
+            child: app.MyApp(),
+          ),
+        ),
+      ));
       await tester.pumpAndSettle();
 
       // Check for accessibility labels
