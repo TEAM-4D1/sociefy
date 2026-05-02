@@ -15,6 +15,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  late AnimationController _controller;
+  late Animation<Color?> _color1;
+  late Animation<Color?> _color2;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 6),
+    )..repeat(reverse: true);
+    _color1 = ColorTween(
+      begin: const Color(0xFF4A0072),
+      end: const Color(0xFF1A237E),
+    ).animate(_controller);
+    _color2 = ColorTween(
+      begin: const Color(0xFF1A237E),
+      end: const Color(0xFF4A0072),
+    ).animate(_controller);
+  }
+
   @override
   void dispose() {
     _displayNameController.dispose();
