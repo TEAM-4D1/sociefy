@@ -45,6 +45,35 @@ class _MemberApprovalScreenState extends State<MemberApprovalScreen> {
                 child: ListTile(
                   title: Text('User: $userId'),
                   subtitle: Text('Request ID: ${req.id}'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // APPROVE
+                      IconButton(
+                        icon: const Icon(Icons.check, color: Colors.green),
+                        onPressed: () async {
+                          await FirebaseFirestore.instance
+                              .collection('memberships')
+                              .doc('${userId}_${widget.societyId}')
+                              .set({
+                                'userId': userId,
+                                'societyId': widget.societyId,
+                                'joinedAt': FieldValue.serverTimestamp(),
+                              });
+
+                          await req.reference.delete();
+                        },
+                      ),
+
+                      // REJECT
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Colors.red),
+                        onPressed: () async {
+                          await req.reference.delete();
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
