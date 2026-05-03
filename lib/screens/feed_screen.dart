@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import '../models/society.dart';
 import '../providers/app_state.dart';
 
@@ -19,11 +21,13 @@ class _CreatePostResult {
   final String societyId;
   final String title;
   final String content;
+  final String? imageUrl;
 
   const _CreatePostResult({
     required this.societyId,
     required this.title,
     required this.content,
+    this.imageUrl,
   });
 }
 
@@ -33,6 +37,7 @@ class _AnnouncementCard extends StatelessWidget {
   final String title;
   final String date;
   final String content;
+  final String? imageUrl;
 
   const _AnnouncementCard({
     Key? key,
@@ -40,6 +45,7 @@ class _AnnouncementCard extends StatelessWidget {
     required this.title,
     required this.date,
     required this.content,
+    this.imageUrl,
   }) : super(key: key);
 
   @override
@@ -70,6 +76,11 @@ class _AnnouncementCard extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 6),
+            if (imageUrl != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Image.network(imageUrl!, height: 180, fit: BoxFit.cover),
+              ),
             Text(content),
           ],
         ),
@@ -129,6 +140,7 @@ class _FeedScreenState extends State<FeedScreen> {
         societyId: result.societyId,
         title: result.title,
         content: result.content,
+        imageUrl: result.imageUrl,
       );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Post created successfully.')),
@@ -236,6 +248,7 @@ class _FeedScreenState extends State<FeedScreen> {
                           date:
                               '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
                           content: announcement.content,
+                          imageUrl: announcement.imageUrl,
                         );
                       },
                     );
@@ -357,6 +370,8 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   late String _selectedSocietyId;
+  XFile? _pickedImage;
+  bool _uploading = false;
 
   @override
   void initState() {
@@ -369,6 +384,22 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
     _titleController.dispose();
     _contentController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _pickedImage = image;
+      });
+    }
+  }
+
+  Future<String?> _uploadImage(XFile image) async {
+    // TODO: Implement upload to Firebase Storage or your backend and return the URL
+    // For now, just return null (no upload)
+    return null;
   }
 
   @override
@@ -423,6 +454,31 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
                   return null;
                 },
               ),
+              const SizedBox(height: 12),
+              if (_pickedImage != null)
+                Column(
+                  children: [
+                    Image.file(File(_pickedImage!.path), height: 120),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _pickedImage = null;
+                        });
+                      },
+                      child: const Text('Remove Image'),
+                    ),
+                  ],
+                ),
+              if (_pickedImage == null)
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.image),
+                  label: const Text('Add Image'),
+                  onPressed: _pickImage,
+                ),
+              if (_uploading) ...[
+                const SizedBox(height: 8),
+                const CircularProgressIndicator(),
+              ],
             ],
           ),
         ),
@@ -433,16 +489,22 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             if (!_formKey.currentState!.validate()) {
               return;
             }
-
+            String? imageUrl;
+            if (_pickedImage != null) {
+              setState(() => _uploading = true);
+              imageUrl = await _uploadImage(_pickedImage!);
+              setState(() => _uploading = false);
+            }
             Navigator.of(context).pop(
               _CreatePostResult(
                 societyId: _selectedSocietyId,
                 title: _titleController.text.trim(),
                 content: _contentController.text.trim(),
+                imageUrl: imageUrl,
               ),
             );
           },
