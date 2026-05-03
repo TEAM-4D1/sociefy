@@ -9,33 +9,14 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage> {
   final List<Map<String, String?>> societies = [];
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descController = TextEditingController();
   XFile? _pickedImage;
 
-  late AnimationController _fabController;
-  late Animation<double> _fabScale;
-
-  @override
-  void initState() {
-    super.initState();
-    _fabController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 700),
-    );
-    _fabScale = CurvedAnimation(
-      parent: _fabController,
-      curve: Curves.elasticOut,
-    );
-    _fabController.forward();
-  }
-
   @override
   void dispose() {
-    _fabController.dispose();
     nameController.dispose();
     descController.dispose();
     super.dispose();
@@ -328,14 +309,11 @@ class _HomePageState extends State<HomePage>
               itemBuilder: (context, index) =>
                   _buildSocietyCard(societies[index], index),
             ),
-      floatingActionButton: ScaleTransition(
-        scale: _fabScale,
-        child: FloatingActionButton(
-          onPressed: _showCreateSocietyDialog,
-          backgroundColor: colorScheme.primary,
-          foregroundColor: colorScheme.onPrimary,
-          child: const Icon(Icons.add),
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showCreateSocietyDialog,
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
+        child: const Icon(Icons.add),
       ),
     );
   }
