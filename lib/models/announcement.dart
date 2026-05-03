@@ -4,6 +4,7 @@ class Announcement {
   final String title;
   final String content;
   final DateTime date;
+  final String? imageUrl;
 
   Announcement({
     required this.id,
