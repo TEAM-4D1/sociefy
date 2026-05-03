@@ -15,7 +15,7 @@ class _MainTabsState extends State<MainTabs> {
 
   final List<Widget> _pages = [
     const HomePage(),
-    AnnouncementHome(),
+    const AnnouncementHome(),
     const MessagesPage(),
   ];
 
