@@ -1,4 +1,4 @@
-# Test Plan for Non-Functional Requirements
+# Test Plan for Sociefy App
 
 ## 1. Performance
 ### Requirement:
@@ -77,3 +77,92 @@ Unauthorized users should not access restricted data.
 - **Screenshots**: Include screenshots of test results.
 - **Logs**: Provide logs from automated tests.
 - **Summary**: Document findings and conclusions.
+
+---
+
+# Functional Test Plan for Sociefy App
+
+## 1. Overview
+This test plan outlines the test cases for the Sociefy app, covering all components and features. The goal is to ensure correctness, reliability, and full code coverage.
+
+## 2. Methodology
+The following methodologies will be used:
+- **Equivalence Partitioning**: Dividing input data into valid, invalid, and edge case partitions.
+- **Boundary Value Analysis**: Testing at the boundaries of input ranges.
+- **User Journey Testing**: Verifying end-to-end workflows.
+
+## 3. Test Cases
+
+### 3.1 Login/Registration Screen
+#### Test Cases:
+1. **Valid Login**:
+   - Input: Correct email and password.
+   - Expected Result: User is logged in successfully.
+2. **Invalid Login**:
+   - Input: Incorrect email or password.
+   - Expected Result: Error message is displayed.
+3. **Edge Case**:
+   - Input: Empty fields, special characters.
+   - Expected Result: Validation errors.
+
+### 3.2 Society Listing and Detail Screens
+#### Test Cases:
+1. **Join Society**:
+   - Input: Tap "Join" on a society.
+   - Expected Result: User is added to the society.
+2. **Leave Society**:
+   - Input: Tap "Leave" on a joined society.
+   - Expected Result: User is removed from the society.
+3. **Edge Case**:
+   - Input: Rapidly tap "Join" and "Leave".
+   - Expected Result: No inconsistent state.
+
+### 3.3 Event Creation and Management Screen
+#### Test Cases:
+1. **Create Event**:
+   - Input: Valid event details.
+   - Expected Result: Event is created successfully.
+2. **Edit Event**:
+   - Input: Modify event details.
+   - Expected Result: Changes are saved.
+3. **Delete Event**:
+   - Input: Delete an event.
+   - Expected Result: Event is removed.
+4. **Edge Case**:
+   - Input: Empty fields, invalid dates.
+   - Expected Result: Validation errors.
+
+### 3.4 Calendar Screen
+#### Test Cases:
+1. **Save Event to Calendar**:
+   - Input: Select an event and save to calendar.
+   - Expected Result: Event appears in the calendar.
+2. **View Events**:
+   - Input: Open the calendar.
+   - Expected Result: Events are displayed.
+3. **Edge Case**:
+   - Input: Overlapping events.
+   - Expected Result: No conflicts.
+
+### 3.5 User Profile Screen
+#### Test Cases:
+1. **View Profile**:
+   - Input: Open profile screen.
+   - Expected Result: User details are displayed.
+2. **Edit Profile**:
+   - Input: Modify user details.
+   - Expected Result: Changes are saved.
+3. **Edge Case**:
+   - Input: Invalid email, empty fields.
+   - Expected Result: Validation errors.
+
+## 4. Tools
+- **JUnit**: For unit testing.
+- **Espresso**: For UI testing.
+- **JaCoCo**: For code coverage reporting.
+
+## 5. Test Coverage
+The automated tests will cover all components and features, ensuring full code coverage. A JaCoCo report will be generated to verify coverage.
+
+## 6. Test Report
+The test results and code coverage report will be included in the submission.
