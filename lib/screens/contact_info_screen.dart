@@ -1,14 +1,56 @@
 import 'package:flutter/material.dart';
-import '../models/society.dart';
 
-class ContactInfoScreen extends StatelessWidget {
+import '../models/society.dart';
+import '../models/committee_member.dart';
+
+class ContactInfoScreen extends StatefulWidget {
   final Society society;
   const ContactInfoScreen({Key? key, required this.society}) : super(key: key);
 
-  void _showComingSoon(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Contact feature coming soon')),
+  @override
+  State<ContactInfoScreen> createState() => _ContactInfoScreenState();
+}
+
+class _ContactInfoScreenState extends State<ContactInfoScreen> {
+  late List<CommitteeMember> _committeeMembers;
+
+  @override
+  void initState() {
+    super.initState();
+    _committeeMembers = List<CommitteeMember>.from(
+      widget.society.committeeMembers,
     );
+  }
+
+  void _editMember(int index) async {
+    final member = _committeeMembers[index];
+    final result = await showDialog<CommitteeMember>(
+      context: context,
+      builder: (context) => _CommitteeMemberDialog(member: member),
+    );
+    if (result != null) {
+      setState(() {
+        _committeeMembers[index] = result;
+      });
+    }
+  }
+
+  void _addMember() async {
+    final result = await showDialog<CommitteeMember>(
+      context: context,
+      builder: (context) => _CommitteeMemberDialog(),
+    );
+    if (result != null) {
+      setState(() {
+        _committeeMembers.add(result);
+      });
+    }
+  }
+
+  void _removeMember(int index) {
+    setState(() {
+      _committeeMembers.removeAt(index);
+    });
   }
 
   @override
