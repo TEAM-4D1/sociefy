@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'announcements.dart';
 import 'home_screen.dart';
 import 'messages_screen.dart';
+import 'society_model.dart';
 
 class MainTabs extends StatefulWidget {
   const MainTabs({super.key});
@@ -13,11 +14,26 @@ class MainTabs extends StatefulWidget {
 class _MainTabsState extends State<MainTabs> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = [
-    const HomePage(),
-    const AnnouncementHome(),
-    const MessagesPage(),
-  ];
+  // One shared notifier wires Home → Messages together
+  final _societyNotifier = SocietyNotifier();
+
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      HomePage(notifier: _societyNotifier),
+      const AnnouncementHome(),
+      MessagesPage(notifier: _societyNotifier),
+    ];
+  }
+
+  @override
+  void dispose() {
+    _societyNotifier.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +68,8 @@ class _MainTabsState extends State<MainTabs> {
               icon: Icon(Icons.announcement),
               label: 'Announcements',
             ),
-            BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.message), label: 'Messages'),
           ],
         ),
       ),
