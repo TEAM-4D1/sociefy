@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sociefy/sign_in_screen.dart';
+import 'package:sociefy/screens/sign_in_screen.dart';
 
 void main() {
   group('SignInPage', () {
