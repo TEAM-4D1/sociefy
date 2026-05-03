@@ -7,7 +7,8 @@ void main() {
     // SI-01 — initial render has email field, password field and Sign In button
     testWidgets('shows email field, password field and Sign In button', (tester) async {
       await tester.pumpWidget(const MaterialApp(home: SignInPage()));
-      expect(find.text('Sign In'), findsOneWidget);
+      // 'Sign In' appears in both the AppBar title and the ElevatedButton label
+      expect(find.text('Sign In'), findsWidgets);
       expect(find.byType(TextFormField), findsNWidgets(2));
       expect(find.widgetWithText(ElevatedButton, 'Sign In'), findsOneWidget);
     });

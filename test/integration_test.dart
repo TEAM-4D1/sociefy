@@ -45,7 +45,8 @@ void main() {
     testWidgets('UI displays all three navigation labels', (tester) async {
       await tester.pumpWidget(const app.MyApp());
       await tester.pumpAndSettle();
-      expect(find.text('Home'), findsOneWidget);
+      // 'Home' appears in both the nav label and the active tab's AppBar
+      expect(find.text('Home'), findsWidgets);
       expect(find.text('Announcements'), findsOneWidget);
       expect(find.text('Messages'), findsOneWidget);
     });

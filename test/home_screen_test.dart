@@ -110,7 +110,8 @@ void main() {
       await tester.tap(find.text('Join'));
       await tester.pumpAndSettle();
       expect(find.text('Joined Society'), findsOneWidget);
-      expect(find.textContaining('Drama Society'), findsOneWidget);
+      // Society name appears in both the list card and the dialog body text
+      expect(find.textContaining('Drama Society'), findsWidgets);
     });
 
     // HP-11 — OK button dismisses join confirmation dialog
