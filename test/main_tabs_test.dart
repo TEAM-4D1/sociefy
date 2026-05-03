@@ -8,7 +8,8 @@ void main() {
     testWidgets('renders BottomNavigationBar with Home, Announcements and Messages', (tester) async {
       await tester.pumpWidget(const MaterialApp(home: MainTabs()));
       expect(find.byType(BottomNavigationBar), findsOneWidget);
-      expect(find.text('Home'), findsOneWidget);
+      // 'Home' appears in both the nav label and the active tab's AppBar
+      expect(find.text('Home'), findsWidgets);
       expect(find.text('Announcements'), findsOneWidget);
       expect(find.text('Messages'), findsOneWidget);
     });
