@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MemberApprovalScreen extends StatefulWidget {
   final String societyId;
@@ -15,7 +16,15 @@ class _MemberApprovalScreenState extends State<MemberApprovalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Approve New Members')),
-      body: const Center(child: Text('Member approval screen')),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('pending_memberships')
+            .where('societyId', isEqualTo: widget.societyId)
+            .snapshots(),
+        builder: (context, snapshot) {
+          return const Center(child: Text('Loading pending requests...'));
+        },
+      ),
     );
   }
 }
