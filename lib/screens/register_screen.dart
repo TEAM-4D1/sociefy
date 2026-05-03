@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import 'sign_in_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -39,6 +38,7 @@ class _RegisterScreenState extends State<RegisterScreen>
 
   @override
   void dispose() {
+    _controller.dispose();
     _displayNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
@@ -124,16 +124,16 @@ class _RegisterScreenState extends State<RegisterScreen>
                         TextFormField(
                           controller: _emailController,
                           decoration: const InputDecoration(
-                            labelText: 'Email',
+                            labelText: 'Uni Email',
                             labelStyle: TextStyle(color: Colors.white),
                           ),
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your email';
+                              return 'Please enter your uni email';
                             }
-                            if (!value.contains('@')) {
-                              return 'Please enter a valid email';
+                            if (!value.contains('@myport.ac.uk')) {
+                              return 'Please enter a valid uni email';
                             }
                             return null;
                           },
