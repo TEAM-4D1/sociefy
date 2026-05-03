@@ -12,5 +12,6 @@ class Announcement {
     required this.title,
     required this.content,
     required this.date,
+    this.imageUrl,
   });
 }
