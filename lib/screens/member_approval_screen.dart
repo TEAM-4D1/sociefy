@@ -22,7 +22,33 @@ class _MemberApprovalScreenState extends State<MemberApprovalScreen> {
             .where('societyId', isEqualTo: widget.societyId)
             .snapshots(),
         builder: (context, snapshot) {
-          return const Center(child: Text('Loading pending requests...'));
+          // Loading state
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          // Empty state
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('No pending requests.'));
+          }
+
+          final requests = snapshot.data!.docs;
+
+          return ListView.builder(
+            itemCount: requests.length,
+            itemBuilder: (context, index) {
+              final req = requests[index];
+              final userId = req['userId'];
+
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: ListTile(
+                  title: Text('User: $userId'),
+                  subtitle: Text('Request ID: ${req.id}'),
+                ),
+              );
+            },
+          );
         },
       ),
     );
