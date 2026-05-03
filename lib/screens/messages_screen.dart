@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/screens/society_chat_screen.dart';
+import 'package:sociefy/screens/member_approval_screen.dart';
 
 class MessagesPage extends StatelessWidget {
   const MessagesPage({super.key});
