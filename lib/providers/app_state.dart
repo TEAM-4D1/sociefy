@@ -316,7 +316,7 @@ class AppState extends ChangeNotifier {
         title: title,
         content: content,
         date: DateTime.now(),
-        imageUrl: imageUrl,
+        imageUrl: imageUrl, time: null, venue: '', description: '',
       ),
     );
     notifyListeners();

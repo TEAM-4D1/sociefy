@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sociefy/announcements.dart';
+import 'package:sociefy/models/announcement.dart';
 
 void main() {
   // ── Unit tests: Announcement.dateTimeVenueString ──────────────────────────
@@ -13,7 +14,7 @@ void main() {
         description: 'Desc',
         date: DateTime(2025, 3, 5),
         time: const TimeOfDay(hour: 9, minute: 30),
-        venue: 'Room A',
+        venue: 'Room A', id: '', societyId: '', content: '',
       );
       expect(a.dateTimeVenueString, '2025-03-05, 09:30 AM @ Room A');
     });
@@ -25,7 +26,7 @@ void main() {
         description: 'Desc',
         date: DateTime(2025, 11, 25),
         time: const TimeOfDay(hour: 14, minute: 45),
-        venue: 'Hall',
+        venue: 'Hall', id: '', societyId: '', content: '',
       );
       expect(a.dateTimeVenueString, '2025-11-25, 02:45 PM @ Hall');
     });
@@ -37,7 +38,7 @@ void main() {
         description: 'Desc',
         date: DateTime(2025, 6, 15),
         time: const TimeOfDay(hour: 12, minute: 0),
-        venue: 'Venue',
+        venue: 'Venue', id: '', societyId: '', content: '',
       );
       expect(a.dateTimeVenueString, '2025-06-15, 12:00 PM @ Venue');
     });
@@ -49,7 +50,7 @@ void main() {
         description: 'Desc',
         date: DateTime(2025, 1, 1),
         time: const TimeOfDay(hour: 0, minute: 0),
-        venue: 'Venue',
+        venue: 'Venue', id: '', societyId: '', content: '',
       );
       expect(a.dateTimeVenueString, '2025-01-01, 12:00 AM @ Venue');
     });
@@ -61,7 +62,7 @@ void main() {
         description: 'Desc',
         date: DateTime(2025, 3, 5),
         time: const TimeOfDay(hour: 9, minute: 7),
-        venue: 'Room',
+        venue: 'Room', id: '', societyId: '', content: '',
       );
       expect(a.dateTimeVenueString, contains('2025-03-05'));
     });
@@ -73,7 +74,7 @@ void main() {
         description: 'Desc',
         date: DateTime(2025, 11, 25),
         time: const TimeOfDay(hour: 10, minute: 0),
-        venue: 'Hall',
+        venue: 'Hall', id: '', societyId: '', content: '',
       );
       expect(a.dateTimeVenueString, contains('2025-11-25'));
     });
@@ -85,7 +86,7 @@ void main() {
         description: 'Desc',
         date: DateTime(2025, 5, 20),
         time: const TimeOfDay(hour: 10, minute: 0),
-        venue: 'Main Hall Room 2A',
+        venue: 'Main Hall Room 2A', id: '', societyId: '', content: '',
       );
       expect(a.dateTimeVenueString, endsWith('@ Main Hall Room 2A'));
     });
@@ -97,7 +98,7 @@ void main() {
         description: 'Desc',
         date: DateTime(2025, 5, 20),
         time: const TimeOfDay(hour: 10, minute: 5),
-        venue: 'Room',
+        venue: 'Room', id: '', societyId: '', content: '',
       );
       expect(a.dateTimeVenueString, contains('10:05'));
     });
@@ -204,3 +205,4 @@ void main() {
     });
   });
 }
+

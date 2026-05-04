@@ -1,3 +1,5 @@
+import 'package:sociefy/models/committee_member.dart';
+
 /// Represents a student society within the university application.
 ///
 /// A `Society` groups students around a shared interest, academic subject,
