@@ -4,6 +4,7 @@ import '../models/announcement.dart';
 import '../services/society_service.dart';
 
 import 'package:flutter/foundation.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
@@ -18,6 +19,10 @@ class AppState extends ChangeNotifier {
   StreamSubscription<QuerySnapshot>? _announcementsSubscription;
 
   AppState() {
+    if (Firebase.apps.isEmpty) {
+      return;
+    }
+
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
         final normalizedEmail = user.email?.trim().toLowerCase();
