@@ -249,6 +249,7 @@ class AppState extends ChangeNotifier {
     required String societyId,
     required String title,
     required String content,
+    String? imageUrl,
   }) {
     _announcements.insert(
       0,
@@ -258,6 +259,7 @@ class AppState extends ChangeNotifier {
         title: title,
         content: content,
         date: DateTime.now(),
+        imageUrl: imageUrl,
       ),
     );
     notifyListeners();
@@ -268,6 +270,7 @@ class AppState extends ChangeNotifier {
         'title': title,
         'content': content,
         'date': FieldValue.serverTimestamp(),
+        if (imageUrl != null) 'imageUrl': imageUrl,
       });
     } catch (e) {
       debugPrint('createAnnouncement Firestore error: $e');

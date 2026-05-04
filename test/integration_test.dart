@@ -1,53 +1,70 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:sociefy/main.dart' as app;
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-
   group('Performance Tests', () {
+    // INT-01 — Messages tab loads within 2 seconds
     testWidgets('Messages tab loads within 2 seconds', (tester) async {
       final stopwatch = Stopwatch()..start();
-
-      // Start the app
-      app.main();
+      await tester.pumpWidget(const app.MyApp());
       await tester.pumpAndSettle();
-
-      // Navigate to Messages tab
       await tester.tap(find.text('Messages'));
       await tester.pumpAndSettle();
-
       stopwatch.stop();
-      expect(stopwatch.elapsed.inSeconds, lessThanOrEqualTo(2),
-          reason: 'Messages tab should load within 2 seconds');
+      expect(
+        stopwatch.elapsed.inSeconds,
+        lessThanOrEqualTo(2),
+        reason: 'Messages tab should load within 2 seconds',
+      );
+      expect(find.text('Messages / Forums go here'), findsOneWidget);
     });
 
-    testWidgets('Joining a society completes within 2 seconds', (tester) async {
+    // INT-02 — creating a society completes within 2 seconds
+    testWidgets('creating a society completes within 2 seconds', (tester) async {
       final stopwatch = Stopwatch()..start();
-
-      // Start the app
-      app.main();
+      await tester.pumpWidget(const app.MyApp());
       await tester.pumpAndSettle();
-
-      // Simulate joining a society
-      await tester.tap(find.text('Join Society'));
+      await tester.tap(find.byType(FloatingActionButton));
       await tester.pumpAndSettle();
-
+      await tester.enterText(find.byType(TextField).at(0), 'Test Society');
+      await tester.enterText(find.byType(TextField).at(1), 'Test Description');
+      await tester.tap(find.text('Create'));
+      await tester.pumpAndSettle();
       stopwatch.stop();
-      expect(stopwatch.elapsed.inSeconds, lessThanOrEqualTo(2),
-          reason: 'Joining a society should complete within 2 seconds');
+      expect(
+        stopwatch.elapsed.inSeconds,
+        lessThanOrEqualTo(2),
+        reason: 'Creating a society should complete within 2 seconds',
+      );
     });
   });
 
   group('Usability Tests', () {
-    testWidgets('UI is accessible', (tester) async {
-      // Start the app
-      app.main();
+    // INT-03 — all key navigation elements are present
+    testWidgets('UI displays all three navigation labels', (tester) async {
+      await tester.pumpWidget(const app.MyApp());
       await tester.pumpAndSettle();
+      // 'Home' appears in both the nav label and the active tab's AppBar
+      expect(find.text('Home'), findsWidgets);
+      expect(find.text('Announcements'), findsOneWidget);
+      expect(find.text('Messages'), findsOneWidget);
+    });
 
-      // Check for accessibility labels
-      expect(find.bySemanticsLabel('Messages'), findsOneWidget);
-      expect(find.bySemanticsLabel('Join Society'), findsOneWidget);
+    // INT-04 — all 3 tabs are accessible and show correct content
+    testWidgets('all 3 tabs are accessible with correct content', (tester) async {
+      await tester.pumpWidget(const app.MyApp());
+      await tester.pumpAndSettle();
+      // Home tab (default)
+      expect(find.text('No societies yet.'), findsOneWidget);
+      // Announcements tab
+      await tester.tap(find.text('Announcements'));
+      await tester.pumpAndSettle();
+      expect(find.text('No announcements yet.'), findsOneWidget);
+      // Messages tab
+      await tester.tap(find.text('Messages'));
+      await tester.pumpAndSettle();
+      expect(find.text('Messages / Forums go here'), findsOneWidget);
     });
   });
 }
