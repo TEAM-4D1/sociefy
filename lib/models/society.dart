@@ -31,6 +31,20 @@ class Society {
   /// a quick overview of what the society does and who it's for.
   final String description;
 
+  /// Creates a `Society` instance from a map (for example Firestore data).
+  ///
+  /// Missing keys are treated gracefully by using sensible defaults
+  /// (empty strings). Optionally provide an explicit [id] which will be
+  /// used instead of `map['id']` when present.
+  factory Society.fromMap(Map<String, dynamic> map, {String? id}) {
+    return Society(
+      id: id ?? (map['id'] as String? ?? ''),
+      name: map['name'] as String? ?? '',
+      category: map['category'] as String? ?? '',
+      description: map['description'] as String? ?? '',
+    );
+  }
+
   /// Constructs a new immutable `Society`.
   Society({
     required this.id,
