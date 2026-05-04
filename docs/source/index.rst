@@ -4,14 +4,19 @@
    contain the root `toctree` directive.
 
 Sociefy documentation
-=====================
+Welcome to Sociefy's Documentation!
+===================================
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
-
+Sociefy is a mobile application designed to simplify the management of university societies.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   architecture
+   setup
+
+Key Features
+------------
+* **Calendar Syncing:** Save events directly to your device.
+* **Society Discovery:** Browse and join university groups.
