@@ -15,7 +15,7 @@ Installation Steps
 1. Clone the Repository:
    Open your terminal and run:
 .. code-block:: bash
-    git clone <insert_your_github_repo_link_here>
+    git clone <https://github.com/TEAM-4D1/sociefy.git>
     cd sociefy-main
 
 2. Install Dependencies:
@@ -28,4 +28,8 @@ Make sure your emulator is running, then build and launch the app:
 
 .. code-block:: bash
     flutter run
-    
+
+Troubleshooting
+=================
+* If you encounter connection errors, ensure your emulator has internet access to connect to the Firebase backend.
+* Run flutter doctor in your terminal if the app refuses to build; this will verify your environment is set up correctly.
