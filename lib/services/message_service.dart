@@ -5,8 +5,17 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 // Simple in-memory service for mapping userId -> set of societyChannelIds.
 // Replace internals with your backend (Firebase, REST call, socket join, etc.)
 class MessageService {
-  MessageService._privateConstructor();
+  MessageService({
+    FirebaseFirestore? firestore,
+    FirebaseMessaging? messaging,
+  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+        _messaging = messaging ?? FirebaseMessaging.instance;
+
+  MessageService._privateConstructor() : this();
   static final MessageService instance = MessageService._privateConstructor();
+
+  final FirebaseFirestore _firestore;
+  final FirebaseMessaging _messaging;
 
   // userId -> set of channel ids
   final Map<String, Set<String>> _userChannels = {};
@@ -40,7 +49,7 @@ class MessageService {
   //  - add membership to Firestore and subscribe to FCM topic
   Future<void> joinSociety(String userId, String societyId) async {
     // Add membership to Firestore
-    await FirebaseFirestore.instance
+    await _firestore
         .collection('memberships')
         .doc('${userId}_$societyId')
         .set({
@@ -50,7 +59,7 @@ class MessageService {
         });
 
     // Subscribe to FCM topic for this society
-    await FirebaseMessaging.instance.subscribeToTopic('society_$societyId');
+    await _messaging.subscribeToTopic('society_$societyId');
 
     // Update local state and notify listeners
     final set = _userChannels.putIfAbsent(userId, () => <String>{});

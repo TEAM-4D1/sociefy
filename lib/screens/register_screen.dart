@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sociefy/screens/sign_in_screen.dart';
 import '../services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -14,6 +15,7 @@ class _RegisterScreenState extends State<RegisterScreen>
   final TextEditingController _displayNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   late AnimationController _controller;
   late Animation<Color?> _color1;
@@ -50,126 +52,105 @@ class _RegisterScreenState extends State<RegisterScreen>
     required String displayName,
   }) async {
     if (!_formKey.currentState!.validate()) return;
+    setState(() => _isLoading = true);
     final messenger = ScaffoldMessenger.of(context);
     final authService = AuthService();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
     final result = await authService.register(email, password);
+    setState(() => _isLoading = false);
     if (result == null) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Registration failed')),
-      );
+      if (mounted) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Registration failed')),
+        );
+      }
       return;
     }
     await result.user?.updateDisplayName(displayName);
-    // Reload the user so authStateChanges sees the updated displayName
-    // before it fires and navigates to the profile screen.
     await result.user?.reload();
-    // On success, do nothing; authStateChanges will handle navigation.
+    // Navigation handled by authStateChanges in AppState
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Register')),
-      body: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) {
-          return Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  _color1.value ?? const Color(0xFF4A0072),
-                  _color2.value ?? const Color(0xFF1A237E),
-                ],
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute<void>(
+                builder: (_) => const SignInScreen(),
               ),
-            ),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 520),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          'Register',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
+            );
+          },
+        ),
+        title: const Text('Register'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextFormField(
+                controller: _displayNameController,
+                decoration: const InputDecoration(labelText: 'Display Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your display name';
+                  }
+                  if (value.length < 2) {
+                    return 'Display name must be at least 2 characters';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'Email'),
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  if (!value.contains('@')) {
+                    return 'Please enter a valid email';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _passwordController,
+                decoration: const InputDecoration(labelText: 'Password'),
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your password';
+                  }
+                  if (value.length < 6) {
+                    return 'Password must be at least 6 characters';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isLoading
+                      ? null
+                      : () => _register(
+                            context,
+                            displayName: _displayNameController.text.trim(),
                           ),
-                        ),
-                        const SizedBox(height: 24),
-                        TextFormField(
-                          controller: _displayNameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Display Name',
-                            labelStyle: TextStyle(color: Colors.white),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your display name';
-                            }
-                            if (value.length < 2) {
-                              return 'Display name must be at least 2 characters';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _emailController,
-                          decoration: const InputDecoration(
-                            labelText: 'Uni Email',
-                            labelStyle: TextStyle(color: Colors.white),
-                          ),
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your uni email';
-                            }
-                            if (!value.contains('@myport.ac.uk')) {
-                              return 'Please enter a valid uni email';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _passwordController,
-                          decoration: const InputDecoration(
-                            labelText: 'Password',
-                            labelStyle: TextStyle(color: Colors.white),
-                          ),
-                          obscureText: true,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your password';
-                            }
-                            if (value.length < 6) {
-                              return 'Password must be at least 6 characters';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 24),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () => _register(
-                              context,
-                              displayName: _displayNameController.text.trim(),
-                            ),
-                            child: const Text('Register'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text('Register'),
                 ),
               ),
             ),

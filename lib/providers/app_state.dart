@@ -4,11 +4,14 @@ import '../models/announcement.dart';
 import '../services/society_service.dart';
 
 import 'package:flutter/foundation.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 
 class AppState extends ChangeNotifier {
+  static const String _committeeAdminEmail = 'jburfoot12@gmail.com';
+
   String? userId;
   bool isAdmin = false;
   bool _pendingAdminLogin = false;
@@ -16,9 +19,18 @@ class AppState extends ChangeNotifier {
   StreamSubscription<QuerySnapshot>? _announcementsSubscription;
 
   AppState() {
+    if (Firebase.apps.isEmpty) {
+      return;
+    }
+
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
-        login(userId: user.uid, isAdmin: _pendingAdminLogin);
+        final normalizedEmail = user.email?.trim().toLowerCase();
+        final isCommitteeAdmin = normalizedEmail == _committeeAdminEmail;
+        login(
+          userId: user.uid,
+          isAdmin: _pendingAdminLogin || isCommitteeAdmin,
+        );
         _pendingAdminLogin = false;
       } else {
         logout();
@@ -34,6 +46,8 @@ class AppState extends ChangeNotifier {
   final List<String> _savedEventIds = [];
 
   List<Society> _societies = [];
+
+  List<Society> _mySocieties = [];
 
   List<Event> _events = [];
 
@@ -131,6 +145,46 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  /// Fetches societies where [userId] is a member and stores them in
+  /// `_mySocieties`, then notifies listeners.
+  Future<void> fetchMySocieties(String userId) async {
+    try {
+      final membershipSnapshot = await FirebaseFirestore.instance
+          .collection('memberships')
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      final List<Society> results = [];
+
+      for (final mem in membershipSnapshot.docs) {
+        final sid = mem['societyId'] as String?;
+        if (sid == null) continue;
+        try {
+          final doc = await FirebaseFirestore.instance
+              .collection('societies')
+              .doc(sid)
+              .get();
+          if (doc.exists) {
+            final data = doc.data();
+            results.add(Society(
+              id: doc.id,
+              name: data?['name'] ?? 'Unknown Society',
+              category: data?['category'] ?? 'General',
+              description: data?['description'] ?? '',
+            ));
+          }
+        } catch (e) {
+          debugPrint('fetchMySocieties: failed to load society $sid: $e');
+        }
+      }
+
+      _mySocieties = results;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('fetchMySocieties error: $e');
+    }
+  }
+
   Future<void> login({String? userId, bool isAdmin = false}) async {
     this.userId = userId ?? this.userId;
     this.isAdmin = isAdmin;
@@ -185,6 +239,9 @@ class AppState extends ChangeNotifier {
   }
 
   List<Society> get societies => _societies;
+
+  /// Societies the current user is a member of.
+  List<Society> get mySocieties => _mySocieties;
 
   List<Announcement> get announcements => _announcements;
 
