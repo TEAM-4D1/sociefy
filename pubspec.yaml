@@ -49,6 +49,9 @@ dependencies:
   firebase_messaging: ^15.2.10
   add_2_calendar: ^2.0.0
 
+dev_dependencies:
+  mockito: ^5.4.5
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
