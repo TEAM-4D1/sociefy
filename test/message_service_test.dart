@@ -18,6 +18,7 @@ class RecordingFirebaseFirestore extends Mock implements FirebaseFirestore {
   }
 }
 
+// ignore: must_be_immutable, subtype_of_sealed_class
 class RecordingCollectionReference extends Mock
     implements CollectionReference<Map<String, dynamic>> {
   RecordingCollectionReference(this.documentReference);
@@ -33,6 +34,7 @@ class RecordingCollectionReference extends Mock
   }
 }
 
+// ignore: must_be_immutable, subtype_of_sealed_class
 class RecordingDocumentReference extends Mock
     implements DocumentReference<Map<String, dynamic>> {
   Map<String, dynamic>? lastSetData;
