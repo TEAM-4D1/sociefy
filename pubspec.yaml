@@ -47,6 +47,7 @@ dependencies:
   integration_test:
     sdk: flutter
   firebase_messaging: ^15.2.10
+  add_2_calendar: ^2.0.0
 
 
 # For information on the generic Dart part of this file, see the
