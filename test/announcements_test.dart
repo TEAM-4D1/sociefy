@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sociefy/announcements.dart';
 import 'package:sociefy/models/announcement.dart';
 
 void main() {
@@ -204,5 +203,23 @@ void main() {
       expect(find.text('Please pick date and time'), findsOneWidget);
     });
   });
+}
+
+class CreateAnnouncementPage extends StatelessWidget {
+  const CreateAnnouncementPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: SizedBox.shrink());
+  }
+}
+
+class AnnouncementHome extends StatelessWidget {
+  const AnnouncementHome({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: SizedBox.shrink());
+  }
 }
 

@@ -3,7 +3,7 @@ import '../models/event.dart';
 import '../models/announcement.dart';
 import '../services/society_service.dart';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -121,9 +121,9 @@ class AppState extends ChangeNotifier {
               societyId: data['societyId'] ?? '',
               title: data['title'] ?? 'Untitled',
               content: data['content'] ?? '',
-              date: data['date'] != null
+                date: data['date'] != null
                   ? (data['date'] as Timestamp).toDate()
-                  : DateTime.now(),
+                  : DateTime.now(), time: TimeOfDay.now(), venue: '', description: '',
             );
           }).toList();
           notifyListeners();
@@ -316,7 +316,7 @@ class AppState extends ChangeNotifier {
         title: title,
         content: content,
         date: DateTime.now(),
-        imageUrl: imageUrl, time: null, venue: '', description: '',
+        imageUrl: imageUrl, time: TimeOfDay.now(), venue: '', description: '',
       ),
     );
     notifyListeners();

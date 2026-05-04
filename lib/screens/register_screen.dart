@@ -143,9 +143,9 @@ class _RegisterScreenState extends State<RegisterScreen>
                       : const Text('Register'),
                 ),
               ),
-            ),
-          );
-        },
+            ],
+          ),
+        ),
       ),
     );
   }
