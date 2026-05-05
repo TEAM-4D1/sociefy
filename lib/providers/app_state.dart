@@ -137,6 +137,8 @@ class AppState extends ChangeNotifier {
 
   bool get isGuest => userId != null && userId!.startsWith('guest');
 
+  bool get isPendingAdminLogin => _pendingAdminLogin;
+
   Future<void> loadJoinedSocieties(String userId) async {
     try {
       final ids = await SocietyService().getJoinedSocietyIds(userId);
