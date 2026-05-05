@@ -86,7 +86,7 @@ void main() {
     testWidgets('Guest user avatar displays G', (WidgetTester tester) async {
       // Arrange
       final appState = AppState(skipFirebase: true);
-      await appState.login(userId: 'guest', isAdmin: false);
+      setupGuestAppState(appState);
 
       // Act
       await tester.pumpWidget(buildTestWidget(appState: appState));
@@ -102,7 +102,7 @@ void main() {
     ) async {
       // Arrange
       final appState = AppState(skipFirebase: true);
-      await appState.login(userId: 'guest', isAdmin: false);
+      setupGuestAppState(appState);
 
       // Act
       await tester.pumpWidget(buildTestWidget(appState: appState));
@@ -122,7 +122,7 @@ void main() {
       final appState = AppState(skipFirebase: true);
 
       // Act
-      await appState.login(userId: 'guest', isAdmin: false);
+      setupGuestAppState(appState);
 
       // Assert
       expect(appState.isAuthenticated, isTrue);
