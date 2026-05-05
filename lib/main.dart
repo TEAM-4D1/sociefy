@@ -31,11 +31,20 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.theme,
         home: Consumer<AppState>(
           builder: (context, appState, _) {
+            // Show loading state when login is in progress
+            if (!appState.isAuthenticated && appState.isPendingAdminLogin) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            // Always return MainTabs when authenticated
             if (appState.isAuthenticated) {
               return const MainTabs();
-            } else {
-              return const SignInScreen();
             }
+
+            // Always return SignInScreen when not authenticated
+            return const SignInScreen();
           },
         ),
       ),

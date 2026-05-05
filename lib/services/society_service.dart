@@ -6,7 +6,8 @@ import 'package:flutter/foundation.dart';
 class SocietyService {
   /// Retrieves all societies from the Firestore 'societies' collection.
   ///
-  /// Returns a list of [Society] objects, or an empty list on error.
+  /// Reads from the Firestore 'societies' collection and returns a list of [Society] objects.
+  /// Returns an empty list if an error occurs.
   Future<List<Society>> getAllSocieties() async {
     try {
       final snapshot = await FirebaseFirestore.instance
@@ -27,7 +28,12 @@ class SocietyService {
     }
   }
 
-  /// Joins the user with [userId] to the society with [societyId].
+  /// Adds a user to a society by creating a membership record in the Firestore 'memberships' collection.
+  ///
+  /// [userId] The ID of the user joining the society.
+  /// [societyId] The ID of the society being joined.
+  /// Writes to the Firestore 'memberships' collection with a document ID of '{userId}_{societyId}'.
+  /// Throws an exception if the operation fails.
   Future<void> joinSociety(String userId, String societyId) async {
     try {
       await FirebaseFirestore.instance
@@ -44,7 +50,12 @@ class SocietyService {
     }
   }
 
-  /// Removes the user with [userId] from the society with [societyId].
+  /// Removes a user from a society by deleting the membership record from the Firestore 'memberships' collection.
+  ///
+  /// [userId] The ID of the user leaving the society.
+  /// [societyId] The ID of the society being left.
+  /// Deletes the document from the Firestore 'memberships' collection with ID '{userId}_{societyId}'.
+  /// Throws an exception if the operation fails.
   Future<void> leaveSociety(String userId, String societyId) async {
     try {
       await FirebaseFirestore.instance
@@ -57,7 +68,11 @@ class SocietyService {
     }
   }
 
-  /// Retrieves the list of society IDs joined by the user with [userId].
+  /// Retrieves all society IDs that a user has joined from the Firestore 'memberships' collection.
+  ///
+  /// [userId] The ID of the user to get memberships for.
+  /// Queries the Firestore 'memberships' collection for all documents where userId matches.
+  /// Returns a list of society IDs, or an empty list if an error occurs.
   Future<List<String>> getJoinedSocietyIds(String userId) async {
     try {
       final snapshot = await FirebaseFirestore.instance

@@ -5,6 +5,9 @@ import 'package:sociefy/providers/app_state.dart';
 import '../models/society.dart';
 import '../models/committee_member.dart';
 
+/// Displays contact information and social media links for a society's committee members.
+/// Shows email addresses, phone numbers, and social media handles for leadership.
+/// Accessible to all authenticated users; guests can view but cannot directly message.
 class ContactInfoScreen extends StatefulWidget {
   final Society society;
   const ContactInfoScreen({Key? key, required this.society}) : super(key: key);
@@ -24,6 +27,7 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
     );
   }
 
+  /// Shows a dialog to edit an existing committee member's information at the specified index.
   void _editMember(int index) async {
     final member = _committeeMembers[index];
     final result = await showDialog<CommitteeMember>(
@@ -37,6 +41,7 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
     }
   }
 
+  /// Shows a dialog to add a new committee member and adds them to the list if confirmed.
   void _addMember() async {
     final result = await showDialog<CommitteeMember>(
       context: context,
@@ -49,6 +54,7 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
     }
   }
 
+  /// Removes a committee member from the list at the specified index.
   void _removeMember(int index) {
     setState(() {
       _committeeMembers.removeAt(index);

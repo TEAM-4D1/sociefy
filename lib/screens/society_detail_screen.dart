@@ -8,6 +8,9 @@ import '../theme/text_styles.dart';
 import 'event_detail_screen.dart';
 import 'contact_info_screen.dart';
 
+/// Displays comprehensive information about a selected society including description, member count, events, and announcements.
+/// Students can join/leave societies; admins see additional management options.
+/// Accessible to all authenticated users; guests can view but cannot join or interact.
 class SocietyDetailScreen extends StatelessWidget {
   final Society society;
 
@@ -237,7 +240,7 @@ class SocietyDetailScreen extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 height: 48,
-                child: ElevatedButton(
+                  child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isJoined
                         ? Colors.grey[300]
