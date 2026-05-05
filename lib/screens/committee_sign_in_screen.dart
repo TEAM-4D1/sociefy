@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:sociefy/main_tabs.dart';
 import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/services/auth_service.dart';
-import 'package:sociefy/screens/sign_in_screen.dart';
 
 class CommitteeSignInScreen extends StatefulWidget {
   const CommitteeSignInScreen({super.key});
@@ -89,10 +88,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => SignInScreen()),
-              (route) => false,
-            );
+            Navigator.of(context).pop();
           },
         ),
       ),
