@@ -57,12 +57,35 @@ class ProfileScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 32),
+            if (!appState.isGuest)
+              ElevatedButton.icon(
+                icon: const Icon(Icons.lock_reset),
+                label: const Text('Change Password'),
+                onPressed: () async {
+                  if (currentUser?.email != null) {
+                    await FirebaseAuth.instance.sendPasswordResetEmail(
+                      email: currentUser!.email!,
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Password reset email sent.'),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('No email found for this user.'),
+                      ),
+                    );
+                  }
+                },
+              ),
+            const SizedBox(height: 16),
             ElevatedButton.icon(
               icon: const Icon(Icons.logout),
               label: const Text('Sign Out'),
               onPressed: () async {
                 final appState = context.read<AppState>();
-
                 if (appState.isGuest) {
                   appState.logout();
                 } else {
