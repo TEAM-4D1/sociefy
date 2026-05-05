@@ -169,6 +169,7 @@ class SocietyDetailScreen extends StatelessWidget {
 
                   const SizedBox(height: 32),
 
+                  // Posts History Button
                   ElevatedButton.icon(
                     icon: const Icon(Icons.history),
                     label: const Text('Posts'),
@@ -176,13 +177,20 @@ class SocietyDetailScreen extends StatelessWidget {
                       showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
-                        builder: context {
-                          final posts = context.read<AppState>().announcements
+                        builder: (context) {
+                          final posts = context
+                              .read<AppState>()
+                              .announcements
                               .where((a) => a.societyId == society.id)
                               .toList();
                           return DraggableScrollableSheet(
                             expand: false,
                             builder: (context, scrollController) {
+                              if (posts.isEmpty) {
+                                return const Center(
+                                  child: Text('No posts yet.'),
+                                );
+                              }
                               return ListView.builder(
                                 controller: scrollController,
                                 itemCount: posts.length,
@@ -193,17 +201,22 @@ class SocietyDetailScreen extends StatelessWidget {
                                     child: ListTile(
                                       title: Text(post.title),
                                       subtitle: Text(post.content),
-                                      trail: post.imageUrl != null
-                                          ? Image.network(post.imageUrl!)
+                                      trailing: post.imageUrl != null
+                                          ? Image.network(
+                                              post.imageUrl!,
+                                              width: 60,
+                                              height: 60,
+                                              fit: BoxFit.cover,
+                                            )
                                           : null,
                                     ),
-                                  ),
+                                  );
                                 },
-                              ),
+                              );
                             },
-                          ),
+                          );
                         },
-                      ),
+                      );
                     },
                   ),
                 ],
