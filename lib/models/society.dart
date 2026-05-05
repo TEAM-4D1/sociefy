@@ -31,6 +31,11 @@ class Society {
   /// a quick overview of what the society does and who it's for.
   final String description;
 
+  /// User ID of the creator/owner of this society.
+  ///
+  /// Used to allow the creator admin to manage or delete the society.
+  final String createdBy;
+
   /// Creates a `Society` instance from a map (for example Firestore data).
   ///
   /// Missing keys are treated gracefully by using sensible defaults
@@ -42,6 +47,7 @@ class Society {
       name: map['name'] as String? ?? '',
       category: map['category'] as String? ?? '',
       description: map['description'] as String? ?? '',
+      createdBy: map['createdBy'] as String? ?? '',
     );
   }
 
@@ -51,6 +57,7 @@ class Society {
     required this.name,
     required this.category,
     required this.description,
+    this.createdBy = '',
   });
 
   /// Returns a copy of this `Society` with the given fields replaced.
@@ -63,12 +70,14 @@ class Society {
     String? name,
     String? category,
     String? description,
+    String? createdBy,
   }) {
     return Society(
       id: id ?? this.id,
       name: name ?? this.name,
       category: category ?? this.category,
       description: description ?? this.description,
+      createdBy: createdBy ?? this.createdBy,
     );
   }
 }
