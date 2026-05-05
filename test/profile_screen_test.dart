@@ -135,7 +135,7 @@ void main() {
     testWidgets('Logout clears userId completely', (WidgetTester tester) async {
       // Arrange
       final appState = AppState(skipFirebase: true);
-      await appState.login(userId: 'guest', isAdmin: false);
+      setupGuestAppState(appState);
       expect(appState.userId, isNotNull);
 
       // Act
@@ -150,7 +150,7 @@ void main() {
     testWidgets('Logout clears admin flag', (WidgetTester tester) async {
       // Arrange
       final appState = AppState(skipFirebase: true);
-      await appState.login(userId: 'guest', isAdmin: false);
+      setupGuestAppState(appState);
 
       // Act
       appState.logout();
@@ -165,7 +165,7 @@ void main() {
     ) async {
       // Arrange
       final appState = AppState(skipFirebase: true);
-      await appState.login(userId: 'guest', isAdmin: false);
+      setupGuestAppState(appState);
 
       // Act
       await tester.pumpWidget(buildTestWidget(appState: appState));
@@ -182,7 +182,7 @@ void main() {
     ) async {
       // Arrange
       final appState = AppState(skipFirebase: true);
-      await appState.login(userId: 'guest', isAdmin: false);
+      setupGuestAppState(appState);
 
       // Act
       await tester.pumpWidget(buildTestWidget(appState: appState));
@@ -204,7 +204,7 @@ void main() {
     ) async {
       // Arrange
       final appState = AppState(skipFirebase: true);
-      await appState.login(userId: 'guest', isAdmin: false);
+      setupGuestAppState(appState);
 
       // Act
       await tester.pumpWidget(buildTestWidget(appState: appState));
