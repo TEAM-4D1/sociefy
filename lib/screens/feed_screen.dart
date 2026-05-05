@@ -456,8 +456,18 @@ class _CreateSocietyDialogState extends State<_CreateSocietyDialog> {
 
 class _CreatePostDialog extends StatefulWidget {
   final List<Society> societies;
+  final String? initialSocietyId;
+  final String? initialTitle;
+  final String? initialContent;
+  final bool isEditing;
 
-  const _CreatePostDialog({required this.societies});
+  const _CreatePostDialog({
+    required this.societies,
+    this.initialSocietyId,
+    this.initialTitle,
+    this.initialContent,
+    this.isEditing = false,
+  });
 
   @override
   State<_CreatePostDialog> createState() => _CreatePostDialogState();
@@ -472,7 +482,9 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
   @override
   void initState() {
     super.initState();
-    _selectedSocietyId = widget.societies.first.id;
+    _selectedSocietyId = widget.initialSocietyId ?? widget.societies.first.id;
+    _titleController.text = widget.initialTitle ?? '';
+    _contentController.text = widget.initialContent ?? '';
   }
 
   @override
@@ -485,33 +497,34 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Create Post'),
+      title: Text(widget.isEditing ? 'Edit Post' : 'Create Post'),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              DropdownButtonFormField<String>(
-                initialValue: _selectedSocietyId,
-                decoration: const InputDecoration(labelText: 'Society'),
-                items: widget.societies
-                    .map(
-                      (society) => DropdownMenuItem<String>(
-                        value: society.id,
-                        child: Text(society.name),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  if (value == null) {
-                    return;
-                  }
-                  setState(() {
-                    _selectedSocietyId = value;
-                  });
-                },
-              ),
+              if (!widget.isEditing)
+                DropdownButtonFormField<String>(
+                  initialValue: _selectedSocietyId,
+                  decoration: const InputDecoration(labelText: 'Society'),
+                  items: widget.societies
+                      .map(
+                        (society) => DropdownMenuItem<String>(
+                          value: society.id,
+                          child: Text(society.name),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    if (value == null) {
+                      return;
+                    }
+                    setState(() {
+                      _selectedSocietyId = value;
+                    });
+                  },
+                ),
               TextFormField(
                 controller: _titleController,
                 decoration: const InputDecoration(labelText: 'Post title'),
@@ -557,7 +570,7 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
               ),
             );
           },
-          child: const Text('Post'),
+          child: Text(widget.isEditing ? 'Save' : 'Post'),
         ),
       ],
     );
