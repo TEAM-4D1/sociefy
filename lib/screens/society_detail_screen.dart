@@ -426,11 +426,39 @@ class SocietyDetailScreen extends StatelessWidget {
                                   },
                                   child: Text(
                                     startTimeController.text.isEmpty
+                                    ? 'Pick Start Time'
+                                    : startTimeController.text,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'End Time',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 8),
+                                ElevatedButton(
+                                  onPressed: () async{
+                                    final pickedTime = await showTimePicker(
+                                      context: statefulContext,
+                                      initialTime: TimeOfDay.now(),
+                                    );
+                                    if (pickedTime != null) {
+                                      setState(() {
+                                        endTimeController.text = pickedTime.format(context);
+                                      });  
+                                    },
+                                  },
+                                  child: Text(
+                                    endTimeController
                                   )
-                                      )
-                                    }
-                                  }
-                                )
+                              ]
                                 )
                               ]
                             )
