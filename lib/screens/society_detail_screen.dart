@@ -305,7 +305,6 @@ class SocietyDetailScreen extends StatelessWidget {
     final endTimeController = TextEditingController();
     DateTime? selectedDate;
 
-    // Dispose all controllers when the dialog closes, regardless of outcome
     showDialog<void>(
       context: context,
       builder: (dialogContext) {
@@ -325,12 +324,9 @@ class SocietyDetailScreen extends StatelessWidget {
                           labelText: 'Event Title',
                           border: OutlineInputBorder(),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter event title';
-                          }
-                          return null;
-                        },
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Please enter event title'
+                            : null,
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
@@ -340,12 +336,9 @@ class SocietyDetailScreen extends StatelessWidget {
                           border: OutlineInputBorder(),
                         ),
                         maxLines: 3,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter description';
-                          }
-                          return null;
-                        },
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Please enter description'
+                            : null,
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
@@ -354,12 +347,9 @@ class SocietyDetailScreen extends StatelessWidget {
                           labelText: 'Venue',
                           border: OutlineInputBorder(),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter venue';
-                          }
-                          return null;
-                        },
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Please enter venue'
+                            : null,
                       ),
                       const SizedBox(height: 12),
                       Row(
@@ -413,21 +403,22 @@ class SocietyDetailScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 8),
                                 ElevatedButton(
-                                  onPressed: () async{
+                                  onPressed: () async {
                                     final pickedTime = await showTimePicker(
                                       context: statefulContext,
-                                      initialTime: TimeofDay.now(),  
+                                      initialTime: TimeOfDay.now(),
                                     );
                                     if (pickedTime != null) {
                                       setState(() {
-                                        startTimeController.text = pickedTime.format(context);
+                                        startTimeController.text = pickedTime
+                                            .format(context);
                                       });
                                     }
                                   },
                                   child: Text(
                                     startTimeController.text.isEmpty
-                                    ? 'Pick Start Time'
-                                    : startTimeController.text,
+                                        ? 'Pick Start Time'
+                                        : startTimeController.text,
                                   ),
                                 ),
                               ],
@@ -444,28 +435,28 @@ class SocietyDetailScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 8),
                                 ElevatedButton(
-                                  onPressed: () async{
+                                  onPressed: () async {
                                     final pickedTime = await showTimePicker(
                                       context: statefulContext,
                                       initialTime: TimeOfDay.now(),
                                     );
                                     if (pickedTime != null) {
                                       setState(() {
-                                        endTimeController.text = pickedTime.format(context);
-                                      });  
-                                    },
+                                        endTimeController.text = pickedTime
+                                            .format(context);
+                                      });
+                                    }
                                   },
                                   child: Text(
-                                    endTimeController
-                                  )
-                              ]
-                                )
-                              ]
-                            )
-
-                          )
-
-                        ],)
+                                    endTimeController.text.isEmpty
+                                        ? 'Pick End Time'
+                                        : endTimeController.text,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -507,7 +498,6 @@ class SocietyDetailScreen extends StatelessWidget {
         );
       },
     ).whenComplete(() {
-      // Dispose all controllers after dialog closes to prevent memory leak
       titleController.dispose();
       descriptionController.dispose();
       venueController.dispose();
