@@ -5,10 +5,11 @@ import 'package:flutter/foundation.dart';
 class AuthService {
   String? lastError;
 
-  /// Signs in a user with the provided [email] and [password].
+  /// Signs in a user with the provided [email] and [password] via Firebase Authentication.
   ///
-  /// Returns a [UserCredential] if successful, or null otherwise.
-  /// Logs errors using debugPrint.
+  /// Performs email/password authentication against Firebase Auth.
+  /// Returns a [UserCredential] on success containing the authenticated user information.
+  /// Returns null on failure and logs the error using debugPrint.
   Future<UserCredential?> signIn(String email, String password) async {
     try {
       return await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -22,10 +23,11 @@ class AuthService {
     }
   }
 
-  /// Registers a new user with the provided [email] and [password].
+  /// Creates a new user account with the provided [email] and [password] via Firebase Authentication.
   ///
-  /// Returns a [UserCredential] if successful, or null otherwise.
-  /// Logs errors using debugPrint.
+  /// Performs user account creation against Firebase Auth.
+  /// Returns a [UserCredential] on success containing the newly created user information.
+  /// Returns null on failure and logs the error using debugPrint.
   Future<UserCredential?> register(String email, String password) async {
     try {
       lastError = null;
@@ -39,12 +41,16 @@ class AuthService {
     }
   }
 
-  /// Signs out the currently authenticated user.
+  /// Signs out the currently authenticated user from Firebase Authentication.
+  ///
+  /// Clears the user session in Firebase Auth.
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
   }
 
-  /// Returns the currently authenticated [User], or null if not signed in.
+  /// Gets the currently authenticated user from Firebase Authentication.
+  ///
+  /// Returns the current [User] object if a user is authenticated, or null if no user is signed in.
   User? get currentUser {
     return FirebaseAuth.instance.currentUser;
   }
