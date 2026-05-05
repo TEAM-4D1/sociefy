@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sociefy/providers/app_state.dart';
 
 import '../models/society.dart';
 import '../models/committee_member.dart';
@@ -56,7 +58,7 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Contact ${widget.society.name}')),
+      appBar: AppBar(title: Text('Contact Info')),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -107,10 +109,23 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
             ),
             const SizedBox(height: 16),
             Center(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.add),
-                label: const Text('Add Committee Member'),
-                onPressed: _addMember,
+              child: Builder(
+                builder: (context) {
+                  final isCommittee = Provider.of<AppState>(
+                    context,
+                    listen: false,
+                  ).isAdmin;
+                  return Tooltip(
+                    message: isCommittee
+                        ? 'Add a new committee member'
+                        : 'Only committee members can add members',
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.add),
+                      label: const Text('Add Committee Member'),
+                      onPressed: isCommittee ? _addMember : null,
+                    ),
+                  );
+                },
               ),
             ),
           ],
