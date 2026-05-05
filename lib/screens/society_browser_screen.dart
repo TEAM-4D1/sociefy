@@ -172,69 +172,107 @@ class _SocietyBrowserCardState extends State<_SocietyBrowserCard> {
                 ),
               );
             },
-            child: Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: ListTile(
-                    title: Text(widget.society.name),
-                    subtitle: Text(widget.society.category),
-                    trailing: Icon(
-                      canDelete ? Icons.expand_more : Icons.chevron_right,
-                    ),
-                  ),
+            child: AnimatedCrossFade(
+              firstChild: ListTile(
+                title: Text(widget.society.name),
+                subtitle: Text(widget.society.category),
+                trailing: Icon(
+                  canDelete ? Icons.expand_more : Icons.chevron_right,
                 ),
-                if (canDelete && _showActions)
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.92),
-                        borderRadius: const BorderRadius.only(
-                          topRight: Radius.circular(12),
-                          bottomLeft: Radius.circular(12),
-                        ),
-                      ),
-                      child: IconButton(
-                        tooltip: 'Delete society',
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () async {
-                          final confirmed = await showDialog<bool>(
-                            context: context,
-                            builder: (dialogContext) => AlertDialog(
-                              title: const Text('Delete society'),
-                              content: Text(
-                                'Delete ${widget.society.name}? This cannot be undone.',
+              ),
+              secondChild: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.society.name,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(dialogContext).pop(false),
-                                  child: const Text('Cancel'),
+                              const SizedBox(height: 4),
+                              Text(
+                                widget.society.category,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
                                 ),
-                                ElevatedButton(
-                                  onPressed: () => Navigator.of(dialogContext).pop(true),
-                                  child: const Text('Delete'),
-                                ),
-                              ],
-                            ),
-                          );
-
-                          if (confirmed == true) {
-                            await context.read<AppState>().deleteSociety(widget.society.id);
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('${widget.society.name} deleted'),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (canDelete)
+                          IconButton(
+                            tooltip: 'Delete society',
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () async {
+                              final confirmed = await showDialog<bool>(
+                                context: context,
+                                builder: (dialogContext) => AlertDialog(
+                                  title: const Text('Delete society'),
+                                  content: Text(
+                                    'Delete ${widget.society.name}? This cannot be undone.',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(dialogContext).pop(false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () => Navigator.of(dialogContext).pop(true),
+                                      child: const Text('Delete'),
+                                    ),
+                                  ],
                                 ),
                               );
-                            }
-                          }
-                        },
+
+                              if (confirmed == true) {
+                                await context.read<AppState>().deleteSociety(widget.society.id);
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('${widget.society.name} deleted'),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      widget.society.description,
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    const SizedBox(height: 12),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'Tap to collapse',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
                     ),
-                  ),
-              ],
+                  ],
+                ),
+              ),
+              crossFadeState: canDelete && _showActions
+                  ? CrossFadeState.showSecond
+                  : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 300),
             ),
           ),
         );
