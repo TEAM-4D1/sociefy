@@ -19,9 +19,18 @@ class AppState extends ChangeNotifier {
 
   StreamSubscription<QuerySnapshot>? _announcementsSubscription;
 
-  AppState() {
-    // Remove Firebase.apps.isEmpty check, not needed in this context
+  /// Whether to skip Firebase initialization (used for testing).
+  final bool _skipFirebase;
 
+  AppState({bool skipFirebase = false}) : _skipFirebase = skipFirebase {
+    // Remove Firebase.apps.isEmpty check, not needed in this context
+    if (!_skipFirebase) {
+      _initializeFirebaseListener();
+    }
+  }
+
+  /// Initialize the Firebase auth listener (called after construction in production).
+  void _initializeFirebaseListener() {
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
         final normalizedEmail = user.email?.trim().toLowerCase();
@@ -38,6 +47,13 @@ class AppState extends ChangeNotifier {
         }
       }
     });
+  }
+
+  /// Initialize Firebase listener for auth state changes.
+  void initializeFirebaseListener() {
+    if (!_skipFirebase) {
+      _initializeFirebaseListener();
+    }
   }
 
   /// Sets the pending admin login flag for committee/admin authentication.
@@ -144,11 +160,11 @@ class AppState extends ChangeNotifier {
         });
   }
 
-  /// Returns true if a user is currently logged in (userId is not null).
-  bool get isAuthenticated => userId != null;
+  /// Returns true if a user is currently logged in (userId is not null and not empty).
+  bool get isAuthenticated => userId != null && userId!.isNotEmpty;
 
-  /// Returns true if the current user is a guest (userId starts with 'guest').
-  bool get isGuest => userId != null && userId!.startsWith('guest');
+  /// Returns true if the current user is a guest (userId equals exactly 'guest').
+  bool get isGuest => userId != null && userId == 'guest';
 
   /// Returns the pending admin login flag status.
   bool get isPendingAdminLogin => _pendingAdminLogin;
