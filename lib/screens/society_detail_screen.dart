@@ -180,7 +180,16 @@ class SocietyDetailScreen extends StatelessWidget {
                           final posts = context.read<AppState>().announcements
                               .where((a) => a.societyId == society.id)
                               .toList();
-                          return DraggableScrollable
+                          return DraggableScrollableSheet(
+                            expand: false,
+                            builder: (context, scrollController) {
+                              return ListView.builder(
+                                controller: scrollController,
+                                itemCount: posts.length,
+                                itemBuilder
+                              )
+                            }
+                          )
                         }
                       )
                     }
