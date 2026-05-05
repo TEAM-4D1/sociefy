@@ -124,6 +124,7 @@ class AppState extends ChangeNotifier {
               date: data['date'] != null
                   ? (data['date'] as Timestamp).toDate()
                   : DateTime.now(),
+              authorId: data['authorId'] ?? '',
             );
           }).toList();
           notifyListeners();
@@ -307,6 +308,7 @@ class AppState extends ChangeNotifier {
     required String title,
     required String content,
   }) {
+    final author = userId ?? '';
     _announcements.insert(
       0,
       Announcement(
@@ -315,6 +317,7 @@ class AppState extends ChangeNotifier {
         title: title,
         content: content,
         date: DateTime.now(),
+        authorId: author,
       ),
     );
     notifyListeners();
@@ -324,10 +327,25 @@ class AppState extends ChangeNotifier {
         'societyId': societyId,
         'title': title,
         'content': content,
+        'authorId': author,
         'date': FieldValue.serverTimestamp(),
       });
     } catch (e) {
       debugPrint('createAnnouncement Firestore error: $e');
+    }
+  }
+
+  /// Delete announcement by id. Removes locally and attempts Firestore delete.
+  Future<void> deleteAnnouncement(String id) async {
+    _announcements.removeWhere((a) => a.id == id);
+    notifyListeners();
+
+    try {
+      await FirebaseFirestore.instance.collection('announcements').doc(id).delete();
+    } catch (e) {
+      // It's possible the id is a temporary local id (created before Firestore returns)
+      // In that case, attempts to delete the document may fail; log and continue.
+      debugPrint('deleteAnnouncement Firestore error: $e');
     }
   }
 

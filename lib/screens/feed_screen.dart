@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/society.dart';
+import '../models/announcement.dart';
 import '../providers/app_state.dart';
 
 class _CreateSocietyResult {
@@ -28,50 +29,121 @@ class _CreatePostResult {
 }
 
 // Announcement card for feed
-class _AnnouncementCard extends StatelessWidget {
+class _AnnouncementCard extends StatefulWidget {
+  final Announcement announcement;
   final String societyName;
-  final String title;
-  final String date;
-  final String content;
+  final bool isAdmin;
+  final String? currentUserId;
+  final Future<void> Function(String id) onDelete;
 
   const _AnnouncementCard({
     Key? key,
+    required this.announcement,
     required this.societyName,
-    required this.title,
-    required this.date,
-    required this.content,
+    required this.isAdmin,
+    required this.currentUserId,
+    required this.onDelete,
   }) : super(key: key);
 
   @override
+  State<_AnnouncementCard> createState() => _AnnouncementCardState();
+}
+
+class _AnnouncementCardState extends State<_AnnouncementCard> {
+  bool _expanded = false;
+
+  void _toggle() {
+    setState(() {
+      _expanded = !_expanded;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final announcement = widget.announcement;
+    final canDelete = widget.isAdmin &&
+        widget.currentUserId != null &&
+        widget.currentUserId == announcement.authorId;
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  societyName,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+      child: InkWell(
+        onTap: _toggle,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.societyName,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Text(
+                    '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                announcement.title,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 6),
+              AnimatedCrossFade(
+                firstChild: Text(
+                  announcement.content,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                Text(
-                  date,
-                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                secondChild: Text(announcement.content),
+                crossFadeState: _expanded
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
+                duration: const Duration(milliseconds: 200),
+              ),
+              if (canDelete)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Delete post'),
+                          content: const Text('Are you sure you want to delete this post?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(ctx).pop(false),
+                              child: const Text('Cancel'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => Navigator.of(ctx).pop(true),
+                              child: const Text('Delete'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirm == true) {
+                        await widget.onDelete(announcement.id);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Post deleted')),
+                          );
+                        }
+                      }
+                    },
+                    icon: const Icon(Icons.delete, size: 18),
+                    label: const Text('Delete'),
+                  ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 6),
-            Text(content),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -229,13 +301,13 @@ class _FeedScreenState extends State<FeedScreen> {
                       itemBuilder: (context, index) {
                         final announcement = visibleAnnouncements[index];
                         return _AnnouncementCard(
+                          announcement: announcement,
                           societyName: appState.societyNameById(
                             announcement.societyId,
                           ),
-                          title: announcement.title,
-                          date:
-                              '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
-                          content: announcement.content,
+                          isAdmin: isAdmin,
+                          currentUserId: appState.userId,
+                          onDelete: (id) => appState.deleteAnnouncement(id),
                         );
                       },
                     );
