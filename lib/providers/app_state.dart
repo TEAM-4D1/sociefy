@@ -5,6 +5,7 @@ import '../models/announcement.dart';
 import '../services/society_service.dart';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
@@ -19,9 +20,7 @@ class AppState extends ChangeNotifier {
   StreamSubscription<QuerySnapshot>? _announcementsSubscription;
 
   AppState() {
-    if (Firebase.apps.isEmpty) {
-      return;
-    }
+    // Remove Firebase.apps.isEmpty check, not needed in this context
 
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
@@ -124,6 +123,10 @@ class AppState extends ChangeNotifier {
               date: data['date'] != null
                   ? (data['date'] as Timestamp).toDate()
                   : DateTime.now(),
+              imageUrl: data['imageUrl'],
+              time: null, // Set if you store time separately
+              venue: data['venue'],
+              description: data['description'],
             );
           }).toList();
           notifyListeners();
@@ -319,7 +322,7 @@ class AppState extends ChangeNotifier {
         content: content,
         date: DateTime.now(),
         imageUrl: imageUrl,
-        time: TimeOfDay.now(),
+        time: null, // Set if needed
         venue: '',
         description: '',
       ),
