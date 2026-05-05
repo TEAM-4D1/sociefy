@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 
 /// A service class for handling authentication operations.
 class AuthService {
+  String? lastError;
+
   /// Signs in a user with the provided [email] and [password].
   ///
   /// Returns a [UserCredential] if successful, or null otherwise.
@@ -26,11 +28,13 @@ class AuthService {
   /// Logs errors using debugPrint.
   Future<UserCredential?> register(String email, String password) async {
     try {
+      lastError = null;
       return await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
     } catch (e) {
+      lastError = e.toString();
       debugPrint('register error: \$e');
       return null;
     }
