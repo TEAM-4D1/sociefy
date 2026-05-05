@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sociefy/main_tabs.dart';
 import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/services/auth_service.dart';
+import 'package:sociefy/screens/sign_in_screen.dart';
 
 class CommitteeSignInScreen extends StatefulWidget {
   const CommitteeSignInScreen({super.key});
@@ -47,7 +48,9 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
         enteredPassword != _adminPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Only the authorized committee admin can sign in here.'),
+          content: Text(
+            'Only the authorized committee admin can sign in here.',
+          ),
         ),
       );
       return;
@@ -59,10 +62,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
     final appState = Provider.of<AppState>(context, listen: false);
     appState.setAdminPending(true);
 
-    final result = await AuthService().signIn(
-      enteredEmail,
-      enteredPassword,
-    );
+    final result = await AuthService().signIn(enteredEmail, enteredPassword);
 
     if (!mounted) return;
     setState(() => _isLoading = false);
@@ -76,7 +76,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
     }
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute<void>(builder: (_) => const MainTabs()),
+      MaterialPageRoute<void>(builder: (context) => const MainTabs()),
       (route) => false,
     );
   }
@@ -84,7 +84,18 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Committee/Admin Sign in')),
+      appBar: AppBar(
+        title: const Text('Committee/Admin Sign in'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => SignInScreen()),
+              (route) => false,
+            );
+          },
+        ),
+      ),
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -190,15 +201,17 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
                         onPressed: _isLoading
                             ? null
                             : () {
-                          if (_formKey.currentState!.validate()) {
-                            _signInAsCommitteeOrAdmin(context);
-                          }
-                        },
+                                if (_formKey.currentState!.validate()) {
+                                  _signInAsCommitteeOrAdmin(context);
+                                }
+                              },
                         icon: _isLoading
                             ? const SizedBox(
                                 width: 18,
                                 height: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : const Icon(Icons.login),
                         label: Text(
