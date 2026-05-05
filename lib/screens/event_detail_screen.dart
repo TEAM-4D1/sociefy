@@ -6,6 +6,9 @@ import 'package:add_2_calendar/add_2_calendar.dart' as add2;
 import '../models/event.dart';
 import '../providers/app_state.dart';
 
+/// Displays detailed information about a specific event including title, description, date, time, and venue.
+/// Users can save events, view the hosting society, and add to calendar.
+/// Accessible to all authenticated users; guests can view but cannot save or RSVP.
 class EventDetailScreen extends StatefulWidget {
   final Event event;
   final String userId;
@@ -33,6 +36,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     _checkRsvpStatus();
   }
 
+  /// Checks if the user has already RSVP'd to the event by querying Firestore 'rsvps' collection.
   Future<void> _checkRsvpStatus() async {
     // Skip Firestore lookup for guest users — userId is empty or 'guest'
     if (widget.userId.isEmpty || widget.userId.startsWith('guest')) return;
@@ -76,6 +80,11 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
             Text(
               'Date: ${DateFormat.yMMMMd().format(event.date)}',
+              style: const TextStyle(fontSize: 16),
+            ),
+
+            Text(
+              'Time: ${event.startTime} - ${event.endTime}',
               style: const TextStyle(fontSize: 16),
             ),
 
@@ -192,11 +201,23 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       DateTime _parseTime(String timeStr, DateTime baseDate) {
                         try {
                           final parsed = DateFormat.Hm().parse(timeStr);
-                          return DateTime(baseDate.year, baseDate.month, baseDate.day, parsed.hour, parsed.minute);
+                          return DateTime(
+                            baseDate.year,
+                            baseDate.month,
+                            baseDate.day,
+                            parsed.hour,
+                            parsed.minute,
+                          );
                         } catch (_) {
                           try {
                             final parsed = DateFormat.jm().parse(timeStr);
-                            return DateTime(baseDate.year, baseDate.month, baseDate.day, parsed.hour, parsed.minute);
+                            return DateTime(
+                              baseDate.year,
+                              baseDate.month,
+                              baseDate.day,
+                              parsed.hour,
+                              parsed.minute,
+                            );
                           } catch (_) {
                             return baseDate;
                           }
@@ -212,8 +233,14 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                         }
 
                         // Build DateTime start/end from event.date + start/end strings
-                        final startDateTime = _parseTime(event.startTime, event.date);
-                        final endDateTime = _parseTime(event.endTime, event.date);
+                        final startDateTime = _parseTime(
+                          event.startTime,
+                          event.date,
+                        );
+                        final endDateTime = _parseTime(
+                          event.endTime,
+                          event.date,
+                        );
 
                         final add2.Event calEvent = add2.Event(
                           title: event.title,
@@ -231,7 +258,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                         });
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error saving to calendar: $e')),
+                            SnackBar(
+                              content: Text('Error saving to calendar: $e'),
+                            ),
                           );
                         }
                         return;
@@ -243,7 +272,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                             content: Text(
                               _isSaved
                                   ? 'Event saved to calendar!'
-                                  : 'Event removed from calendar!'
+                                  : 'Event removed from calendar!',
                             ),
                           ),
                         );

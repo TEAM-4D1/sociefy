@@ -1,3 +1,5 @@
+import 'committee_member.dart';
+
 /// Represents a student society within the university application.
 ///
 /// A `Society` groups students around a shared interest, academic subject,
@@ -30,17 +32,7 @@ class Society {
   /// Displayed on society profile pages and in preview cards to give users
   /// a quick overview of what the society does and who it's for.
   final String description;
-
-  /// User ID of the creator/owner of this society.
-  ///
-  /// Used to allow the creator admin to manage or delete the society.
-  final String createdBy;
-
-  /// Email address of the creator/owner of this society.
-  ///
-  /// Stored alongside the UID so creator ownership can still be matched when
-  /// the app loads older records or the auth identifier changes.
-  final String createdByEmail;
+  final List<CommitteeMember> committeeMembers;
 
   /// Creates a `Society` instance from a map (for example Firestore data).
   ///
@@ -53,8 +45,6 @@ class Society {
       name: map['name'] as String? ?? '',
       category: map['category'] as String? ?? '',
       description: map['description'] as String? ?? '',
-      createdBy: map['createdBy'] as String? ?? '',
-      createdByEmail: map['createdByEmail'] as String? ?? '',
     );
   }
 
@@ -64,8 +54,7 @@ class Society {
     required this.name,
     required this.category,
     required this.description,
-    this.createdBy = '',
-    this.createdByEmail = '',
+    this.committeeMembers = const [],
   });
 
   /// Returns a copy of this `Society` with the given fields replaced.
@@ -78,16 +67,14 @@ class Society {
     String? name,
     String? category,
     String? description,
-    String? createdBy,
-    String? createdByEmail,
+    List<CommitteeMember>? committeeMembers,
   }) {
     return Society(
       id: id ?? this.id,
       name: name ?? this.name,
       category: category ?? this.category,
       description: description ?? this.description,
-      createdBy: createdBy ?? this.createdBy,
-      createdByEmail: createdByEmail ?? this.createdByEmail,
+      committeeMembers: committeeMembers ?? this.committeeMembers,
     );
   }
 }

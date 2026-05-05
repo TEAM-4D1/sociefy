@@ -4,6 +4,9 @@ import 'package:sociefy/main_tabs.dart';
 import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/services/auth_service.dart';
 
+/// Provides dedicated authentication for committee members and admins with email/password login.
+/// Checks against the committee admin email to grant administrative privileges.
+/// Accessible only to authorized committee members and admins.
 class CommitteeSignInScreen extends StatefulWidget {
   const CommitteeSignInScreen({super.key});
 
@@ -12,11 +15,8 @@ class CommitteeSignInScreen extends StatefulWidget {
 }
 
 class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
-  // Map of valid admin credentials
-  static const Map<String, String> _validAdminCredentials = {
-    'jburfoot12@gmail.com': '111444',
-    'up2306278@myport.ac.uk': '123456',
-  };
+  static const String _adminEmail = 'jburfoot12@gmail.com';
+  static const String _adminPassword = '111444';
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
@@ -31,16 +31,29 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
     super.dispose();
   }
 
+  /// Validates committee/admin credentials and signs in the user via Firebase Authentication with admin status detection.
   Future<void> _signInAsCommitteeOrAdmin(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
 
-    final enteredEmail = _emailController.text.trim().toLowerCase();
+    final enteredEmail = _emailController.text.trim();
     final enteredPassword = _passwordController.text.trim();
 
-    if (_validAdminCredentials[enteredEmail] != enteredPassword) {
+    if (enteredEmail.toLowerCase().contains('myport')) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Invalid admin credentials.'),
+          content: Text('MyPort emails are not allowed on committee sign in.'),
+        ),
+      );
+      return;
+    }
+
+    if (enteredEmail.toLowerCase() != _adminEmail ||
+        enteredPassword != _adminPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Only the authorized committee admin can sign in here.',
+          ),
         ),
       );
       return;
@@ -52,10 +65,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
     final appState = Provider.of<AppState>(context, listen: false);
     appState.setAdminPending(true);
 
-    final result = await AuthService().signIn(
-      enteredEmail,
-      enteredPassword,
-    );
+    final result = await AuthService().signIn(enteredEmail, enteredPassword);
 
     if (!mounted) return;
     setState(() => _isLoading = false);
@@ -69,7 +79,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
     }
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute<void>(builder: (_) => const MainTabs()),
+      MaterialPageRoute<void>(builder: (context) => const MainTabs()),
       (route) => false,
     );
   }
@@ -77,7 +87,15 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Committee/Admin Sign in')),
+      appBar: AppBar(
+        title: const Text('Committee/Admin Sign in'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -183,15 +201,17 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
                         onPressed: _isLoading
                             ? null
                             : () {
-                          if (_formKey.currentState!.validate()) {
-                            _signInAsCommitteeOrAdmin(context);
-                          }
-                        },
+                                if (_formKey.currentState!.validate()) {
+                                  _signInAsCommitteeOrAdmin(context);
+                                }
+                              },
                         icon: _isLoading
                             ? const SizedBox(
                                 width: 18,
                                 height: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : const Icon(Icons.login),
                         label: Text(

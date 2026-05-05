@@ -5,6 +5,9 @@ import 'package:provider/provider.dart';
 import '../models/society.dart';
 import '../providers/app_state.dart';
 
+/// Provides real-time group chat functionality for society members with message history.
+/// Stores messages in Firestore and updates reactively across all connected users.
+/// Accessible only to authenticated users who are members of the society.
 class SocietyChatScreen extends StatefulWidget {
   final Society society;
 
@@ -18,6 +21,7 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
+  /// Sends a message to the society's group chat and stores it in Firestore with sender information and timestamp.
   Future<void> _sendMessage() async {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;

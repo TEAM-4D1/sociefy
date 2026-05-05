@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:sociefy/screens/sign_in_screen.dart';
 import '../services/auth_service.dart';
 
+/// Allows new students to create an account with display name, email, and password.
+/// Includes form validation and navigation back to SignInScreen.
+/// Accessible only to unauthenticated users.
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
 
@@ -9,21 +12,35 @@ class RegisterScreen extends StatefulWidget {
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends State<RegisterScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _displayNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
 
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 6),
+    )..repeat(reverse: true);
+  }
+
   @override
   void dispose() {
+    _controller.dispose();
     _displayNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
+  /// Validates form input and creates a new user account via Firebase Authentication with the provided display name.
   Future<void> _register(
     BuildContext context, {
     required String displayName,
@@ -37,11 +54,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final result = await authService.register(email, password);
     setState(() => _isLoading = false);
     if (result == null) {
-      if (mounted) {
-        messenger.showSnackBar(
-          const SnackBar(content: Text('Registration failed')),
-        );
-      }
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Registration failed')),
+      );
       return;
     }
     await result.user?.updateDisplayName(displayName);
@@ -57,9 +72,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute<void>(
-                builder: (_) => const SignInScreen(),
-              ),
+              MaterialPageRoute<void>(builder: (_) => const SignInScreen()),
             );
           },
         ),
@@ -122,9 +135,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   onPressed: _isLoading
                       ? null
                       : () => _register(
-                            context,
-                            displayName: _displayNameController.text.trim(),
-                          ),
+                          context,
+                          displayName: _displayNameController.text.trim(),
+                        ),
                   child: _isLoading
                       ? const CircularProgressIndicator()
                       : const Text('Register'),

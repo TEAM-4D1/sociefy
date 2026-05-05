@@ -3,46 +3,71 @@ import 'package:provider/provider.dart';
 import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/screens/society_chat_screen.dart';
 
+/// Displays a list of society group chat channels that the user is a member of.
+/// Provides quick access to messages and member approval features for committee admins.
+/// Accessible only to authenticated users who have joined societies.
 class MessagesPage extends StatelessWidget {
   const MessagesPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return Scaffold(
       appBar: AppBar(title: const Text('Messages')),
       body: Consumer<AppState>(
-        builder: (context, appState, _) {
-          // ✅ derive joined societies instead of joinedChannels
-          final joinedSocieties = appState.joinedSocieties;
 
-          if (joinedSocieties.isEmpty) {
-            return const Center(
-              child: Text('Join a society to access its message channel.'),
-            );
-          }
-
-          return ListView.builder(
-            itemCount: joinedSocieties.length,
-            itemBuilder: (context, index) {
-              final society = joinedSocieties[index];
-
-              return ListTile(
-                leading: const Icon(Icons.forum),
-                title: Text(society.name),
-                subtitle: Text(society.category),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SocietyChatScreen(society: society),
-                    ),
-                  );
-                },
-              );
-            },
-          );
-        },
-      ),
+        return Scaffold(
+          appBar: AppBar(title: const Text('Messages')),
+          body: joinedSocieties.isEmpty
+              ? const Center(
+                  child: Text('Join a society to access its message channel.'),
+                )
+              : ListView.builder(
+                  itemCount: joinedSocieties.length,
+                  itemBuilder: (context, index) {
+                    final society = joinedSocieties[index];
+                    return ListTile(
+                      leading: const Icon(Icons.forum),
+                      title: Text(society.name),
+                      subtitle: Text(society.category),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                SocietyChatScreen(society: society),
+                          ),
+                        );
+                      },
+                      trailing: isCommittee
+                          ? IconButton(
+                              icon: const Icon(
+                                Icons.admin_panel_settings,
+                                color: Colors.deepPurple,
+                              ),
+                              tooltip: 'Approve Members',
+                              onPressed: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  builder: (ctx) => SizedBox(
+                                    height:
+                                        MediaQuery.of(context).size.height *
+                                        0.7,
+                                    child: MemberApprovalScreen(
+                                      societyId: society.id,
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                          : null,
+                    );
+                  },
+                ),
+        );
+      },
+>>>>>>> ae3b9827faa895c0f23cdbe649ff49e1e03afdfb
     );
   }
 }

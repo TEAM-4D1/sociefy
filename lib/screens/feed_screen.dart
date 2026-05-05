@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import '../models/society.dart';
-import '../models/announcement.dart';
 import '../providers/app_state.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 
 class _CreateSocietyResult {
   final String name;
@@ -20,150 +23,80 @@ class _CreatePostResult {
   final String societyId;
   final String title;
   final String content;
+  final String? imageUrl;
 
   const _CreatePostResult({
     required this.societyId,
     required this.title,
     required this.content,
+    this.imageUrl,
   });
 }
 
 // Announcement card for feed
-class _AnnouncementCard extends StatefulWidget {
-  final Announcement announcement;
+class _AnnouncementCard extends StatelessWidget {
   final String societyName;
-  final bool isAdmin;
-  final String? currentUserId;
-  final Future<void> Function(Announcement announcement) onEdit;
-  final Future<void> Function(String id) onDelete;
+  final String title;
+  final String date;
+  final String content;
+  final String? imageUrl;
 
   const _AnnouncementCard({
     Key? key,
-    required this.announcement,
     required this.societyName,
-    required this.isAdmin,
-    required this.currentUserId,
-    required this.onEdit,
-    required this.onDelete,
+    required this.title,
+    required this.date,
+    required this.content,
+    this.imageUrl,
   }) : super(key: key);
 
   @override
-  State<_AnnouncementCard> createState() => _AnnouncementCardState();
-}
-
-class _AnnouncementCardState extends State<_AnnouncementCard> {
-  bool _expanded = false;
-
-  void _toggle() {
-    setState(() {
-      _expanded = !_expanded;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final announcement = widget.announcement;
-    final canManage = widget.isAdmin && _expanded;
-
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-      child: InkWell(
-        onTap: _toggle,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      widget.societyName,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Text(
-                    '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
-                    style: const TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                announcement.title,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              const SizedBox(height: 6),
-              AnimatedCrossFade(
-                firstChild: Text(
-                  announcement.content,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  societyName,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                secondChild: Text(announcement.content),
-                crossFadeState: _expanded
-                    ? CrossFadeState.showSecond
-                    : CrossFadeState.showFirst,
-                duration: const Duration(milliseconds: 200),
-              ),
-              if (canManage)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    alignment: WrapAlignment.end,
-                    children: [
-                      TextButton.icon(
-                        onPressed: () async {
-                          await widget.onEdit(announcement);
-                        },
-                        icon: const Icon(Icons.edit, size: 18),
-                        label: const Text('Edit'),
-                      ),
-                      TextButton.icon(
-                        onPressed: () async {
-                          final confirm = await showDialog<bool>(
-                            context: context,
-                            builder: (ctx) => AlertDialog(
-                              title: const Text('Delete post'),
-                              content: const Text('Are you sure you want to delete this post?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(ctx).pop(false),
-                                  child: const Text('Cancel'),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () => Navigator.of(ctx).pop(true),
-                                  child: const Text('Delete'),
-                                ),
-                              ],
-                            ),
-                          );
-                          if (confirm == true) {
-                            await widget.onDelete(announcement.id);
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Post deleted')),
-                              );
-                            }
-                          }
-                        },
-                        icon: const Icon(Icons.delete, size: 18),
-                        label: const Text('Delete'),
-                      ),
-                    ],
-                  ),
+                Text(
+                  date,
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
                 ),
-            ],
-          ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            const SizedBox(height: 6),
+            if (imageUrl != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Image.network(imageUrl!, height: 180, fit: BoxFit.cover),
+              ),
+            Text(content),
+          ],
         ),
       ),
     );
   }
 }
 
+<<<<<<< HEAD
+=======
+/// Displays the main announcements feed with real-time updates from all societies.
+/// Provides admin capabilities to create societies and announcements. Shows pull-to-refresh functionality.
+/// Accessible to authenticated students and admins; guests can view but not create.
+>>>>>>> ae3b9827faa895c0f23cdbe649ff49e1e03afdfb
 class FeedScreen extends StatefulWidget {
   const FeedScreen({Key? key}) : super(key: key);
 
@@ -172,6 +105,10 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
+<<<<<<< HEAD
+=======
+  /// Shows a dialog for creating a new society and creates it if confirmed.
+>>>>>>> ae3b9827faa895c0f23cdbe649ff49e1e03afdfb
   Future<void> _showCreateSocietyDialog(BuildContext context) async {
     final result = await showDialog<_CreateSocietyResult>(
       context: context,
@@ -190,6 +127,7 @@ class _FeedScreenState extends State<FeedScreen> {
     }
   }
 
+  /// Shows a dialog for creating a new announcement/post for a society and creates it if confirmed.
   Future<void> _showCreatePostDialog(BuildContext context) async {
     final appState = context.read<AppState>();
     final societies = List.of(appState.societies);
@@ -215,6 +153,7 @@ class _FeedScreenState extends State<FeedScreen> {
         societyId: result.societyId,
         title: result.title,
         content: result.content,
+        imageUrl: result.imageUrl,
       );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Post created successfully.')),
@@ -315,38 +254,14 @@ class _FeedScreenState extends State<FeedScreen> {
                       itemBuilder: (context, index) {
                         final announcement = visibleAnnouncements[index];
                         return _AnnouncementCard(
-                          announcement: announcement,
                           societyName: appState.societyNameById(
                             announcement.societyId,
                           ),
-                          isAdmin: isAdmin,
-                          currentUserId: appState.userId,
-                          onEdit: (announcement) async {
-                            final edited = await showDialog<_CreatePostResult>(
-                              context: context,
-                              builder: (_) => _CreatePostDialog(
-                                societies: appState.societies,
-                                initialSocietyId: announcement.societyId,
-                                initialTitle: announcement.title,
-                                initialContent: announcement.content,
-                                isEditing: true,
-                              ),
-                            );
-
-                            if (edited != null) {
-                              await appState.editAnnouncement(
-                                id: announcement.id,
-                                title: edited.title,
-                                content: edited.content,
-                              );
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Post updated')),
-                                );
-                              }
-                            }
-                          },
-                          onDelete: (id) => appState.deleteAnnouncement(id),
+                          title: announcement.title,
+                          date:
+                              '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
+                          content: announcement.content,
+                          imageUrl: announcement.imageUrl,
                         );
                       },
                     );
@@ -456,18 +371,8 @@ class _CreateSocietyDialogState extends State<_CreateSocietyDialog> {
 
 class _CreatePostDialog extends StatefulWidget {
   final List<Society> societies;
-  final String? initialSocietyId;
-  final String? initialTitle;
-  final String? initialContent;
-  final bool isEditing;
 
-  const _CreatePostDialog({
-    required this.societies,
-    this.initialSocietyId,
-    this.initialTitle,
-    this.initialContent,
-    this.isEditing = false,
-  });
+  const _CreatePostDialog({required this.societies});
 
   @override
   State<_CreatePostDialog> createState() => _CreatePostDialogState();
@@ -478,13 +383,13 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   late String _selectedSocietyId;
+  XFile? _pickedImage;
+  bool _uploading = false;
 
   @override
   void initState() {
     super.initState();
-    _selectedSocietyId = widget.initialSocietyId ?? widget.societies.first.id;
-    _titleController.text = widget.initialTitle ?? '';
-    _contentController.text = widget.initialContent ?? '';
+    _selectedSocietyId = widget.societies.first.id;
   }
 
   @override
@@ -494,37 +399,63 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
     super.dispose();
   }
 
+  /// Allows the user to select an image from the device gallery for attachment to announcements.
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _pickedImage = image;
+      });
+    }
+  }
+
+  Future<String?> _uploadImage(XFile image) async {
+    try {
+      final storageRef = FirebaseStorage.instance.ref();
+      final fileName =
+          'post_images/${DateTime.now().millisecondsSinceEpoch}_${image.name}';
+      final imageRef = storageRef.child(fileName);
+      final uploadTask = imageRef.putFile(File(image.path));
+      final snapshot = await uploadTask;
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      debugPrint('Image upload error: $e');
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.isEditing ? 'Edit Post' : 'Create Post'),
+      title: const Text('Create Post'),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (!widget.isEditing)
-                DropdownButtonFormField<String>(
-                  initialValue: _selectedSocietyId,
-                  decoration: const InputDecoration(labelText: 'Society'),
-                  items: widget.societies
-                      .map(
-                        (society) => DropdownMenuItem<String>(
-                          value: society.id,
-                          child: Text(society.name),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (value) {
-                    if (value == null) {
-                      return;
-                    }
-                    setState(() {
-                      _selectedSocietyId = value;
-                    });
-                  },
-                ),
+              DropdownButtonFormField<String>(
+                initialValue: _selectedSocietyId,
+                decoration: const InputDecoration(labelText: 'Society'),
+                items: widget.societies
+                    .map(
+                      (society) => DropdownMenuItem<String>(
+                        value: society.id,
+                        child: Text(society.name),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value == null) {
+                    return;
+                  }
+                  setState(() {
+                    _selectedSocietyId = value;
+                  });
+                },
+              ),
               TextFormField(
                 controller: _titleController,
                 decoration: const InputDecoration(labelText: 'Post title'),
@@ -547,6 +478,33 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
                   return null;
                 },
               ),
+              const SizedBox(height: 12),
+              if (_pickedImage != null)
+                Column(
+                  children: [
+                    kIsWeb
+                        ? Image.network(_pickedImage!.path, height: 120)
+                        : Image.file(File(_pickedImage!.path), height: 120),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _pickedImage = null;
+                        });
+                      },
+                      child: const Text('Remove Image'),
+                    ),
+                  ],
+                ),
+              if (_pickedImage == null)
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.image),
+                  label: const Text('Add Image'),
+                  onPressed: _pickImage,
+                ),
+              if (_uploading) ...[
+                const SizedBox(height: 8),
+                const CircularProgressIndicator(),
+              ],
             ],
           ),
         ),
@@ -557,20 +515,26 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             if (!_formKey.currentState!.validate()) {
               return;
             }
-
+            String? imageUrl;
+            if (_pickedImage != null) {
+              setState(() => _uploading = true);
+              imageUrl = await _uploadImage(_pickedImage!);
+              setState(() => _uploading = false);
+            }
             Navigator.of(context).pop(
               _CreatePostResult(
                 societyId: _selectedSocietyId,
                 title: _titleController.text.trim(),
                 content: _contentController.text.trim(),
+                imageUrl: imageUrl,
               ),
             );
           },
-          child: Text(widget.isEditing ? 'Save' : 'Post'),
+          child: const Text('Post'),
         ),
       ],
     );

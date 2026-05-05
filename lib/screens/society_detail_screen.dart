@@ -8,6 +8,9 @@ import '../theme/text_styles.dart';
 import 'event_detail_screen.dart';
 import 'contact_info_screen.dart';
 
+/// Displays comprehensive information about a selected society including description, member count, events, and announcements.
+/// Students can join/leave societies; admins see additional management options.
+/// Accessible to all authenticated users; guests can view but cannot join or interact.
 class SocietyDetailScreen extends StatelessWidget {
   final Society society;
 
@@ -166,6 +169,59 @@ class SocietyDetailScreen extends StatelessWidget {
                       );
                     },
                   ),
+
+                  const SizedBox(height: 32),
+
+                  // Posts History Button
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.history),
+                    label: const Text('Posts'),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (context) {
+                          final posts = context
+                              .read<AppState>()
+                              .announcements
+                              .where((a) => a.societyId == society.id)
+                              .toList();
+                          return DraggableScrollableSheet(
+                            expand: false,
+                            builder: (context, scrollController) {
+                              if (posts.isEmpty) {
+                                return const Center(
+                                  child: Text('No posts yet.'),
+                                );
+                              }
+                              return ListView.builder(
+                                controller: scrollController,
+                                itemCount: posts.length,
+                                itemBuilder: (context, index) {
+                                  final post = posts[index];
+                                  return Card(
+                                    margin: const EdgeInsets.all(12),
+                                    child: ListTile(
+                                      title: Text(post.title),
+                                      subtitle: Text(post.content),
+                                      trailing: post.imageUrl != null
+                                          ? Image.network(
+                                              post.imageUrl!,
+                                              width: 60,
+                                              height: 60,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : null,
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -252,7 +308,6 @@ class SocietyDetailScreen extends StatelessWidget {
     final endTimeController = TextEditingController();
     DateTime? selectedDate;
 
-    // Dispose all controllers when the dialog closes, regardless of outcome
     showDialog<void>(
       context: context,
       builder: (dialogContext) {
@@ -272,12 +327,9 @@ class SocietyDetailScreen extends StatelessWidget {
                           labelText: 'Event Title',
                           border: OutlineInputBorder(),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter event title';
-                          }
-                          return null;
-                        },
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Please enter event title'
+                            : null,
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
@@ -287,12 +339,9 @@ class SocietyDetailScreen extends StatelessWidget {
                           border: OutlineInputBorder(),
                         ),
                         maxLines: 3,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter description';
-                          }
-                          return null;
-                        },
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Please enter description'
+                            : null,
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
@@ -301,12 +350,9 @@ class SocietyDetailScreen extends StatelessWidget {
                           labelText: 'Venue',
                           border: OutlineInputBorder(),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter venue';
-                          }
-                          return null;
-                        },
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Please enter venue'
+                            : null,
                       ),
                       const SizedBox(height: 12),
                       Row(
@@ -348,40 +394,72 @@ class SocietyDetailScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        controller: startTimeController,
-                        keyboardType: TextInputType.datetime,
-                        decoration: const InputDecoration(
-                          labelText: 'Start Time (HH:MM)',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter start time';
-                          }
-                          if (!RegExp(r'^\d{2}:\d{2}$').hasMatch(value)) {
-                            return 'Use HH:MM format (e.g. 14:30)';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: endTimeController,
-                        keyboardType: TextInputType.datetime,
-                        decoration: const InputDecoration(
-                          labelText: 'End Time (HH:MM)',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter end time';
-                          }
-                          if (!RegExp(r'^\d{2}:\d{2}$').hasMatch(value)) {
-                            return 'Use HH:MM format (e.g. 16:00)';
-                          }
-                          return null;
-                        },
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Start Time',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 8),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    final pickedTime = await showTimePicker(
+                                      context: statefulContext,
+                                      initialTime: TimeOfDay.now(),
+                                    );
+                                    if (pickedTime != null) {
+                                      setState(() {
+                                        startTimeController.text = pickedTime
+                                            .format(context);
+                                      });
+                                    }
+                                  },
+                                  child: Text(
+                                    startTimeController.text.isEmpty
+                                        ? 'Pick Start Time'
+                                        : startTimeController.text,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'End Time',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 8),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    final pickedTime = await showTimePicker(
+                                      context: statefulContext,
+                                      initialTime: TimeOfDay.now(),
+                                    );
+                                    if (pickedTime != null) {
+                                      setState(() {
+                                        endTimeController.text = pickedTime
+                                            .format(context);
+                                      });
+                                    }
+                                  },
+                                  child: Text(
+                                    endTimeController.text.isEmpty
+                                        ? 'Pick End Time'
+                                        : endTimeController.text,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -423,7 +501,6 @@ class SocietyDetailScreen extends StatelessWidget {
         );
       },
     ).whenComplete(() {
-      // Dispose all controllers after dialog closes to prevent memory leak
       titleController.dispose();
       descriptionController.dispose();
       venueController.dispose();

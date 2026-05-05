@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ "main" ]
 
+<<<<<<< HEAD
+=======
+permissions:
+  contents: read
+
+>>>>>>> ae3b9827faa895c0f23cdbe649ff49e1e03afdfb
 jobs:
   test:
     runs-on: ubuntu-latest

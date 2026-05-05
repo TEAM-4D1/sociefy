@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/screens/committee_sign_in_screen.dart';
 import 'package:sociefy/screens/register_screen.dart';
 import 'package:sociefy/services/auth_service.dart';
 
+/// The primary authentication entry point for Sociefy.
+/// Provides email/password login for students and a separate button for committee/admin sign in.
+/// Accessible to all users (guests, students, and admins) as the main entry screen.
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
 
@@ -54,6 +59,7 @@ class _SignInScreenState extends State<SignInScreen>
     super.dispose();
   }
 
+  /// Handles student user sign in with email and password validation and Firebase authentication.
   Future<void> _signInWithUop(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -179,6 +185,21 @@ class _SignInScreenState extends State<SignInScreen>
                               : const Text('Sign In'),
                         ),
 
+                        const SizedBox(height: 12),
+                        TextButton(
+                          onPressed: () async {
+                            final appState = Provider.of<AppState>(
+                              context,
+                              listen: false,
+                            );
+                            await appState.login(
+                              userId: 'guest',
+                              isAdmin: false,
+                            );
+                            if (!mounted) return;
+                          },
+                          child: const Text('Continue as Guest'),
+                        ),
                         const SizedBox(height: 12),
                         TextButton(
                           onPressed: () {

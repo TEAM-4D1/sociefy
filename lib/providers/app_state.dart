@@ -1,10 +1,11 @@
 import '../models/society.dart';
+
 import '../models/event.dart';
 import '../models/announcement.dart';
 import '../services/society_service.dart';
 
 import 'package:flutter/foundation.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
@@ -13,33 +14,50 @@ class AppState extends ChangeNotifier {
   static const String _committeeAdminEmail = 'jburfoot12@gmail.com';
 
   String? userId;
-  String? userEmail;
   bool isAdmin = false;
   bool _pendingAdminLogin = false;
 
   StreamSubscription<QuerySnapshot>? _announcementsSubscription;
 
-  AppState() {
-    if (Firebase.apps.isEmpty) {
-      return;
-    }
+  /// Whether to skip Firebase initialization (used for testing).
+  final bool _skipFirebase;
 
+  AppState({bool skipFirebase = false}) : _skipFirebase = skipFirebase {
+    // Remove Firebase.apps.isEmpty check, not needed in this context
+    if (!_skipFirebase) {
+      _initializeFirebaseListener();
+    }
+  }
+
+  /// Initialize the Firebase auth listener (called after construction in production).
+  void _initializeFirebaseListener() {
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
         final normalizedEmail = user.email?.trim().toLowerCase();
         final isCommitteeAdmin = normalizedEmail == _committeeAdminEmail;
         login(
           userId: user.uid,
-          userEmail: normalizedEmail,
           isAdmin: _pendingAdminLogin || isCommitteeAdmin,
         );
         _pendingAdminLogin = false;
       } else {
-        logout();
+        // Only logout if not already in a guest session
+        if (!isGuest) {
+          logout();
+        }
       }
     });
   }
 
+  /// Initialize Firebase listener for auth state changes.
+  void initializeFirebaseListener() {
+    if (!_skipFirebase) {
+      _initializeFirebaseListener();
+    }
+  }
+
+  /// Sets the pending admin login flag for committee/admin authentication.
+  /// [value] The admin pending flag value.
   void setAdminPending(bool value) {
     _pendingAdminLogin = value;
   }
@@ -55,6 +73,8 @@ class AppState extends ChangeNotifier {
 
   List<Announcement> _announcements = [];
 
+  /// Fetches all available societies from the Firestore 'societies' collection and caches them locally.
+  /// Calls [notifyListeners] after loading. Only fetches once per session.
   Future<void> loadSocieties() async {
     if (_societies.isNotEmpty) return;
     final querySnapshot = await FirebaseFirestore.instance
@@ -67,13 +87,13 @@ class AppState extends ChangeNotifier {
         name: data['name'] ?? 'Unknown Society',
         category: data['category'] ?? 'General',
         description: data['description'] ?? '',
-        createdBy: data['createdBy'] ?? '',
-        createdByEmail: data['createdByEmail'] ?? '',
       );
     }).toList();
     notifyListeners();
   }
 
+  /// Fetches upcoming events from the Firestore 'events' collection with a 100-event limit and caches them locally.
+  /// Calls [notifyListeners] after loading. Only fetches once per session.
   Future<void> loadEvents() async {
     if (_events.isNotEmpty) return;
     final querySnapshot = await FirebaseFirestore.instance
@@ -106,6 +126,8 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Sets up a real-time stream listener for announcements from the Firestore 'announcements' collection.
+  /// Automatically updates the announcements list when new announcements are added. Calls [notifyListeners] on updates.
   void loadAnnouncements() {
     // Cancel any existing subscription to prevent duplicates
     _announcementsSubscription?.cancel();
@@ -128,17 +150,28 @@ class AppState extends ChangeNotifier {
               date: data['date'] != null
                   ? (data['date'] as Timestamp).toDate()
                   : DateTime.now(),
-              authorId: data['authorId'] ?? '',
+              imageUrl: data['imageUrl'],
+              time: null, // Set if you store time separately
+              venue: data['venue'],
+              description: data['description'],
             );
           }).toList();
           notifyListeners();
         });
   }
 
-  bool get isAuthenticated => userId != null;
+  /// Returns true if a user is currently logged in (userId is not null and not empty).
+  bool get isAuthenticated => userId != null && userId!.isNotEmpty;
 
-  bool get isGuest => userId != null && userId!.startsWith('guest');
+  /// Returns true if the current user is a guest (userId equals exactly 'guest').
+  bool get isGuest => userId != null && userId == 'guest';
 
+  /// Returns the pending admin login flag status.
+  bool get isPendingAdminLogin => _pendingAdminLogin;
+
+  /// Loads the list of society IDs that the user with [userId] has joined from the Firestore 'memberships' collection.
+  /// [userId] The ID of the user to load memberships for.
+  /// Calls [notifyListeners] after loading.
   Future<void> loadJoinedSocieties(String userId) async {
     try {
       final ids = await SocietyService().getJoinedSocietyIds(userId);
@@ -150,8 +183,9 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  /// Fetches societies where [userId] is a member and stores them in
-  /// `_mySocieties`, then notifies listeners.
+  /// Fetches full Society objects for all societies the user is a member of from the Firestore 'memberships' collection.
+  /// [userId] The ID of the user to fetch societies for.
+  /// Populates [_mySocieties] with complete society data and calls [notifyListeners] after loading.
   Future<void> fetchMySocieties(String userId) async {
     try {
       final membershipSnapshot = await FirebaseFirestore.instance
@@ -171,14 +205,14 @@ class AppState extends ChangeNotifier {
               .get();
           if (doc.exists) {
             final data = doc.data();
-            results.add(Society(
-              id: doc.id,
-              name: data?['name'] ?? 'Unknown Society',
-              category: data?['category'] ?? 'General',
-              description: data?['description'] ?? '',
-              createdBy: data?['createdBy'] ?? '',
-              createdByEmail: data?['createdByEmail'] ?? '',
-            ));
+            results.add(
+              Society(
+                id: doc.id,
+                name: data?['name'] ?? 'Unknown Society',
+                category: data?['category'] ?? 'General',
+                description: data?['description'] ?? '',
+              ),
+            );
           }
         } catch (e) {
           debugPrint('fetchMySocieties: failed to load society $sid: $e');
@@ -192,9 +226,12 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  Future<void> login({String? userId, String? userEmail, bool isAdmin = false}) async {
+  /// Sets the current user's ID and admin status and triggers data loading.
+  /// [userId] The ID of the user to log in (optional, defaults to existing userId).
+  /// [isAdmin] Whether the user has admin privileges (defaults to false).
+  /// Calls [notifyListeners], triggers [loadSocieties], [loadEvents], [loadAnnouncements]. For non-guest users, also loads joined societies and saved events.
+  Future<void> login({String? userId, bool isAdmin = false}) async {
     this.userId = userId ?? this.userId;
-    this.userEmail = userEmail ?? this.userEmail;
     this.isAdmin = isAdmin;
     notifyListeners();
 
@@ -209,6 +246,8 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  /// Clears all cached data and reloads societies and events in parallel.
+  /// Calls [notifyListeners] after reloading. Streams are set up separately via [loadAnnouncements].
   Future<void> refreshFeed() async {
     // Clear all data lists
     _societies.clear();
@@ -222,15 +261,17 @@ class AppState extends ChangeNotifier {
     loadAnnouncements();
   }
 
+  /// Clears all user data and resets the application state.
+  /// Clears all ID lists and cached data, cancels the announcements stream subscription, and calls [notifyListeners].
   void logout() {
     userId = null;
-    userEmail = null;
     isAdmin = false;
     _joinedSocietyIds.clear();
     _savedEventIds.clear();
 
     // Clear all cached data so fresh user gets a clean slate
     _societies.clear();
+    _mySocieties.clear();
     _events.clear();
     _announcements.clear();
 
@@ -247,21 +288,29 @@ class AppState extends ChangeNotifier {
     super.dispose();
   }
 
+  /// Returns the complete list of all available societies.
   List<Society> get societies => _societies;
 
-  /// Societies the current user is a member of.
+  /// Returns societies the current user is a member of.
   List<Society> get mySocieties => _mySocieties;
 
+  /// Returns the current list of announcements from all societies.
   List<Announcement> get announcements => _announcements;
 
+  /// Checks if the user has joined the society with the given [id].
   bool isJoined(String id) => _joinedSocietyIds.contains(id);
 
+  /// Returns a filtered list of societies the user has joined.
   List<Society> get joinedSocieties =>
       _societies.where((s) => _joinedSocietyIds.contains(s.id)).toList();
 
+  /// Returns a filtered list of societies the user has not joined.
   List<Society> get availableSocieties =>
       _societies.where((s) => !_joinedSocietyIds.contains(s.id)).toList();
 
+  /// Adds a society to the user's joined list and persists the membership to Firestore.
+  /// [id] The ID of the society to join.
+  /// Calls [notifyListeners]. For authenticated users, writes to the Firestore 'memberships' collection via [SocietyService].
   Future<void> joinSociety(String id) async {
     if (!_joinedSocietyIds.contains(id)) {
       _joinedSocietyIds.add(id);
@@ -276,6 +325,9 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  /// Removes a society from the user's joined list and updates Firestore.
+  /// [id] The ID of the society to leave.
+  /// Calls [notifyListeners]. For authenticated users, deletes from the Firestore 'memberships' collection via [SocietyService].
   Future<void> leaveSociety(String id) async {
     _joinedSocietyIds.remove(id);
     notifyListeners();
@@ -288,24 +340,20 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  /// Creates a new society with the given details and writes it to Firestore.
+  /// [name] The name of the society.
+  /// [category] The category of the society.
+  /// [description] A description of the society.
+  /// Generates a unique ID, adds to [_societies], calls [notifyListeners], and writes to Firestore 'societies' collection.
   void createSociety({
     required String name,
     required String category,
     required String description,
   }) {
-    final creatorId = userId ?? '';
-    final creatorEmail = userEmail ?? '';
     final id =
         '${name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-')}-${DateTime.now().millisecondsSinceEpoch}';
     _societies.add(
-      Society(
-        id: id,
-        name: name,
-        category: category,
-        description: description,
-        createdBy: creatorId,
-        createdByEmail: creatorEmail,
-      ),
+      Society(id: id, name: name, category: category, description: description),
     );
     notifyListeners();
 
@@ -314,111 +362,62 @@ class AppState extends ChangeNotifier {
         'name': name,
         'category': category,
         'description': description,
-        'createdBy': creatorId,
-        'createdByEmail': creatorEmail,
       });
     } catch (e) {
       debugPrint('createSociety Firestore error: $e');
     }
   }
 
-  bool canDeleteSociety(Society society) {
-    final normalizedEmail = userEmail?.trim().toLowerCase();
-    return isAdmin && (
-      (userId != null && society.createdBy == userId) ||
-      (normalizedEmail != null && normalizedEmail.isNotEmpty && society.createdByEmail.toLowerCase() == normalizedEmail)
-    );
-  }
-
-  Future<void> deleteSociety(String societyId) async {
-    _societies.removeWhere((society) => society.id == societyId);
-    _joinedSocietyIds.remove(societyId);
-    _mySocieties.removeWhere((society) => society.id == societyId);
-    notifyListeners();
-
-    try {
-      await FirebaseFirestore.instance.collection('societies').doc(societyId).delete();
-    } catch (e) {
-      debugPrint('deleteSociety Firestore error: $e');
-    }
-  }
-
+  /// Creates a new announcement for a society and writes it to Firestore.
+  /// [societyId] The ID of the society posting the announcement.
+  /// [title] The title of the announcement.
+  /// [content] The body content of the announcement.
+  /// [imageUrl] An optional image URL for the announcement.
+  /// Inserts at beginning of [_announcements], calls [notifyListeners], and writes to Firestore 'announcements' collection with server timestamp.
   void createAnnouncement({
     required String societyId,
     required String title,
     required String content,
+    String? imageUrl,
   }) {
-    final author = userId ?? '';
-    final announcementId = 'a-${DateTime.now().millisecondsSinceEpoch}';
     _announcements.insert(
       0,
       Announcement(
-        id: announcementId,
+        id: 'a-${DateTime.now().millisecondsSinceEpoch}',
         societyId: societyId,
         title: title,
         content: content,
         date: DateTime.now(),
-        authorId: author,
+        imageUrl: imageUrl,
+        time: null, // Set if needed
+        venue: '',
+        description: '',
       ),
     );
     notifyListeners();
 
     try {
-      FirebaseFirestore.instance.collection('announcements').doc(announcementId).set({
+      FirebaseFirestore.instance.collection('announcements').add({
         'societyId': societyId,
         'title': title,
         'content': content,
-        'authorId': author,
         'date': FieldValue.serverTimestamp(),
+        if (imageUrl != null) 'imageUrl': imageUrl,
       });
     } catch (e) {
       debugPrint('createAnnouncement Firestore error: $e');
     }
   }
 
-  /// Delete announcement by id. Removes locally and attempts Firestore delete.
-  Future<void> deleteAnnouncement(String id) async {
-    _announcements.removeWhere((a) => a.id == id);
-    notifyListeners();
-
-    try {
-      await FirebaseFirestore.instance.collection('announcements').doc(id).delete();
-    } catch (e) {
-      // It's possible the id is a temporary local id (created before Firestore returns)
-      // In that case, attempts to delete the document may fail; log and continue.
-      debugPrint('deleteAnnouncement Firestore error: $e');
-    }
-  }
-
-  Future<void> editAnnouncement({
-    required String id,
-    required String title,
-    required String content,
-  }) async {
-    final index = _announcements.indexWhere((a) => a.id == id);
-    if (index != -1) {
-      final existing = _announcements[index];
-      _announcements[index] = Announcement(
-        id: existing.id,
-        societyId: existing.societyId,
-        title: title,
-        content: content,
-        date: existing.date,
-        authorId: existing.authorId,
-      );
-      notifyListeners();
-    }
-
-    try {
-      await FirebaseFirestore.instance.collection('announcements').doc(id).update({
-        'title': title,
-        'content': content,
-      });
-    } catch (e) {
-      debugPrint('editAnnouncement Firestore error: $e');
-    }
-  }
-
+  /// Creates a new event for a society and writes it to Firestore.
+  /// [societyId] The ID of the society hosting the event.
+  /// [title] The title of the event.
+  /// [description] A detailed description of the event.
+  /// [date] The date the event occurs.
+  /// [startTime] The start time of the event.
+  /// [endTime] The end time of the event.
+  /// [venue] The location where the event takes place.
+  /// Generates unique ID, inserts at beginning of [_events], calls [notifyListeners], and writes to Firestore 'events' collection.
   void createEvent({
     required String societyId,
     required String title,
@@ -464,6 +463,8 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  /// Helper method that returns the name of a society by its [id].
+  /// Returns 'Society' if the ID is not found.
   String societyNameById(String id) {
     for (final society in _societies) {
       if (society.id == id) {
@@ -473,16 +474,24 @@ class AppState extends ChangeNotifier {
     return 'Society';
   }
 
+  /// Returns the complete list of all upcoming events.
   List<Event> get events => _events;
 
+  /// Checks if the event with the given [id] has been saved by the user.
   bool isEventSaved(String id) => _savedEventIds.contains(id);
 
+  /// Returns a filtered list of events the user has saved/bookmarked.
   List<Event> get savedEvents =>
       _events.where((e) => _savedEventIds.contains(e.id)).toList();
 
+  /// Returns a filtered list of events for a specific society.
+  /// [societyId] The ID of the society to filter events for.
   List<Event> eventsForSociety(String societyId) =>
       _events.where((e) => e.societyId == societyId).toList();
 
+  /// Adds an event to the user's saved events list and persists to Firestore.
+  /// [id] The ID of the event to save.
+  /// Calls [notifyListeners]. For authenticated users, writes to the Firestore 'savedEvents' collection via [persistSaveEvent].
   void saveEvent(String id) {
     if (!_savedEventIds.contains(id)) {
       _savedEventIds.add(id);
@@ -497,6 +506,9 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  /// Removes an event from the user's saved events list and updates Firestore.
+  /// [id] The ID of the event to unsave.
+  /// Calls [notifyListeners]. For authenticated users, deletes from the Firestore 'savedEvents' collection via [persistUnsaveEvent].
   void unsaveEvent(String id) {
     _savedEventIds.remove(id);
     notifyListeners();
@@ -509,7 +521,10 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  /// Persist a saved event to Firestore for the given user.
+  /// Writes a saved event record to the Firestore 'savedEvents' collection for the given user.
+  /// [userId] The ID of the user saving the event.
+  /// [eventId] The ID of the event being saved.
+  /// Creates a document with userId, eventId, and server timestamp. Throws on error.
   Future<void> persistSaveEvent(String userId, String eventId) async {
     try {
       await FirebaseFirestore.instance
@@ -526,7 +541,10 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  /// Remove a saved event document for the given user/event.
+  /// Deletes a saved event record from the Firestore 'savedEvents' collection.
+  /// [userId] The ID of the user unsaving the event.
+  /// [eventId] The ID of the event being unsaved.
+  /// Deletes the document from 'savedEvents' collection. Throws on error.
   Future<void> persistUnsaveEvent(String userId, String eventId) async {
     try {
       await FirebaseFirestore.instance
@@ -539,7 +557,9 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  /// Load saved events for a user from Firestore into local state.
+  /// Loads saved event IDs from the Firestore 'savedEvents' collection for a user.
+  /// [userId] The ID of the user to load saved events for.
+  /// Populates [_savedEventIds] list and calls [notifyListeners].
   Future<void> loadSavedEvents(String userId) async {
     try {
       final snapshot = await FirebaseFirestore.instance
