@@ -19,22 +19,30 @@ class AppState extends ChangeNotifier {
 
   StreamSubscription<QuerySnapshot>? _announcementsSubscription;
 
-  AppState() {
-    // Remove Firebase.apps.isEmpty check, not needed in this context
+  AppState({bool skipFirebase = false}) {
+    if (!skipFirebase) {
+      _initFirebaseListener();
+    }
+  }
 
-    FirebaseAuth.instance.authStateChanges().listen((user) {
-      if (user != null) {
-        final normalizedEmail = user.email?.trim().toLowerCase();
-        final isCommitteeAdmin = normalizedEmail == _committeeAdminEmail;
-        login(
-          userId: user.uid,
-          isAdmin: _pendingAdminLogin || isCommitteeAdmin,
-        );
-        _pendingAdminLogin = false;
-      } else {
-        logout();
-      }
-    });
+  void _initFirebaseListener() {
+    try {
+      FirebaseAuth.instance.authStateChanges().listen((user) {
+        if (user != null) {
+          final normalizedEmail = user.email?.trim().toLowerCase();
+          final isCommitteeAdmin = normalizedEmail == _committeeAdminEmail;
+          login(
+            userId: user.uid,
+            isAdmin: _pendingAdminLogin || isCommitteeAdmin,
+          );
+          _pendingAdminLogin = false;
+        } else {
+          logout();
+        }
+      });
+    } catch (e) {
+      debugPrint('Firebase not initialized, auth listener skipped: $e');
+    }
   }
 
   void setAdminPending(bool value) {
@@ -133,9 +141,9 @@ class AppState extends ChangeNotifier {
         });
   }
 
-  bool get isAuthenticated => userId != null;
+  bool get isAuthenticated => userId != null && userId!.isNotEmpty;
 
-  bool get isGuest => userId != null && userId!.startsWith('guest');
+  bool get isGuest => userId != null && userId == 'guest';
 
   Future<void> loadJoinedSocieties(String userId) async {
     try {
