@@ -186,14 +186,26 @@ class SocietyDetailScreen extends StatelessWidget {
                               return ListView.builder(
                                 controller: scrollController,
                                 itemCount: posts.length,
-                                itemBuilder
-                              )
-                            }
-                          )
-                        }
-                      )
-                    }
-                    ,)
+                                itemBuilder: (context, index) {
+                                  final post = posts[index];
+                                  return Card(
+                                    margin: const EdgeInsets.all(12),
+                                    child: ListTile(
+                                      title: Text(post.title),
+                                      subtitle: Text(post.content),
+                                      trail: post.imageUrl != null
+                                          ? Image.network(post.imageUrl!)
+                                          : null,
+                                    ),
+                                  ),
+                                },
+                              ),
+                            },
+                          ),
+                        },
+                      ),
+                    },
+                  ),
                 ],
               ),
             ),
