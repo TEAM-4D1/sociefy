@@ -40,10 +40,20 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
           ),
           Consumer<AppState>(
             builder: (context, appState, _) {
-              final categories = appState.societies
-                  .map((s) => s.category)
-                  .toSet()
-                  .toList();
+              final categories = <String>[];
+              final categoryKeys = <String>{};
+
+              for (final society in appState.societies) {
+                final category = society.category.trim();
+                if (category.isEmpty) {
+                  continue;
+                }
+
+                final normalizedCategory = category.toLowerCase();
+                if (categoryKeys.add(normalizedCategory)) {
+                  categories.add(category);
+                }
+              }
 
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -62,7 +72,9 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
                       ...categories.map(
                         (category) => FilterChip(
                           label: Text(category),
-                          selected: _selectedCategory == category,
+                          selected:
+                              _selectedCategory?.trim().toLowerCase() ==
+                              category.toLowerCase(),
                           onSelected: (_) {
                             setState(() => _selectedCategory = category);
                           },
@@ -107,8 +119,9 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
                         society.name.toLowerCase().contains(query) ||
                         society.category.toLowerCase().contains(query);
                     final matchesCategory =
-                        _selectedCategory == null ||
-                        society.category == _selectedCategory;
+                      _selectedCategory == null ||
+                      society.category.trim().toLowerCase() ==
+                        _selectedCategory!.trim().toLowerCase();
                     return matchesSearch && matchesCategory;
                   }).toList();
 
