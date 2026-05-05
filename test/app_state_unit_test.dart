@@ -194,7 +194,7 @@ void main() {
 
     test('joinSociety() marks society as joined (guest user)', () async {
       final appState = AppState(skipFirebase: true);
-      appState.userId = 'guest'; // set directly — avoids Firebase load calls
+      appState.userId = 'guest';
       appState.createSociety(
         name: 'Chess Club',
         category: 'Academic',
@@ -360,6 +360,10 @@ void main() {
         societyId: 'soc-1',
         title: 'Event Tonight',
         content: 'Come at 7pm',
+        venue: 'Room 1',
+        startTime: '19:00',
+        endTime: '21:00',
+        date: DateTime(2026, 6, 1),
       );
       expect(appState.announcements.length, equals(1));
       expect(appState.announcements.first.title, equals('Event Tonight'));
@@ -371,11 +375,19 @@ void main() {
         societyId: 'soc-1',
         title: 'First',
         content: 'Content',
+        venue: 'Room 1',
+        startTime: '10:00',
+        endTime: '11:00',
+        date: DateTime(2026, 6, 1),
       );
       appState.createAnnouncement(
         societyId: 'soc-1',
         title: 'Second',
         content: 'Content',
+        venue: 'Room 2',
+        startTime: '12:00',
+        endTime: '13:00',
+        date: DateTime(2026, 6, 2),
       );
       expect(appState.announcements.first.title, equals('Second'));
     });
@@ -403,7 +415,11 @@ void main() {
 
     test('createEvent() adds event to events list', () {
       final appState = AppState(skipFirebase: true);
-      appState.createSociety(name: 'CS Club', category: 'Tech', description: 'D');
+      appState.createSociety(
+        name: 'CS Club',
+        category: 'Tech',
+        description: 'D',
+      );
       appState.createEvent(
         societyId: appState.societies.first.id,
         title: 'Hackathon',
@@ -419,8 +435,16 @@ void main() {
 
     test('eventsForSociety() returns only events for that society', () {
       final appState = AppState(skipFirebase: true);
-      appState.createSociety(name: 'CS Club', category: 'Tech', description: 'D');
-      appState.createSociety(name: 'Art Club', category: 'Arts', description: 'D');
+      appState.createSociety(
+        name: 'CS Club',
+        category: 'Tech',
+        description: 'D',
+      );
+      appState.createSociety(
+        name: 'Art Club',
+        category: 'Arts',
+        description: 'D',
+      );
       final csId = appState.societies[0].id;
       final artId = appState.societies[1].id;
       appState.createEvent(

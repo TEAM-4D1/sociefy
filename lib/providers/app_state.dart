@@ -382,7 +382,12 @@ class AppState extends ChangeNotifier {
     required String title,
     required String content,
     String? imageUrl,
+    String? venue,
+    String? startTime,
+    String? endTime,
+    DateTime? date,
   }) {
+    final announcementDate = date ?? DateTime.now();
     _announcements.insert(
       0,
       Announcement(
@@ -390,10 +395,10 @@ class AppState extends ChangeNotifier {
         societyId: societyId,
         title: title,
         content: content,
-        date: DateTime.now(),
+        date: announcementDate,
         imageUrl: imageUrl,
-        time: null, // Set if needed
-        venue: '',
+        time: null,
+        venue: venue ?? '',
         description: '',
       ),
     );
@@ -406,6 +411,9 @@ class AppState extends ChangeNotifier {
         'content': content,
         'date': FieldValue.serverTimestamp(),
         if (imageUrl != null) 'imageUrl': imageUrl,
+        if (venue != null) 'venue': venue,
+        if (startTime != null) 'startTime': startTime,
+        if (endTime != null) 'endTime': endTime,
       });
     } catch (e) {
       debugPrint('createAnnouncement Firestore error: $e');
