@@ -192,6 +192,7 @@ class _SignInScreenState extends State<SignInScreen>
                               userId: 'guest',
                               isAdmin: false,
                             );
+                            if (!mounted) return;
                           },
                           child: const Text('Continue as Guest'),
                         ),
