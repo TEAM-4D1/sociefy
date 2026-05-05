@@ -260,3 +260,7 @@ class _SignInScreenState extends State<SignInScreen>
     );
   }
 }
+
+class RegisterScreen {
+  const RegisterScreen();
+}
