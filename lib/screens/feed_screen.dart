@@ -397,9 +397,19 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
   }
 
   Future<String?> _uploadImage(XFile image) async {
-    // TODO: Implement upload to Firebase Storage or your backend and return the URL
-    // For now, just return null (no upload)
-    return null;
+    try {
+      final storageRef = FirebaseStorage.instance.ref();
+      final fileName =
+          'post_images/${DateTime.now().millisecondsSinceEpoch}_${image.name}';
+      final imageRef = storageRef.child(fileName);
+      final uploadTask = imageRef.putFile(File(image.path));
+      final snapshot = await uploadTask;
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      debugPrint('Image upload error: $e');
+      return null;
+    }
   }
 
   @override
