@@ -12,8 +12,11 @@ class CommitteeSignInScreen extends StatefulWidget {
 }
 
 class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
-  static const String _adminEmail = 'jburfoot12@gmail.com';
-  static const String _adminPassword = '111444';
+  // Map of valid admin credentials
+  static const Map<String, String> _validAdminCredentials = {
+    'jburfoot12@gmail.com': '111444',
+    'up2306278@myport.ac.uk': '123456',
+  };
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
@@ -31,23 +34,13 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
   Future<void> _signInAsCommitteeOrAdmin(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
 
-    final enteredEmail = _emailController.text.trim();
+    final enteredEmail = _emailController.text.trim().toLowerCase();
     final enteredPassword = _passwordController.text.trim();
 
-    if (enteredEmail.toLowerCase().contains('myport')) {
+    if (_validAdminCredentials[enteredEmail] != enteredPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('MyPort emails are not allowed on committee sign in.'),
-        ),
-      );
-      return;
-    }
-
-    if (enteredEmail.toLowerCase() != _adminEmail ||
-        enteredPassword != _adminPassword) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Only the authorized committee admin can sign in here.'),
+          content: Text('Invalid admin credentials.'),
         ),
       );
       return;
