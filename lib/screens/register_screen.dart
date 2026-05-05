@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:sociefy/screens/sign_in_screen.dart';
 import '../services/auth_service.dart';
 
+/// Allows new students to create an account with display name, email, and password.
+/// Includes form validation and navigation back to SignInScreen.
+/// Accessible only to unauthenticated users.
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
 
@@ -37,6 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     super.dispose();
   }
 
+  /// Validates form input and creates a new user account via Firebase Authentication with the provided display name.
   Future<void> _register(
     BuildContext context, {
     required String displayName,

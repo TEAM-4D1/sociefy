@@ -3,6 +3,9 @@ import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
 import 'event_detail_screen.dart';
 
+/// Displays the user's bookmarked/saved events with quick access to event details.
+/// Allows users to remove events from their saved list and navigate to detailed event information.
+/// Accessible only to authenticated students and admins; guests cannot save events.
 class SavedEventsScreen extends StatelessWidget {
   const SavedEventsScreen({Key? key}) : super(key: key);
 

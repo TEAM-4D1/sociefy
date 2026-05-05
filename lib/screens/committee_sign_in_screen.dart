@@ -4,6 +4,9 @@ import 'package:sociefy/main_tabs.dart';
 import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/services/auth_service.dart';
 
+/// Provides dedicated authentication for committee members and admins with email/password login.
+/// Checks against the committee admin email to grant administrative privileges.
+/// Accessible only to authorized committee members and admins.
 class CommitteeSignInScreen extends StatefulWidget {
   const CommitteeSignInScreen({super.key});
 
@@ -28,6 +31,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
     super.dispose();
   }
 
+  /// Validates committee/admin credentials and signs in the user via Firebase Authentication with admin status detection.
   Future<void> _signInAsCommitteeOrAdmin(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
 

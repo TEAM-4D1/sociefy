@@ -6,6 +6,9 @@ import 'package:add_2_calendar/add_2_calendar.dart' as add2;
 import '../models/event.dart';
 import '../providers/app_state.dart';
 
+/// Displays detailed information about a specific event including title, description, date, time, and venue.
+/// Users can save events, view the hosting society, and add to calendar.
+/// Accessible to all authenticated users; guests can view but cannot save or RSVP.
 class EventDetailScreen extends StatefulWidget {
   final Event event;
   final String userId;
@@ -33,6 +36,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     _checkRsvpStatus();
   }
 
+  /// Checks if the user has already RSVP'd to the event by querying Firestore 'rsvps' collection.
   Future<void> _checkRsvpStatus() async {
     // Skip Firestore lookup for guest users — userId is empty or 'guest'
     if (widget.userId.isEmpty || widget.userId.startsWith('guest')) return;

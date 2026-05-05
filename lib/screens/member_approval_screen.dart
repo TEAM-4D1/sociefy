@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// Admin-only interface for approving or rejecting pending society membership requests.
+/// Displays pending members with buttons to accept or deny applications.
+/// Accessible only to admin users; students and guests cannot access this screen.
 class MemberApprovalScreen extends StatefulWidget {
   final String societyId;
 

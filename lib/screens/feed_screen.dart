@@ -91,6 +91,9 @@ class _AnnouncementCard extends StatelessWidget {
   }
 }
 
+/// Displays the main announcements feed with real-time updates from all societies.
+/// Provides admin capabilities to create societies and announcements. Shows pull-to-refresh functionality.
+/// Accessible to authenticated students and admins; guests can view but not create.
 class FeedScreen extends StatefulWidget {
   const FeedScreen({Key? key}) : super(key: key);
 
@@ -99,6 +102,7 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
+  /// Shows a dialog for creating a new society and creates it if confirmed.
   Future<void> _showCreateSocietyDialog(BuildContext context) async {
     final result = await showDialog<_CreateSocietyResult>(
       context: context,
@@ -117,6 +121,7 @@ class _FeedScreenState extends State<FeedScreen> {
     }
   }
 
+  /// Shows a dialog for creating a new announcement/post for a society and creates it if confirmed.
   Future<void> _showCreatePostDialog(BuildContext context) async {
     final appState = context.read<AppState>();
     final societies = List.of(appState.societies);
@@ -388,6 +393,7 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
     super.dispose();
   }
 
+  /// Allows the user to select an image from the device gallery for attachment to announcements.
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);

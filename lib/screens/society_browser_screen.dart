@@ -3,6 +3,9 @@ import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
 import 'society_detail_screen.dart';
 
+/// Allows users to discover and search all available societies with category filtering.
+/// Displays society cards and enables navigation to detailed society information.
+/// Accessible to all authenticated users; guests can browse but cannot join societies.
 class SocietyBrowserScreen extends StatefulWidget {
   const SocietyBrowserScreen({super.key});
 
