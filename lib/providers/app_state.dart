@@ -1,8 +1,8 @@
 import '../models/society.dart';
+
 import '../models/event.dart';
 import '../models/announcement.dart';
 import '../services/society_service.dart';
-
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -110,6 +110,7 @@ class AppState extends ChangeNotifier {
               date: data['date'] != null
                   ? (data['date'] as Timestamp).toDate()
                   : DateTime.now(),
+              imageUrl: data['imageUrl'],
             );
           }).toList();
           notifyListeners();
