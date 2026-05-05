@@ -36,6 +36,12 @@ class Society {
   /// Used to allow the creator admin to manage or delete the society.
   final String createdBy;
 
+  /// Email address of the creator/owner of this society.
+  ///
+  /// Stored alongside the UID so creator ownership can still be matched when
+  /// the app loads older records or the auth identifier changes.
+  final String createdByEmail;
+
   /// Creates a `Society` instance from a map (for example Firestore data).
   ///
   /// Missing keys are treated gracefully by using sensible defaults
@@ -48,6 +54,7 @@ class Society {
       category: map['category'] as String? ?? '',
       description: map['description'] as String? ?? '',
       createdBy: map['createdBy'] as String? ?? '',
+      createdByEmail: map['createdByEmail'] as String? ?? '',
     );
   }
 
@@ -58,6 +65,7 @@ class Society {
     required this.category,
     required this.description,
     this.createdBy = '',
+    this.createdByEmail = '',
   });
 
   /// Returns a copy of this `Society` with the given fields replaced.
@@ -71,6 +79,7 @@ class Society {
     String? category,
     String? description,
     String? createdBy,
+    String? createdByEmail,
   }) {
     return Society(
       id: id ?? this.id,
@@ -78,6 +87,7 @@ class Society {
       category: category ?? this.category,
       description: description ?? this.description,
       createdBy: createdBy ?? this.createdBy,
+      createdByEmail: createdByEmail ?? this.createdByEmail,
     );
   }
 }

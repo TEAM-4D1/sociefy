@@ -174,50 +174,64 @@ class _SocietyBrowserCardState extends State<_SocietyBrowserCard> {
             },
             child: Stack(
               children: [
-                ListTile(
-                  title: Text(widget.society.name),
-                  subtitle: Text(widget.society.category),
-                  trailing: const Icon(Icons.chevron_right),
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: ListTile(
+                    title: Text(widget.society.name),
+                    subtitle: Text(widget.society.category),
+                    trailing: Icon(
+                      canDelete ? Icons.expand_more : Icons.chevron_right,
+                    ),
+                  ),
                 ),
                 if (canDelete && _showActions)
                   Positioned(
-                    top: 4,
-                    right: 4,
-                    child: IconButton(
-                      tooltip: 'Delete society',
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () async {
-                        final confirmed = await showDialog<bool>(
-                          context: context,
-                          builder: (dialogContext) => AlertDialog(
-                            title: const Text('Delete society'),
-                            content: Text(
-                              'Delete ${widget.society.name}? This cannot be undone.',
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.92),
+                        borderRadius: const BorderRadius.only(
+                          topRight: Radius.circular(12),
+                          bottomLeft: Radius.circular(12),
+                        ),
+                      ),
+                      child: IconButton(
+                        tooltip: 'Delete society',
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () async {
+                          final confirmed = await showDialog<bool>(
+                            context: context,
+                            builder: (dialogContext) => AlertDialog(
+                              title: const Text('Delete society'),
+                              content: Text(
+                                'Delete ${widget.society.name}? This cannot be undone.',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                                  child: const Text('Cancel'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () => Navigator.of(dialogContext).pop(true),
+                                  child: const Text('Delete'),
+                                ),
+                              ],
                             ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(dialogContext).pop(false),
-                                child: const Text('Cancel'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () => Navigator.of(dialogContext).pop(true),
-                                child: const Text('Delete'),
-                              ),
-                            ],
-                          ),
-                        );
+                          );
 
-                        if (confirmed == true) {
-                          await context.read<AppState>().deleteSociety(widget.society.id);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('${widget.society.name} deleted'),
-                              ),
-                            );
+                          if (confirmed == true) {
+                            await context.read<AppState>().deleteSociety(widget.society.id);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('${widget.society.name} deleted'),
+                                ),
+                              );
+                            }
                           }
-                        }
-                      },
+                        },
+                      ),
                     ),
                   ),
               ],

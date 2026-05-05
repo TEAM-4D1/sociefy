@@ -13,6 +13,7 @@ class AppState extends ChangeNotifier {
   static const String _committeeAdminEmail = 'jburfoot12@gmail.com';
 
   String? userId;
+  String? userEmail;
   bool isAdmin = false;
   bool _pendingAdminLogin = false;
 
@@ -29,6 +30,7 @@ class AppState extends ChangeNotifier {
         final isCommitteeAdmin = normalizedEmail == _committeeAdminEmail;
         login(
           userId: user.uid,
+          userEmail: normalizedEmail,
           isAdmin: _pendingAdminLogin || isCommitteeAdmin,
         );
         _pendingAdminLogin = false;
@@ -66,6 +68,7 @@ class AppState extends ChangeNotifier {
         category: data['category'] ?? 'General',
         description: data['description'] ?? '',
         createdBy: data['createdBy'] ?? '',
+        createdByEmail: data['createdByEmail'] ?? '',
       );
     }).toList();
     notifyListeners();
@@ -174,6 +177,7 @@ class AppState extends ChangeNotifier {
               category: data?['category'] ?? 'General',
               description: data?['description'] ?? '',
               createdBy: data?['createdBy'] ?? '',
+              createdByEmail: data?['createdByEmail'] ?? '',
             ));
           }
         } catch (e) {
@@ -188,8 +192,9 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  Future<void> login({String? userId, bool isAdmin = false}) async {
+  Future<void> login({String? userId, String? userEmail, bool isAdmin = false}) async {
     this.userId = userId ?? this.userId;
+    this.userEmail = userEmail ?? this.userEmail;
     this.isAdmin = isAdmin;
     notifyListeners();
 
@@ -219,6 +224,7 @@ class AppState extends ChangeNotifier {
 
   void logout() {
     userId = null;
+    userEmail = null;
     isAdmin = false;
     _joinedSocietyIds.clear();
     _savedEventIds.clear();
@@ -288,6 +294,7 @@ class AppState extends ChangeNotifier {
     required String description,
   }) {
     final creatorId = userId ?? '';
+    final creatorEmail = userEmail ?? '';
     final id =
         '${name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-')}-${DateTime.now().millisecondsSinceEpoch}';
     _societies.add(
@@ -297,6 +304,7 @@ class AppState extends ChangeNotifier {
         category: category,
         description: description,
         createdBy: creatorId,
+        createdByEmail: creatorEmail,
       ),
     );
     notifyListeners();
@@ -307,6 +315,7 @@ class AppState extends ChangeNotifier {
         'category': category,
         'description': description,
         'createdBy': creatorId,
+        'createdByEmail': creatorEmail,
       });
     } catch (e) {
       debugPrint('createSociety Firestore error: $e');
@@ -314,7 +323,11 @@ class AppState extends ChangeNotifier {
   }
 
   bool canDeleteSociety(Society society) {
-    return isAdmin && userId != null && society.createdBy == userId;
+    final normalizedEmail = userEmail?.trim().toLowerCase();
+    return isAdmin && (
+      (userId != null && society.createdBy == userId) ||
+      (normalizedEmail != null && normalizedEmail.isNotEmpty && society.createdByEmail.toLowerCase() == normalizedEmail)
+    );
   }
 
   Future<void> deleteSociety(String societyId) async {

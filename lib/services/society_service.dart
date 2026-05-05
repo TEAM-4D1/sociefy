@@ -20,6 +20,7 @@ class SocietyService {
           category: data['category'] ?? '',
           description: data['description'] ?? '',
           createdBy: data['createdBy'] ?? '',
+          createdByEmail: data['createdByEmail'] ?? '',
         );
       }).toList();
     } catch (e) {
