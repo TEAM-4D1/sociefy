@@ -1,4 +1,46 @@
 {
   "version": "0.2",
-  "words": ["sociefy", "swiftpm", "flutterfire", "firestore", "invalidemail"]
+  "language": "en",
+  "words": [
+    "sociefy",
+    "swiftpm",
+    "flutterfire",
+    "firestore",
+    "invalidemail",
+    "pubspec",
+    "buildcontext",
+    "notifylisteners",
+    "changenotifier",
+    "pumpwidget",
+    "pumpandsettle",
+    "testwidgets",
+    "findsonewidget",
+    "findsnothing",
+    "findswidgets",
+    "obscuretext",
+    "texteditingcontroller",
+    "dropdownbuttonformfield",
+    "scaffoldmessenger",
+    "initstate",
+    "appstate",
+    "appbar",
+    "apptheme",
+    "appcolours",
+    "apptextstyles",
+    "societyid",
+    "announcementid",
+    "groupchats",
+    "savedevents",
+    "joinedsocieties",
+    "leavesociety",
+    "joinsociety",
+    "createannouncement",
+    "createsociety"
+  ],
+  "ignorePaths": [
+    "pubspec.lock",
+    ".dart_tool/**",
+    "build/**",
+    ".flutter-plugins-dependencies"
+  ]
 }

@@ -34,8 +34,10 @@ class Announcement {
 }
 
 class AnnouncementHome extends StatefulWidget {
+  const AnnouncementHome({super.key});
+
   @override
-  _AnnouncementHomeState createState() => _AnnouncementHomeState();
+  State<AnnouncementHome> createState() => _AnnouncementHomeState();
 }
 
 class _AnnouncementHomeState extends State<AnnouncementHome> {
@@ -72,7 +74,7 @@ class _AnnouncementHomeState extends State<AnnouncementHome> {
 
   Future<void> _openCreatePage() async {
     final result = await Navigator.of(context).push<Announcement>(
-      MaterialPageRoute(builder: (_) => CreateAnnouncementPage()),
+      MaterialPageRoute(builder: (_) => const CreateAnnouncementPage()),
     );
 
     if (result != null) {
@@ -83,54 +85,53 @@ class _AnnouncementHomeState extends State<AnnouncementHome> {
 
   @override
   Widget build(BuildContext context) {
-    // Schedule removal for any announcements that don't have a timer yet
     for (final a in _announcements) {
       if (!_timers.containsKey(a)) {
         _scheduleAutoRemove(a);
       }
     }
     return Scaffold(
-      appBar: AppBar(title: Text('Society Announcements')),
+      appBar: AppBar(title: const Text('Society Announcements')),
       body: _announcements.isEmpty
           ? Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('No announcements yet.', style: TextStyle(fontSize: 18)),
-                  SizedBox(height: 12),
+                  const Text('No announcements yet.', style: TextStyle(fontSize: 18)),
+                  const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: _openCreatePage,
-                    child: Text('Post'),
+                    child: const Text('Post'),
                   ),
                 ],
               ),
             )
           : ListView.builder(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               itemCount: _announcements.length,
               itemBuilder: (context, i) {
                 final a = _announcements[i];
                 return Card(
-                  margin: EdgeInsets.symmetric(vertical: 8),
+                  margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
                     title: Text(
                       a.title,
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 6),
+                        const SizedBox(height: 6),
                         Text(a.description),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
                           a.dateTimeVenueString,
                           style: TextStyle(color: Colors.grey[700]),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
-                          'Ends: ' + a.endDateTime.toString(),
-                          style: TextStyle(fontSize: 12, color: Colors.red),
+                          'Ends: ${a.endDateTime}',
+                          style: const TextStyle(fontSize: 12, color: Colors.red),
                         ),
                       ],
                     ),
@@ -140,16 +141,18 @@ class _AnnouncementHomeState extends State<AnnouncementHome> {
             ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openCreatePage,
-        label: Text('Post'),
-        icon: Icon(Icons.post_add),
+        label: const Text('Post'),
+        icon: const Icon(Icons.post_add),
       ),
     );
   }
 }
 
 class CreateAnnouncementPage extends StatefulWidget {
+  const CreateAnnouncementPage({super.key});
+
   @override
-  _CreateAnnouncementPageState createState() => _CreateAnnouncementPageState();
+  State<CreateAnnouncementPage> createState() => _CreateAnnouncementPageState();
 }
 
 class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
@@ -160,8 +163,6 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
   DateTime? _selectedDate;
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
-
-  get _selectedTime => null;
 
   @override
   void dispose() {
@@ -183,14 +184,18 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
   }
 
   Future<void> _pickStartTime() async {
-    final now = TimeOfDay.now();
-    final picked = await showTimePicker(context: context, initialTime: now);
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
     if (picked != null) setState(() => _startTime = picked);
   }
 
   Future<void> _pickEndTime() async {
-    final now = TimeOfDay.now();
-    final picked = await showTimePicker(context: context, initialTime: now);
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
     if (picked != null) setState(() => _endTime = picked);
   }
 
@@ -198,7 +203,7 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedDate == null || _startTime == null || _endTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please pick date, start time, and end time')),
+        const SnackBar(content: Text('Please pick date, start time, and end time')),
       );
       return;
     }
@@ -217,31 +222,32 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
       _endTime!.hour,
       _endTime!.minute,
     );
+
     if (endDateTime.isBefore(startDateTime) ||
         endDateTime.isAtSameMomentAs(startDateTime)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('End time must be after start time')),
+        const SnackBar(content: Text('End time must be after start time')),
       );
       return;
     }
 
-    final announcement = Announcement(
-      title: _titleCtrl.text.trim(),
-      description: _descCtrl.text.trim(),
-      date: _selectedDate!,
-      time: _selectedTime!,
-      venue: _venueCtrl.text.trim(),
-      startDateTime: startDateTime,
-      endDateTime: endDateTime,
+    Navigator.of(context).pop(
+      Announcement(
+        title: _titleCtrl.text.trim(),
+        description: _descCtrl.text.trim(),
+        date: _selectedDate!,
+        time: _startTime!,
+        venue: _venueCtrl.text.trim(),
+        startDateTime: startDateTime,
+        endDateTime: endDateTime,
+      ),
     );
-
-    Navigator.of(context).pop(announcement);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Create Announcement')),
+      appBar: AppBar(title: const Text('Create Announcement')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -250,77 +256,62 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
             children: [
               TextFormField(
                 controller: _titleCtrl,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Title',
                   border: OutlineInputBorder(),
                 ),
-                validator: (v) => (v == null || v.trim().isEmpty)
-                    ? 'Please enter a title'
-                    : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Please enter a title' : null,
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _descCtrl,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Description',
                   border: OutlineInputBorder(),
                 ),
                 minLines: 3,
                 maxLines: 6,
-                validator: (v) => (v == null || v.trim().isEmpty)
-                    ? 'Please enter a description'
-                    : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Please enter a description' : null,
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _venueCtrl,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Venue',
                   border: OutlineInputBorder(),
                 ),
-                validator: (v) => (v == null || v.trim().isEmpty)
-                    ? 'Please enter a venue'
-                    : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Please enter a venue' : null,
               ),
-              SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: _pickDate,
-                      child: Text(
-                        _selectedDate == null
-                            ? 'Pick date'
-                            : '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}',
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: _pickStartTime,
-                      child: Text(
-                        _startTime == null
-                            ? 'Start time'
-                            : _startTime!.format(context),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: _pickEndTime,
-                      child: Text(
-                        _endTime == null
-                            ? 'Pick time'
-                            : '${_endTime!.format(context)}',
-                      ),
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 16),
+              ListTile(
+                title: Text(_selectedDate == null
+                    ? 'Pick a date'
+                    : 'Date: ${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}'),
+                trailing: const Icon(Icons.calendar_today),
+                onTap: _pickDate,
               ),
-              SizedBox(height: 20),
-              ElevatedButton(onPressed: _save, child: Text('Save')),
+              ListTile(
+                title: Text(_startTime == null
+                    ? 'Pick start time'
+                    : 'Start: ${_startTime!.format(context)}'),
+                trailing: const Icon(Icons.access_time),
+                onTap: _pickStartTime,
+              ),
+              ListTile(
+                title: Text(_endTime == null
+                    ? 'Pick end time'
+                    : 'End: ${_endTime!.format(context)}'),
+                trailing: const Icon(Icons.access_time_filled),
+                onTap: _pickEndTime,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: _save,
+                child: const Text('Save Announcement'),
+              ),
             ],
           ),
         ),
