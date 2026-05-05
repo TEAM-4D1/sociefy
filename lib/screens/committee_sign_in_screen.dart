@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/main_tabs.dart';
+import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/services/auth_service.dart';
 
 class CommitteeSignInScreen extends StatefulWidget {
@@ -12,9 +12,14 @@ class CommitteeSignInScreen extends StatefulWidget {
 }
 
 class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
+  static const String _adminEmail = 'jburfoot12@gmail.com';
+  static const String _adminPassword = '111444';
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -26,14 +31,41 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
   Future<void> _signInAsCommitteeOrAdmin(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
 
+    final enteredEmail = _emailController.text.trim();
+    final enteredPassword = _passwordController.text.trim();
+
+    if (enteredEmail.toLowerCase().contains('myport')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('MyPort emails are not allowed on committee sign in.'),
+        ),
+      );
+      return;
+    }
+
+    if (enteredEmail.toLowerCase() != _adminEmail ||
+        enteredPassword != _adminPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Only the authorized committee admin can sign in here.'),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
     // Set admin pending flag before Firebase auth
     final appState = Provider.of<AppState>(context, listen: false);
     appState.setAdminPending(true);
 
     final result = await AuthService().signIn(
-      _emailController.text.trim(),
-      _passwordController.text.trim(),
+      enteredEmail,
+      enteredPassword,
     );
+
+    if (!mounted) return;
+    setState(() => _isLoading = false);
 
     if (result == null) {
       appState.setAdminPending(false);
@@ -43,16 +75,10 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
       return;
     }
 
-    // Let authStateChanges listener handle login with admin flag
-    // Wait a bit for the listener to fire
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    if (mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute<void>(builder: (_) => const MainTabs()),
-        (route) => false,
-      );
-    }
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute<void>(builder: (_) => const MainTabs()),
+      (route) => false,
+    );
   }
 
   @override
@@ -125,7 +151,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _passwordController,
-                      obscureText: true,
+                      obscureText: _obscurePassword,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter committee/admin password';
@@ -136,6 +162,18 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
                         labelText: 'Committee/Admin Password',
                         filled: true,
                         fillColor: Colors.white,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -149,13 +187,25 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () {
+                        onPressed: _isLoading
+                            ? null
+                            : () {
                           if (_formKey.currentState!.validate()) {
                             _signInAsCommitteeOrAdmin(context);
                           }
                         },
-                        icon: const Icon(Icons.login),
-                        label: const Text('Sign in as Committee/Admin'),
+                        icon: _isLoading
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Icon(Icons.login),
+                        label: Text(
+                          _isLoading
+                              ? 'Signing in...'
+                              : 'Sign in as Committee/Admin',
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: const Color(0xFF4A148C),
@@ -168,45 +218,6 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
                             fontSize: 16,
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          side: const BorderSide(color: Colors.white),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        onPressed: () async {
-                          final appState = Provider.of<AppState>(
-                            context,
-                            listen: false,
-                          );
-
-                          // Guard: don't reload if already guest-committee
-                          if (appState.userId == 'guest-committee') {
-                            return;
-                          }
-
-                          await appState.login(
-                            userId: 'guest-committee',
-                            isAdmin: true,
-                          );
-                          if (mounted) {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute<void>(
-                                builder: (_) => const MainTabs(),
-                              ),
-                              (route) => false,
-                            );
-                          }
-                        },
-                        child: const Text('Continue as Guest Committee'),
                       ),
                     ),
                   ],

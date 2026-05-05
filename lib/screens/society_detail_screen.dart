@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/society.dart';
 import '../providers/app_state.dart';
+import '../services/society_service.dart';
 import '../theme/colours.dart';
 import '../theme/text_styles.dart';
 import 'event_detail_screen.dart';
@@ -183,7 +184,7 @@ class SocietyDetailScreen extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 height: 48,
-                child: ElevatedButton(
+                  child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isJoined
                         ? Colors.grey[300]
@@ -197,14 +198,38 @@ class SocietyDetailScreen extends StatelessWidget {
                     final messenger = ScaffoldMessenger.of(context);
 
                     if (isJoined) {
-                      await appState.leaveSociety(society.id);
+                      try {
+                        await appState.leaveSociety(society.id);
+                        messenger.showSnackBar(
+                          SnackBar(content: Text('Left ${society.name}')),
+                        );
+                      } catch (e) {
+                        messenger.showSnackBar(
+                          SnackBar(content: Text('Error leaving society: $e')),
+                        );
+                      }
+                      return;
+                    }
+
+                    // Joining path: call SocietyService.joinSociety and show result
+                    final userId = appState.userId;
+                    if (userId == null || appState.isGuest) {
                       messenger.showSnackBar(
-                        SnackBar(content: Text('Left ${society.name}')),
+                        const SnackBar(content: Text('Please sign in to join')),
                       );
-                    } else {
-                      await appState.joinSociety(society.id);
+                      return;
+                    }
+
+                    try {
+                      await SocietyService().joinSociety(userId, society.id);
+                      // Refresh local joined list from backend
+                      await appState.loadJoinedSocieties(userId);
                       messenger.showSnackBar(
                         SnackBar(content: Text('Joined ${society.name}')),
+                      );
+                    } catch (e) {
+                      messenger.showSnackBar(
+                        SnackBar(content: Text('Error joining society: $e')),
                       );
                     }
                   },

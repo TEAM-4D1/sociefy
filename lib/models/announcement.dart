@@ -1,3 +1,5 @@
+import 'package:flutter/src/material/time.dart';
+
 class Announcement {
   final String id;
   final String societyId;
@@ -12,6 +14,8 @@ class Announcement {
     required this.title,
     required this.content,
     required this.date,
-    this.imageUrl,
+    this.imageUrl, required TimeOfDay time, required String venue, required String description,
   });
+
+  get dateTimeVenueString => null;
 }
