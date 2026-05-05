@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:sociefy/providers/app_state.dart';
-
 import 'package:sociefy/screens/society_browser_screen.dart';
 
 void main() {
@@ -33,11 +32,28 @@ void main() {
       expect(find.byType(FilterChip), findsOneWidget);
     });
 
-    testWidgets('screen renders without crashing when AppState._societies is empty', (WidgetTester tester) async {
+    testWidgets('screen renders shimmer placeholders when societies list is empty', (WidgetTester tester) async {
       final appState = AppState(skipFirebase: true);
       await tester.pumpWidget(buildTestWidget(appState));
 
+      // Empty list → shimmer containers, NOT "No societies found."
       expect(find.byType(SocietyBrowserScreen), findsOneWidget);
+      expect(find.text('No societies found.'), findsNothing);
+    });
+
+    testWidgets('"No societies found." shows when search matches nothing', (WidgetTester tester) async {
+      final appState = AppState(skipFirebase: true);
+      appState.createSociety(
+        name: 'Chess Club',
+        category: 'Academic',
+        description: 'Chess',
+      );
+      await tester.pumpWidget(buildTestWidget(appState));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'no match query');
+      await tester.pumpAndSettle();
+
       expect(find.text('No societies found.'), findsOneWidget);
     });
 
@@ -151,7 +167,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Test Society'), findsOneWidget);
-      expect(find.text('Academic'), findsOneWidget);
+      // 'Academic' appears twice: once in the FilterChip and once in the ListTile subtitle
+      expect(find.text('Academic'), findsWidgets);
     });
 
     testWidgets('multiple societies render in list', (WidgetTester tester) async {
