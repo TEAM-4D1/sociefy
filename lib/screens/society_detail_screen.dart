@@ -166,6 +166,10 @@ class SocietyDetailScreen extends StatelessWidget {
                       );
                     },
                   ),
+
+                  const SizedBox(height: 32),
+
+                  ElevatedButton.icon,
                 ],
               ),
             ),
@@ -184,7 +188,7 @@ class SocietyDetailScreen extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 height: 48,
-                  child: ElevatedButton(
+                child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isJoined
                         ? Colors.grey[300]
