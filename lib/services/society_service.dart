@@ -19,6 +19,7 @@ class SocietyService {
           name: data['name'] ?? '',
           category: data['category'] ?? '',
           description: data['description'] ?? '',
+          createdBy: data['createdBy'] ?? '',
         );
       }).toList();
     } catch (e) {

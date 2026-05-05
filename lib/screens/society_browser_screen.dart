@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/society.dart';
 import '../providers/app_state.dart';
 import 'society_detail_screen.dart';
 
@@ -119,25 +120,9 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
                     itemCount: societies.length,
                     itemBuilder: (context, index) {
                       final society = societies[index];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: ListTile(
-                          title: Text(society.name),
-                          subtitle: Text(society.category),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    SocietyDetailScreen(society: society),
-                              ),
-                            );
-                          },
-                        ),
+                      return _SocietyBrowserCard(
+                        key: ValueKey(society.id),
+                        society: society,
                       );
                     },
                   );
@@ -147,6 +132,99 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _SocietyBrowserCard extends StatefulWidget {
+  final Society society;
+
+  const _SocietyBrowserCard({super.key, required this.society});
+
+  @override
+  State<_SocietyBrowserCard> createState() => _SocietyBrowserCardState();
+}
+
+class _SocietyBrowserCardState extends State<_SocietyBrowserCard> {
+  bool _showActions = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AppState>(
+      builder: (context, appState, _) {
+        final canDelete = appState.canDeleteSociety(widget.society);
+
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: InkWell(
+            onTap: () {
+              if (canDelete) {
+                setState(() {
+                  _showActions = !_showActions;
+                });
+                return;
+              }
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => SocietyDetailScreen(society: widget.society),
+                ),
+              );
+            },
+            child: Stack(
+              children: [
+                ListTile(
+                  title: Text(widget.society.name),
+                  subtitle: Text(widget.society.category),
+                  trailing: const Icon(Icons.chevron_right),
+                ),
+                if (canDelete && _showActions)
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: IconButton(
+                      tooltip: 'Delete society',
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () async {
+                        final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (dialogContext) => AlertDialog(
+                            title: const Text('Delete society'),
+                            content: Text(
+                              'Delete ${widget.society.name}? This cannot be undone.',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(dialogContext).pop(false),
+                                child: const Text('Cancel'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => Navigator.of(dialogContext).pop(true),
+                                child: const Text('Delete'),
+                              ),
+                            ],
+                          ),
+                        );
+
+                        if (confirmed == true) {
+                          await context.read<AppState>().deleteSociety(widget.society.id);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('${widget.society.name} deleted'),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

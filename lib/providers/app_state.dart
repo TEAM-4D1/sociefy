@@ -65,6 +65,7 @@ class AppState extends ChangeNotifier {
         name: data['name'] ?? 'Unknown Society',
         category: data['category'] ?? 'General',
         description: data['description'] ?? '',
+        createdBy: data['createdBy'] ?? '',
       );
     }).toList();
     notifyListeners();
@@ -172,6 +173,7 @@ class AppState extends ChangeNotifier {
               name: data?['name'] ?? 'Unknown Society',
               category: data?['category'] ?? 'General',
               description: data?['description'] ?? '',
+              createdBy: data?['createdBy'] ?? '',
             ));
           }
         } catch (e) {
@@ -285,10 +287,17 @@ class AppState extends ChangeNotifier {
     required String category,
     required String description,
   }) {
+    final creatorId = userId ?? '';
     final id =
         '${name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-')}-${DateTime.now().millisecondsSinceEpoch}';
     _societies.add(
-      Society(id: id, name: name, category: category, description: description),
+      Society(
+        id: id,
+        name: name,
+        category: category,
+        description: description,
+        createdBy: creatorId,
+      ),
     );
     notifyListeners();
 
@@ -297,9 +306,27 @@ class AppState extends ChangeNotifier {
         'name': name,
         'category': category,
         'description': description,
+        'createdBy': creatorId,
       });
     } catch (e) {
       debugPrint('createSociety Firestore error: $e');
+    }
+  }
+
+  bool canDeleteSociety(Society society) {
+    return isAdmin && userId != null && society.createdBy == userId;
+  }
+
+  Future<void> deleteSociety(String societyId) async {
+    _societies.removeWhere((society) => society.id == societyId);
+    _joinedSocietyIds.remove(societyId);
+    _mySocieties.removeWhere((society) => society.id == societyId);
+    notifyListeners();
+
+    try {
+      await FirebaseFirestore.instance.collection('societies').doc(societyId).delete();
+    } catch (e) {
+      debugPrint('deleteSociety Firestore error: $e');
     }
   }
 
