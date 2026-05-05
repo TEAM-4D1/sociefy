@@ -411,6 +411,26 @@ class SocietyDetailScreen extends StatelessWidget {
                                   'Start Time',
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
+                                const SizedBox(height: 8),
+                                ElevatedButton(
+                                  onPressed: () async{
+                                    final pickedTime = await showTimePicker(
+                                      context: statefulContext,
+                                      initialTime: TimeofDay.now(),  
+                                    );
+                                    if (pickedTime != null) {
+                                      setState(() {
+                                        startTimeController.text = pickedTime.format(context);
+                                      });
+                                    }
+                                  },
+                                  child: Text(
+                                    startTimeController.text.isEmpty
+                                  )
+                                      )
+                                    }
+                                  }
+                                )
                                 )
                               ]
                             )
