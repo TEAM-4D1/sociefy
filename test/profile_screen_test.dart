@@ -1,244 +1,726 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_test/flutter_test.dart';import 'package:flutter_test/flutter_test.dart';import 'package:flutter/material.dart';
+
 import 'package:sociefy/providers/app_state.dart';
 
+import 'package:sociefy/providers/app_state.dart';import 'package:flutter_test/flutter_test.dart';
+
 void main() {
-  group('ProfileScreen with AppState Tests', () {
+
+  group('ProfileScreen with AppState Tests', () {import 'package:provider/provider.dart';
+
     /// Helper to create and initialize an AppState with guest login
-    /// without calling Firebase methods.
+
+    /// without calling Firebase methods.void main() {import 'package:sociefy/providers/app_state.dart';
+
     void setupGuestAppState(AppState appState) {
-      appState.userId = 'guest';
+
+      appState.userId = 'guest';  group('ProfileScreen with AppState Tests', () {
+
       appState.isAdmin = false;
-      appState.notifyListeners();
+
+      appState.notifyListeners();    /// Helper to create and initialize an AppState with guest loginvoid main() {
+
     }
 
-    /// Test 1: AppState initializes with guest login
-    test('AppState initializes with guest userId', () async {
-      // Arrange
-      final appState = AppState(skipFirebase: true);
+    /// without calling Firebase methods.  group('ProfileScreen with AppState Tests', () {
 
-      // Act
+    /// Test 1: AppState initializes with guest userId
+
+    test('AppState initializes with guest userId', () {    void setupGuestAppState(AppState appState) {    /// Helper to create and initialize an AppState with guest login
+
+      // Arrange
+
+      final appState = AppState(skipFirebase: true);      appState.userId = 'guest';    /// without calling Firebase methods.
+
+
+
+      // Act      appState.isAdmin = false;    void setupGuestAppState(AppState appState) {
+
       setupGuestAppState(appState);
 
+      appState.notifyListeners();      appState.userId = 'guest';
+
       // Assert
-      expect(appState.isAuthenticated, isTrue);
+
+      expect(appState.isAuthenticated, isTrue);    }      appState.isAdmin = false;
+
       expect(appState.isGuest, isTrue);
-      expect(appState.userId, equals('guest'));
+
+      expect(appState.userId, equals('guest'));      appState.notifyListeners();
+
       expect(appState.isAdmin, isFalse);
-    });
 
-    /// Test 2: Guest user flag is accurate
-    test('Guest user flag reflects guest userId correctly', () async {
-      // Arrange
+    });    /// Test 1: AppState initializes with guest userId    }
+
+
+
+    /// Test 2: Guest user flag is accurate    test('AppState initializes with guest userId', () async {
+
+    test('Guest user flag reflects guest userId correctly', () {
+
+      // Arrange      // Arrange    /// Test 1: AppState initializes with guest login
+
       final appState = AppState(skipFirebase: true);
-      setupGuestAppState(appState);
 
-      // Assert
+      setupGuestAppState(appState);      final appState = AppState(skipFirebase: true);    test('AppState initializes with guest userId', () async {
+
+
+
+      // Assert      // Arrange
+
       expect(appState.isGuest, isTrue);
-      expect(appState.userId, equals('guest'));
+
+      expect(appState.userId, equals('guest'));      // Act      final appState = AppState(skipFirebase: true);
+
     });
+
+      setupGuestAppState(appState);
 
     /// Test 3: Sign Out clears authentication
-    test('Sign Out button clears authentication for guest user', () async {
+
+    test('Sign Out clears authentication for guest user', () {      // Act
+
       // Arrange
-      final appState = AppState(skipFirebase: true);
+
+      final appState = AppState(skipFirebase: true);      // Assert      setupGuestAppState(appState);
+
       setupGuestAppState(appState);
+
+      expect(appState.isAuthenticated, isTrue);
 
       // Verify guest is authenticated before logout
-      expect(appState.isAuthenticated, isTrue);
+
+      expect(appState.isAuthenticated, isTrue);      expect(appState.isGuest, isTrue);      // Assert
+
       expect(appState.isGuest, isTrue);
 
+      expect(appState.userId, equals('guest'));      expect(appState.isAuthenticated, isTrue);
+
       // Act
-      appState.logout();
 
-      // Assert
+      appState.logout();      expect(appState.isAdmin, isFalse);      expect(appState.isGuest, isTrue);
+
+
+
+      // Assert    });      expect(appState.userId, equals('guest'));
+
       expect(appState.isAuthenticated, isFalse);
-      expect(appState.isGuest, isFalse);
-      expect(appState.userId, isNull);
-    });
 
-    /// Test 4: Verify logout clears userId
-    test('Logout clears userId completely', () async {
-      // Arrange
+      expect(appState.isGuest, isFalse);      expect(appState.isAdmin, isFalse);
+
+      expect(appState.userId, isNull);
+
+    });    /// Test 2: Guest user flag is accurate    });
+
+
+
+    /// Test 4: Verify logout clears userId    test('Guest user flag reflects guest userId correctly', () async {
+
+    test('Logout clears userId completely', () {
+
+      // Arrange      // Arrange    /// Test 2: Guest user flag is accurate
+
       final appState = AppState(skipFirebase: true);
-      setupGuestAppState(appState);
+
+      setupGuestAppState(appState);      final appState = AppState(skipFirebase: true);    test('Guest user flag reflects guest userId correctly', () async {
+
       expect(appState.userId, isNotNull);
 
-      // Act
-      appState.logout();
+      setupGuestAppState(appState);      // Arrange
 
-      // Assert
+      // Act
+
+      appState.logout();      final appState = AppState(skipFirebase: true);
+
+
+
+      // Assert      // Assert      setupGuestAppState(appState);
+
       expect(appState.userId, isNull);
-      expect(appState.isAuthenticated, isFalse);
+
+      expect(appState.isAuthenticated, isFalse);      expect(appState.isGuest, isTrue);
+
     });
+
+      expect(appState.userId, equals('guest'));      // Assert
 
     /// Test 5: Verify logout clears admin flag
-    test('Logout clears admin flag', () async {
+
+    test('Logout clears admin flag', () {    });      expect(appState.isGuest, isTrue);
+
       // Arrange
-      final appState = AppState(skipFirebase: true);
+
+      final appState = AppState(skipFirebase: true);      expect(appState.userId, equals('guest'));
+
       setupGuestAppState(appState);
 
-      // Act
-      appState.logout();
+    /// Test 3: Sign Out clears authentication    });
 
-      // Assert
+      // Act
+
+      appState.logout();    test('Sign Out clears authentication for guest user', () async {
+
+
+
+      // Assert      // Arrange    /// Test 3: Sign Out clears authentication
+
       expect(appState.isAdmin, isFalse);
-    });
 
-    /// Test 6: Guest userId is exactly 'guest'
-    test('Guest userId is exactly guest', () async {
-      // Arrange
+    });      final appState = AppState(skipFirebase: true);    test('Sign Out button clears authentication for guest user', () async {
+
+
+
+    /// Test 6: Guest userId is exactly 'guest'      setupGuestAppState(appState);      // Arrange
+
+    test('Guest userId is exactly guest', () {
+
+      // Arrange      final appState = AppState(skipFirebase: true);
+
       final appState = AppState(skipFirebase: true);
 
-      // Act
-      setupGuestAppState(appState);
+      // Verify guest is authenticated before logout      setupGuestAppState(appState);
 
-      // Assert
+      // Act
+
+      setupGuestAppState(appState);      expect(appState.isAuthenticated, isTrue);
+
+
+
+      // Assert      expect(appState.isGuest, isTrue);      // Verify guest is authenticated before logout
+
       expect(appState.userId, equals('guest'));
-      expect(appState.isGuest, isTrue);
+
+      expect(appState.isGuest, isTrue);      expect(appState.isAuthenticated, isTrue);
+
     });
+
+      // Act      expect(appState.isGuest, isTrue);
 
     /// Test 7: AppState tracks admin status separately from guest status
-    test('Admin status is separate from guest status', () async {
+
+    test('Admin status is separate from guest status', () {      appState.logout();
+
       // Arrange
-      final appState = AppState(skipFirebase: true);
+
+      final appState = AppState(skipFirebase: true);      // Act
+
       setupGuestAppState(appState);
 
+      // Assert      appState.logout();
+
       // Assert
-      expect(appState.isGuest, isTrue);
+
+      expect(appState.isGuest, isTrue);      expect(appState.isAuthenticated, isFalse);
+
       expect(appState.isAdmin, isFalse);
-      expect(appState.isAuthenticated, isTrue);
+
+      expect(appState.isAuthenticated, isTrue);      expect(appState.isGuest, isFalse);      // Assert
+
     });
+
+      expect(appState.userId, isNull);      expect(appState.isAuthenticated, isFalse);
 
     /// Test 8: Non-guest user is not identified as guest
-    test('Non-guest user is not identified as guest', () async {
+
+    test('Non-guest user is not identified as guest', () {    });      expect(appState.isGuest, isFalse);
+
       // Arrange
-      final appState = AppState(skipFirebase: true);
+
+      final appState = AppState(skipFirebase: true);      expect(appState.userId, isNull);
+
       appState.userId = 'real-user-id';
-      appState.isAdmin = false;
+
+      appState.isAdmin = false;    /// Test 4: Verify logout clears userId    });
+
       appState.notifyListeners();
 
+    test('Logout clears userId completely', () async {
+
       // Assert
-      expect(appState.isGuest, isFalse);
+
+      expect(appState.isGuest, isFalse);      // Arrange    /// Test 4: Verify logout clears userId
+
       expect(appState.isAuthenticated, isTrue);
-      expect(appState.userId, equals('real-user-id'));
+
+      expect(appState.userId, equals('real-user-id'));      final appState = AppState(skipFirebase: true);    test('Logout clears userId completely', () async {
+
     });
+
+      setupGuestAppState(appState);      // Arrange
 
     /// Test 9: Multiple logout calls don't cause errors
-    test('Multiple logout calls are handled gracefully', () async {
+
+    test('Multiple logout calls are handled gracefully', () {      expect(appState.userId, isNotNull);      final appState = AppState(skipFirebase: true);
+
       // Arrange
-      final appState = AppState(skipFirebase: true);
+
+      final appState = AppState(skipFirebase: true);      setupGuestAppState(appState);
+
       setupGuestAppState(appState);
+
+      // Act      expect(appState.userId, isNotNull);
 
       // Act & Assert - Should not throw
-      appState.logout();
+
+      appState.logout();      appState.logout();
+
       expect(appState.isAuthenticated, isFalse);
+
+      // Act
 
       // Calling logout again on an already logged-out state
-      appState.logout();
+
+      appState.logout();      // Assert      appState.logout();
+
       expect(appState.isAuthenticated, isFalse);
-      expect(appState.userId, isNull);
+
+      expect(appState.userId, isNull);      expect(appState.userId, isNull);
+
     });
+
+      expect(appState.isAuthenticated, isFalse);      // Assert
 
     /// Test 10: Logout triggers notifyListeners
-    test('Logout triggers listeners for state changes', () async {
-      // Arrange
-      final appState = AppState(skipFirebase: true);
-      setupGuestAppState(appState);
-      
-      bool listenerCalled = false;
-      appState.addListener(() {
-        listenerCalled = true;
-      });
 
-      // Act
+    test('Logout triggers listeners for state changes', () {    });      expect(appState.userId, isNull);
+
+      // Arrange
+
+      final appState = AppState(skipFirebase: true);      expect(appState.isAuthenticated, isFalse);
+
+      setupGuestAppState(appState);
+
+    /// Test 5: Verify logout clears admin flag    });
+
+      bool listenerCalled = false;
+
+      appState.addListener(() {    test('Logout clears admin flag', () async {
+
+        listenerCalled = true;
+
+      });      // Arrange    /// Test 5: Verify logout clears admin flag
+
+
+
+      // Act      final appState = AppState(skipFirebase: true);    test('Logout clears admin flag', () async {
+
       appState.logout();
 
+      setupGuestAppState(appState);      // Arrange
+
       // Assert
-      expect(listenerCalled, isTrue);
+
+      expect(listenerCalled, isTrue);      final appState = AppState(skipFirebase: true);
+
       expect(appState.isAuthenticated, isFalse);
-    });
 
-    /// Test 11: Guest setup triggers notifyListeners
-    test('Setting guest state triggers listeners', () async {
-      // Arrange
+    });      // Act      setupGuestAppState(appState);
+
+
+
+    /// Test 11: Guest setup triggers notifyListeners      appState.logout();
+
+    test('Setting guest state triggers listeners', () {
+
+      // Arrange      // Act
+
       final appState = AppState(skipFirebase: true);
-      
-      bool listenerCalled = false;
-      appState.addListener(() {
-        listenerCalled = true;
-      });
 
-      // Act
+      // Assert      appState.logout();
+
+      bool listenerCalled = false;
+
+      appState.addListener(() {      expect(appState.isAdmin, isFalse);
+
+        listenerCalled = true;
+
+      });    });      // Assert
+
+
+
+      // Act      expect(appState.isAdmin, isFalse);
+
       setupGuestAppState(appState);
+
+    /// Test 6: Guest userId is exactly 'guest'    });
 
       // Assert
-      expect(listenerCalled, isTrue);
-      expect(appState.isGuest, isTrue);
-    });
 
-    /// Test 12: AppState allows switching from guest to authenticated user
-    test('AppState can transition from guest to authenticated user', () async {
-      // Arrange
-      final appState = AppState(skipFirebase: true);
-      setupGuestAppState(appState);
+      expect(listenerCalled, isTrue);    test('Guest userId is exactly guest', () async {
+
       expect(appState.isGuest, isTrue);
+
+    });      // Arrange    /// Test 6: Guest userId is exactly 'guest'
+
+
+
+    /// Test 12: AppState allows switching from guest to authenticated user      final appState = AppState(skipFirebase: true);    test('Guest userId is exactly guest', () async {
+
+    test('AppState can transition from guest to authenticated user', () {
+
+      // Arrange      // Arrange
+
+      final appState = AppState(skipFirebase: true);
+
+      setupGuestAppState(appState);      // Act      final appState = AppState(skipFirebase: true);
+
+      expect(appState.isGuest, isTrue);
+
+      setupGuestAppState(appState);
 
       // Act - Switch to a different user
-      appState.userId = 'real-user-id';
+
+      appState.userId = 'real-user-id';      // Act
+
       appState.notifyListeners();
 
+      // Assert      setupGuestAppState(appState);
+
       // Assert
-      expect(appState.isGuest, isFalse);
+
+      expect(appState.isGuest, isFalse);      expect(appState.userId, equals('guest'));
+
       expect(appState.isAuthenticated, isTrue);
-      expect(appState.userId, equals('real-user-id'));
+
+      expect(appState.userId, equals('real-user-id'));      expect(appState.isGuest, isTrue);      // Assert
+
     });
+
+    });      expect(appState.userId, equals('guest'));
 
     /// Test 13: AppState allows switching from authenticated user back to guest
-    test('AppState can transition from authenticated user back to guest', () async {
+
+    test('AppState can transition from authenticated user back to guest', () {      expect(appState.isGuest, isTrue);
+
       // Arrange
-      final appState = AppState(skipFirebase: true);
+
+      final appState = AppState(skipFirebase: true);    /// Test 7: AppState tracks admin status separately from guest status    });
+
       appState.userId = 'real-user-id';
-      appState.notifyListeners();
+
+      appState.notifyListeners();    test('Admin status is separate from guest status', () async {
+
       expect(appState.isGuest, isFalse);
+
+      // Arrange    /// Test 7: AppState tracks admin status separately from guest status
 
       // Act - Switch to guest
-      setupGuestAppState(appState);
 
-      // Assert
+      setupGuestAppState(appState);      final appState = AppState(skipFirebase: true);    test('Admin status is separate from guest status', () async {
+
+
+
+      // Assert      setupGuestAppState(appState);      // Arrange
+
       expect(appState.isGuest, isTrue);
-      expect(appState.isAuthenticated, isTrue);
+
+      expect(appState.isAuthenticated, isTrue);      final appState = AppState(skipFirebase: true);
+
     });
+
+      // Assert      setupGuestAppState(appState);
 
     /// Test 14: Verify guest user is not admin
-    test('Guest user is not admin by default', () async {
+
+    test('Guest user is not admin by default', () {      expect(appState.isGuest, isTrue);
+
       // Arrange
-      final appState = AppState(skipFirebase: true);
+
+      final appState = AppState(skipFirebase: true);      expect(appState.isAdmin, isFalse);      // Assert
+
       setupGuestAppState(appState);
+
+      expect(appState.isAuthenticated, isTrue);      expect(appState.isGuest, isTrue);
 
       // Assert
-      expect(appState.isGuest, isTrue);
+
+      expect(appState.isGuest, isTrue);    });      expect(appState.isAdmin, isFalse);
+
       expect(appState.isAdmin, isFalse);
-    });
 
-    /// Test 15: Logout clears both guest and admin states
-    test('Logout completely resets authentication state', () async {
-      // Arrange
+    });      expect(appState.isAuthenticated, isTrue);
+
+
+
+    /// Test 15: Logout completely resets authentication state    /// Test 8: Non-guest user is not identified as guest    });
+
+    test('Logout completely resets authentication state', () {
+
+      // Arrange    test('Non-guest user is not identified as guest', () async {
+
       final appState = AppState(skipFirebase: true);
-      setupGuestAppState(appState);
-      expect(appState.isAuthenticated, isTrue);
-      expect(appState.isGuest, isTrue);
 
-      // Act
+      setupGuestAppState(appState);      // Arrange    /// Test 8: Non-guest user is not identified as guest
+
+      expect(appState.isAuthenticated, isTrue);
+
+      expect(appState.isGuest, isTrue);      final appState = AppState(skipFirebase: true);    test('Non-guest user is not identified as guest', () async {
+
+
+
+      // Act      appState.userId = 'real-user-id';      // Arrange
+
       appState.logout();
 
+      appState.isAdmin = false;      final appState = AppState(skipFirebase: true);
+
       // Assert
-      expect(appState.isAuthenticated, isFalse);
+
+      expect(appState.isAuthenticated, isFalse);      appState.notifyListeners();      appState.userId = 'real-user-id';
+
       expect(appState.isGuest, isFalse);
-      expect(appState.isAdmin, isFalse);
+
+      expect(appState.isAdmin, isFalse);      appState.isAdmin = false;
+
       expect(appState.userId, isNull);
-    });
+
+    });      // Assert      appState.notifyListeners();
+
+  });
+
+}      expect(appState.isGuest, isFalse);
+
+
+      expect(appState.isAuthenticated, isTrue);      // Assert
+
+      expect(appState.userId, equals('real-user-id'));      expect(appState.isGuest, isFalse);
+
+    });      expect(appState.isAuthenticated, isTrue);
+
+      expect(appState.userId, equals('real-user-id'));
+
+    /// Test 9: Multiple logout calls don't cause errors    });
+
+    test('Multiple logout calls are handled gracefully', () async {
+
+      // Arrange    /// Test 9: Multiple logout calls don't cause errors
+
+      final appState = AppState(skipFirebase: true);    test('Multiple logout calls are handled gracefully', () async {
+
+      setupGuestAppState(appState);      // Arrange
+
+      final appState = AppState(skipFirebase: true);
+
+      // Act & Assert - Should not throw      setupGuestAppState(appState);
+
+      appState.logout();
+
+      expect(appState.isAuthenticated, isFalse);      // Act & Assert - Should not throw
+
+      appState.logout();
+
+      // Calling logout again on an already logged-out state      expect(appState.isAuthenticated, isFalse);
+
+      appState.logout();
+
+      expect(appState.isAuthenticated, isFalse);      // Calling logout again on an already logged-out state
+
+      expect(appState.userId, isNull);      appState.logout();
+
+    });      expect(appState.isAuthenticated, isFalse);
+
+      expect(appState.userId, isNull);
+
+    /// Test 10: Logout triggers notifyListeners    });
+
+    test('Logout triggers listeners for state changes', () async {
+
+      // Arrange    /// Test 10: Logout triggers notifyListeners
+
+      final appState = AppState(skipFirebase: true);    test('Logout triggers listeners for state changes', () async {
+
+      setupGuestAppState(appState);      // Arrange
+
+      final appState = AppState(skipFirebase: true);
+
+      bool listenerCalled = false;      setupGuestAppState(appState);
+
+      appState.addListener(() {      
+
+        listenerCalled = true;      bool listenerCalled = false;
+
+      });      appState.addListener(() {
+
+        listenerCalled = true;
+
+      // Act      });
+
+      appState.logout();
+
+      // Act
+
+      // Assert      appState.logout();
+
+      expect(listenerCalled, isTrue);
+
+      expect(appState.isAuthenticated, isFalse);      // Assert
+
+    });      expect(listenerCalled, isTrue);
+
+      expect(appState.isAuthenticated, isFalse);
+
+    /// Test 11: Guest setup triggers notifyListeners    });
+
+    test('Setting guest state triggers listeners', () async {
+
+      // Arrange    /// Test 11: Guest setup triggers notifyListeners
+
+      final appState = AppState(skipFirebase: true);    test('Setting guest state triggers listeners', () async {
+
+      // Arrange
+
+      bool listenerCalled = false;      final appState = AppState(skipFirebase: true);
+
+      appState.addListener(() {      
+
+        listenerCalled = true;      bool listenerCalled = false;
+
+      });      appState.addListener(() {
+
+        listenerCalled = true;
+
+      // Act      });
+
+      setupGuestAppState(appState);
+
+      // Act
+
+      // Assert      setupGuestAppState(appState);
+
+      expect(listenerCalled, isTrue);
+
+      expect(appState.isGuest, isTrue);      // Assert
+
+    });      expect(listenerCalled, isTrue);
+
+      expect(appState.isGuest, isTrue);
+
+    /// Test 12: AppState allows switching from guest to authenticated user    });
+
+    test('AppState can transition from guest to authenticated user', () async {
+
+      // Arrange    /// Test 12: AppState allows switching from guest to authenticated user
+
+      final appState = AppState(skipFirebase: true);    test('AppState can transition from guest to authenticated user', () async {
+
+      setupGuestAppState(appState);      // Arrange
+
+      expect(appState.isGuest, isTrue);      final appState = AppState(skipFirebase: true);
+
+      setupGuestAppState(appState);
+
+      // Act - Switch to a different user      expect(appState.isGuest, isTrue);
+
+      appState.userId = 'real-user-id';
+
+      appState.notifyListeners();      // Act - Switch to a different user
+
+      appState.userId = 'real-user-id';
+
+      // Assert      appState.notifyListeners();
+
+      expect(appState.isGuest, isFalse);
+
+      expect(appState.isAuthenticated, isTrue);      // Assert
+
+      expect(appState.userId, equals('real-user-id'));      expect(appState.isGuest, isFalse);
+
+    });      expect(appState.isAuthenticated, isTrue);
+
+      expect(appState.userId, equals('real-user-id'));
+
+    /// Test 13: AppState allows switching from authenticated user back to guest    });
+
+    test('AppState can transition from authenticated user back to guest', () async {
+
+      // Arrange    /// Test 13: AppState allows switching from authenticated user back to guest
+
+      final appState = AppState(skipFirebase: true);    test('AppState can transition from authenticated user back to guest', () async {
+
+      appState.userId = 'real-user-id';      // Arrange
+
+      appState.notifyListeners();      final appState = AppState(skipFirebase: true);
+
+      expect(appState.isGuest, isFalse);      appState.userId = 'real-user-id';
+
+      appState.notifyListeners();
+
+      // Act - Switch to guest      expect(appState.isGuest, isFalse);
+
+      setupGuestAppState(appState);
+
+      // Act - Switch to guest
+
+      // Assert      setupGuestAppState(appState);
+
+      expect(appState.isGuest, isTrue);
+
+      expect(appState.isAuthenticated, isTrue);      // Assert
+
+    });      expect(appState.isGuest, isTrue);
+
+      expect(appState.isAuthenticated, isTrue);
+
+    /// Test 14: Verify guest user is not admin    });
+
+    test('Guest user is not admin by default', () async {
+
+      // Arrange    /// Test 14: Verify guest user is not admin
+
+      final appState = AppState(skipFirebase: true);    test('Guest user is not admin by default', () async {
+
+      setupGuestAppState(appState);      // Arrange
+
+      final appState = AppState(skipFirebase: true);
+
+      // Assert      setupGuestAppState(appState);
+
+      expect(appState.isGuest, isTrue);
+
+      expect(appState.isAdmin, isFalse);      // Assert
+
+    });      expect(appState.isGuest, isTrue);
+
+      expect(appState.isAdmin, isFalse);
+
+    /// Test 15: Logout clears both guest and admin states    });
+
+    test('Logout completely resets authentication state', () async {
+
+      // Arrange    /// Test 15: Logout clears both guest and admin states
+
+      final appState = AppState(skipFirebase: true);    test('Logout completely resets authentication state', () async {
+
+      setupGuestAppState(appState);      // Arrange
+
+      expect(appState.isAuthenticated, isTrue);      final appState = AppState(skipFirebase: true);
+
+      expect(appState.isGuest, isTrue);      setupGuestAppState(appState);
+
+      expect(appState.isAuthenticated, isTrue);
+
+      // Act      expect(appState.isGuest, isTrue);
+
+      appState.logout();
+
+      // Act
+
+      // Assert      appState.logout();
+
+      expect(appState.isAuthenticated, isFalse);
+
+      expect(appState.isGuest, isFalse);      // Assert
+
+      expect(appState.isAdmin, isFalse);      expect(appState.isAuthenticated, isFalse);
+
+      expect(appState.userId, isNull);      expect(appState.isGuest, isFalse);
+
+    });      expect(appState.isAdmin, isFalse);
+
+  });      expect(appState.userId, isNull);
+
+}    });
+
   });
 }
 
