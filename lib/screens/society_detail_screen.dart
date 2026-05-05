@@ -169,7 +169,22 @@ class SocietyDetailScreen extends StatelessWidget {
 
                   const SizedBox(height: 32),
 
-                  ElevatedButton.icon,
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.history),
+                    label: const Text('Posts'),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: context {
+                          final posts = context.read<AppState>().announcements
+                              .where((a) => a.societyId == society.id)
+                              .toList();
+                          return DraggableScrollable
+                        }
+                      )
+                    }
+                    ,)
                 ],
               ),
             ),
