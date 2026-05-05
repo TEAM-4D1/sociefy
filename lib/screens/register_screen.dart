@@ -56,9 +56,8 @@ class _RegisterScreenState extends State<RegisterScreen>
     final password = _passwordController.text.trim();
     final result = await authService.register(email, password);
     if (result == null) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Registration failed')),
-      );
+      final error = authService.lastError ?? 'Registration failed';
+      messenger.showSnackBar(SnackBar(content: Text(error)));
       return;
     }
     await result.user?.updateDisplayName(displayName);
