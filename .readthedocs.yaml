@@ -1,0 +1,16 @@
+version: 2
+
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3.10"
+<<<<<<< HEAD
+=======
+  python:
+    install:
+      - method: pip
+        path: docs/requirements.txt
+>>>>>>> ae3b9827faa895c0f23cdbe649ff49e1e03afdfb
+
+sphinx:
+  configuration: docs/source/conf.py

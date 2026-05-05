@@ -1,10 +1,21 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 // Simple in-memory service for mapping userId -> set of societyChannelIds.
 // Replace internals with your backend (Firebase, REST call, socket join, etc.)
 class MessageService {
-  MessageService._privateConstructor();
+  MessageService({
+    FirebaseFirestore? firestore,
+    FirebaseMessaging? messaging,
+  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+        _messaging = messaging ?? FirebaseMessaging.instance;
+
+  MessageService._privateConstructor() : this();
   static final MessageService instance = MessageService._privateConstructor();
+
+  final FirebaseFirestore _firestore;
+  final FirebaseMessaging _messaging;
 
   // userId -> set of channel ids
   final Map<String, Set<String>> _userChannels = {};
@@ -35,20 +46,25 @@ class MessageService {
   // Call this when a user joins a society. This will:
   //  - update local state
   //  - push update to stream
-  //  - TODO: add real backend integration (subscribe to socket room / add to DB / call API)
+  //  - add membership to Firestore and subscribe to FCM topic
   Future<void> joinSociety(String userId, String societyId) async {
-    // Simulate network latency if desired:
-    await Future.delayed(const Duration(milliseconds: 200));
+    // Add membership to Firestore
+    await _firestore
+        .collection('memberships')
+        .doc('${userId}_$societyId')
+        .set({
+          'userId': userId,
+          'societyId': societyId,
+          'joinedAt': FieldValue.serverTimestamp(),
+        });
 
+    // Subscribe to FCM topic for this society
+    await _messaging.subscribeToTopic('society_$societyId');
+
+    // Update local state and notify listeners
     final set = _userChannels.putIfAbsent(userId, () => <String>{});
     if (!set.contains(societyId)) {
       set.add(societyId);
-
-      // TODO: Replace the following with real channel subscription logic:
-      // e.g. Firebase: add membership document, then subscribe to FCM topic or join socket room
-      // e.g. WebSocket: send "join" message for 'societyId' room
-
-      // notify listeners
       final controller = _ensureController(userId);
       controller.add(List.unmodifiable(set));
     }

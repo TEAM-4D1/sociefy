@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/society.dart';
 import '../providers/app_state.dart';
+import '../services/society_service.dart';
 import '../theme/colours.dart';
 import '../theme/text_styles.dart';
 import 'event_detail_screen.dart';
+import 'contact_info_screen.dart';
 
+/// Displays comprehensive information about a selected society including description, member count, events, and announcements.
+/// Students can join/leave societies; admins see additional management options.
+/// Accessible to all authenticated users; guests can view but cannot join or interact.
 class SocietyDetailScreen extends StatelessWidget {
   final Society society;
 
@@ -36,9 +41,8 @@ class SocietyDetailScreen extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 32,
-                        // ignore: deprecated_member_use
-                        backgroundColor: AppColours.primaryPurple.withOpacity(
-                          0.1,
+                        backgroundColor: AppColours.primaryPurple.withValues(
+                          alpha: 0.1,
                         ),
                         child: Icon(
                           Icons.groups,
@@ -66,6 +70,40 @@ class SocietyDetailScreen extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   Text(society.description, style: AppTextStyles.bodyRegular),
+
+                  const SizedBox(height: 16),
+
+                  Consumer<AppState>(
+                    builder: (context, appState, _) {
+                      return Column(
+                        children: [
+                          OutlinedButton.icon(
+                            icon: const Icon(Icons.contact_mail),
+                            label: const Text('View Contact Info'),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      ContactInfoScreen(society: society),
+                                ),
+                              );
+                            },
+                          ),
+                          if (appState.isAdmin) ...[
+                            const SizedBox(height: 12),
+                            ElevatedButton.icon(
+                              icon: const Icon(Icons.event),
+                              label: const Text('Create Event'),
+                              onPressed: () {
+                                _showCreateEventDialog(context, appState);
+                              },
+                            ),
+                          ],
+                        ],
+                      );
+                    },
+                  ),
 
                   const SizedBox(height: 32),
 
@@ -113,15 +151,72 @@ class SocietyDetailScreen extends StatelessWidget {
                                 ],
                               ),
                               onTap: () {
+                                final userId = context.read<AppState>().userId;
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) =>
-                                        EventDetailScreen(event: event),
+                                    builder: (_) => EventDetailScreen(
+                                      event: event,
+                                      userId: userId ?? '',
+                                      isSaved: appState.isEventSaved(event.id),
+                                    ),
                                   ),
                                 );
                               },
                             ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // Posts History Button
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.history),
+                    label: const Text('Posts'),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (context) {
+                          final posts = context
+                              .read<AppState>()
+                              .announcements
+                              .where((a) => a.societyId == society.id)
+                              .toList();
+                          return DraggableScrollableSheet(
+                            expand: false,
+                            builder: (context, scrollController) {
+                              if (posts.isEmpty) {
+                                return const Center(
+                                  child: Text('No posts yet.'),
+                                );
+                              }
+                              return ListView.builder(
+                                controller: scrollController,
+                                itemCount: posts.length,
+                                itemBuilder: (context, index) {
+                                  final post = posts[index];
+                                  return Card(
+                                    margin: const EdgeInsets.all(12),
+                                    child: ListTile(
+                                      title: Text(post.title),
+                                      subtitle: Text(post.content),
+                                      trailing: post.imageUrl != null
+                                          ? Image.network(
+                                              post.imageUrl!,
+                                              width: 60,
+                                              height: 60,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : null,
+                                    ),
+                                  );
+                                },
+                              );
+                            },
                           );
                         },
                       );
@@ -136,9 +231,7 @@ class SocietyDetailScreen extends StatelessWidget {
 
       bottomNavigationBar: Consumer<AppState>(
         builder: (context, appState, _) {
-          final isJoined = appState.societies
-              .firstWhere((s) => s.id == society.id)
-              .isJoined;
+          final isJoined = appState.isJoined(society.id);
 
           return BottomAppBar(
             elevation: 8,
@@ -147,7 +240,7 @@ class SocietyDetailScreen extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 height: 48,
-                child: ElevatedButton(
+                  child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isJoined
                         ? Colors.grey[300]
@@ -157,16 +250,42 @@ class SocietyDetailScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(24),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
+                    final messenger = ScaffoldMessenger.of(context);
+
                     if (isJoined) {
-                      appState.leaveSociety(society.id);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Left ${society.name}')),
+                      try {
+                        await appState.leaveSociety(society.id);
+                        messenger.showSnackBar(
+                          SnackBar(content: Text('Left ${society.name}')),
+                        );
+                      } catch (e) {
+                        messenger.showSnackBar(
+                          SnackBar(content: Text('Error leaving society: $e')),
+                        );
+                      }
+                      return;
+                    }
+
+                    // Joining path: call SocietyService.joinSociety and show result
+                    final userId = appState.userId;
+                    if (userId == null || appState.isGuest) {
+                      messenger.showSnackBar(
+                        const SnackBar(content: Text('Please sign in to join')),
                       );
-                    } else {
-                      appState.joinSociety(society.id);
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      return;
+                    }
+
+                    try {
+                      await SocietyService().joinSociety(userId, society.id);
+                      // Refresh local joined list from backend
+                      await appState.loadJoinedSocieties(userId);
+                      messenger.showSnackBar(
                         SnackBar(content: Text('Joined ${society.name}')),
+                      );
+                    } catch (e) {
+                      messenger.showSnackBar(
+                        SnackBar(content: Text('Error joining society: $e')),
                       );
                     }
                   },
@@ -178,5 +297,215 @@ class SocietyDetailScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  void _showCreateEventDialog(BuildContext context, AppState appState) {
+    final formKey = GlobalKey<FormState>();
+    final titleController = TextEditingController();
+    final descriptionController = TextEditingController();
+    final venueController = TextEditingController();
+    final startTimeController = TextEditingController();
+    final endTimeController = TextEditingController();
+    DateTime? selectedDate;
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (statefulContext, setState) {
+            return AlertDialog(
+              title: const Text('Create Event'),
+              content: SingleChildScrollView(
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: titleController,
+                        decoration: const InputDecoration(
+                          labelText: 'Event Title',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Please enter event title'
+                            : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: descriptionController,
+                        decoration: const InputDecoration(
+                          labelText: 'Description',
+                          border: OutlineInputBorder(),
+                        ),
+                        maxLines: 3,
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Please enter description'
+                            : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: venueController,
+                        decoration: const InputDecoration(
+                          labelText: 'Venue',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Please enter venue'
+                            : null,
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Date',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 8),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    final pickedDate = await showDatePicker(
+                                      context: statefulContext,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime.now(),
+                                      lastDate: DateTime.now().add(
+                                        const Duration(days: 365),
+                                      ),
+                                    );
+                                    if (pickedDate != null) {
+                                      setState(() {
+                                        selectedDate = pickedDate;
+                                      });
+                                    }
+                                  },
+                                  child: Text(
+                                    selectedDate == null
+                                        ? 'Pick Date'
+                                        : '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Start Time',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 8),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    final pickedTime = await showTimePicker(
+                                      context: statefulContext,
+                                      initialTime: TimeOfDay.now(),
+                                    );
+                                    if (pickedTime != null) {
+                                      setState(() {
+                                        startTimeController.text = pickedTime
+                                            .format(context);
+                                      });
+                                    }
+                                  },
+                                  child: Text(
+                                    startTimeController.text.isEmpty
+                                        ? 'Pick Start Time'
+                                        : startTimeController.text,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'End Time',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 8),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    final pickedTime = await showTimePicker(
+                                      context: statefulContext,
+                                      initialTime: TimeOfDay.now(),
+                                    );
+                                    if (pickedTime != null) {
+                                      setState(() {
+                                        endTimeController.text = pickedTime
+                                            .format(context);
+                                      });
+                                    }
+                                  },
+                                  child: Text(
+                                    endTimeController.text.isEmpty
+                                        ? 'Pick End Time'
+                                        : endTimeController.text,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (formKey.currentState!.validate() &&
+                        selectedDate != null) {
+                      appState.createEvent(
+                        societyId: society.id,
+                        title: titleController.text,
+                        description: descriptionController.text,
+                        date: selectedDate!,
+                        startTime: startTimeController.text,
+                        endTime: endTimeController.text,
+                        venue: venueController.text,
+                      );
+                      Navigator.pop(dialogContext);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Event created!')),
+                      );
+                    } else if (selectedDate == null) {
+                      ScaffoldMessenger.of(statefulContext).showSnackBar(
+                        const SnackBar(content: Text('Please pick a date')),
+                      );
+                    }
+                  },
+                  child: const Text('Create'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    ).whenComplete(() {
+      titleController.dispose();
+      descriptionController.dispose();
+      venueController.dispose();
+      startTimeController.dispose();
+      endTimeController.dispose();
+    });
   }
 }
