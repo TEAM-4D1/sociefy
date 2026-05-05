@@ -4,6 +4,8 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../models/society.dart';
 import '../providers/app_state.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 
 class _CreateSocietyResult {
   final String name;
@@ -468,7 +470,9 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
               if (_pickedImage != null)
                 Column(
                   children: [
-                    Image.file(File(_pickedImage!.path), height: 120),
+                    kIsWeb
+                        ? Image.network(_pickedImage!.path, height: 120)
+                        : Image.file(File(_pickedImage!.path), height: 120),
                     TextButton(
                       onPressed: () {
                         setState(() {
