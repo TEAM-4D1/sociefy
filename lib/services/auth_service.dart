@@ -34,7 +34,7 @@ class AuthService {
         password: password,
       );
     } catch (e) {
-      debugPrint('register error: \$e');
+      debugPrint('register error: $e');
       return null;
     }
   }
