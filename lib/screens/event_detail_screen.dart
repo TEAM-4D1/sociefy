@@ -79,6 +79,11 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               style: const TextStyle(fontSize: 16),
             ),
 
+            Text(
+              'Time: ${event.startTime} - ${event.endTime}',
+              style: const TextStyle(fontSize: 16),
+            ),
+
             const SizedBox(height: 16),
 
             Row(
@@ -192,11 +197,23 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       DateTime _parseTime(String timeStr, DateTime baseDate) {
                         try {
                           final parsed = DateFormat.Hm().parse(timeStr);
-                          return DateTime(baseDate.year, baseDate.month, baseDate.day, parsed.hour, parsed.minute);
+                          return DateTime(
+                            baseDate.year,
+                            baseDate.month,
+                            baseDate.day,
+                            parsed.hour,
+                            parsed.minute,
+                          );
                         } catch (_) {
                           try {
                             final parsed = DateFormat.jm().parse(timeStr);
-                            return DateTime(baseDate.year, baseDate.month, baseDate.day, parsed.hour, parsed.minute);
+                            return DateTime(
+                              baseDate.year,
+                              baseDate.month,
+                              baseDate.day,
+                              parsed.hour,
+                              parsed.minute,
+                            );
                           } catch (_) {
                             return baseDate;
                           }
@@ -212,8 +229,14 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                         }
 
                         // Build DateTime start/end from event.date + start/end strings
-                        final startDateTime = _parseTime(event.startTime, event.date);
-                        final endDateTime = _parseTime(event.endTime, event.date);
+                        final startDateTime = _parseTime(
+                          event.startTime,
+                          event.date,
+                        );
+                        final endDateTime = _parseTime(
+                          event.endTime,
+                          event.date,
+                        );
 
                         final add2.Event calEvent = add2.Event(
                           title: event.title,
@@ -231,7 +254,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                         });
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error saving to calendar: $e')),
+                            SnackBar(
+                              content: Text('Error saving to calendar: $e'),
+                            ),
                           );
                         }
                         return;
@@ -243,7 +268,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                             content: Text(
                               _isSaved
                                   ? 'Event saved to calendar!'
-                                  : 'Event removed from calendar!'
+                                  : 'Event removed from calendar!',
                             ),
                           ),
                         );
