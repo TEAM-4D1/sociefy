@@ -34,6 +34,7 @@ class _AnnouncementCard extends StatefulWidget {
   final String societyName;
   final bool isAdmin;
   final String? currentUserId;
+  final Future<void> Function(Announcement announcement) onEdit;
   final Future<void> Function(String id) onDelete;
 
   const _AnnouncementCard({
@@ -42,6 +43,7 @@ class _AnnouncementCard extends StatefulWidget {
     required this.societyName,
     required this.isAdmin,
     required this.currentUserId,
+    required this.onEdit,
     required this.onDelete,
   }) : super(key: key);
 
@@ -61,9 +63,7 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
   @override
   Widget build(BuildContext context) {
     final announcement = widget.announcement;
-    final canDelete = widget.isAdmin &&
-        widget.currentUserId != null &&
-        widget.currentUserId == announcement.authorId;
+    final canManage = widget.isAdmin && _expanded;
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
@@ -107,39 +107,53 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
                     : CrossFadeState.showFirst,
                 duration: const Duration(milliseconds: 200),
               ),
-              if (canDelete)
+              if (canManage)
                 Align(
                   alignment: Alignment.centerRight,
-                  child: TextButton.icon(
-                    onPressed: () async {
-                      final confirm = await showDialog<bool>(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          title: const Text('Delete post'),
-                          content: const Text('Are you sure you want to delete this post?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(ctx).pop(false),
-                              child: const Text('Cancel'),
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    alignment: WrapAlignment.end,
+                    children: [
+                      TextButton.icon(
+                        onPressed: () async {
+                          await widget.onEdit(announcement);
+                        },
+                        icon: const Icon(Icons.edit, size: 18),
+                        label: const Text('Edit'),
+                      ),
+                      TextButton.icon(
+                        onPressed: () async {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Delete post'),
+                              content: const Text('Are you sure you want to delete this post?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(ctx).pop(false),
+                                  child: const Text('Cancel'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () => Navigator.of(ctx).pop(true),
+                                  child: const Text('Delete'),
+                                ),
+                              ],
                             ),
-                            ElevatedButton(
-                              onPressed: () => Navigator.of(ctx).pop(true),
-                              child: const Text('Delete'),
-                            ),
-                          ],
-                        ),
-                      );
-                      if (confirm == true) {
-                        await widget.onDelete(announcement.id);
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Post deleted')),
                           );
-                        }
-                      }
-                    },
-                    icon: const Icon(Icons.delete, size: 18),
-                    label: const Text('Delete'),
+                          if (confirm == true) {
+                            await widget.onDelete(announcement.id);
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Post deleted')),
+                              );
+                            }
+                          }
+                        },
+                        icon: const Icon(Icons.delete, size: 18),
+                        label: const Text('Delete'),
+                      ),
+                    ],
                   ),
                 ),
             ],
@@ -307,6 +321,31 @@ class _FeedScreenState extends State<FeedScreen> {
                           ),
                           isAdmin: isAdmin,
                           currentUserId: appState.userId,
+                          onEdit: (announcement) async {
+                            final edited = await showDialog<_CreatePostResult>(
+                              context: context,
+                              builder: (_) => _CreatePostDialog(
+                                societies: appState.societies,
+                                initialSocietyId: announcement.societyId,
+                                initialTitle: announcement.title,
+                                initialContent: announcement.content,
+                                isEditing: true,
+                              ),
+                            );
+
+                            if (edited != null) {
+                              await appState.editAnnouncement(
+                                id: announcement.id,
+                                title: edited.title,
+                                content: edited.content,
+                              );
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Post updated')),
+                                );
+                              }
+                            }
+                          },
                           onDelete: (id) => appState.deleteAnnouncement(id),
                         );
                       },

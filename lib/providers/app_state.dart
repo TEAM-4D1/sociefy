@@ -309,10 +309,11 @@ class AppState extends ChangeNotifier {
     required String content,
   }) {
     final author = userId ?? '';
+    final announcementId = 'a-${DateTime.now().millisecondsSinceEpoch}';
     _announcements.insert(
       0,
       Announcement(
-        id: 'a-${DateTime.now().millisecondsSinceEpoch}',
+        id: announcementId,
         societyId: societyId,
         title: title,
         content: content,
@@ -323,7 +324,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      FirebaseFirestore.instance.collection('announcements').add({
+      FirebaseFirestore.instance.collection('announcements').doc(announcementId).set({
         'societyId': societyId,
         'title': title,
         'content': content,
@@ -346,6 +347,35 @@ class AppState extends ChangeNotifier {
       // It's possible the id is a temporary local id (created before Firestore returns)
       // In that case, attempts to delete the document may fail; log and continue.
       debugPrint('deleteAnnouncement Firestore error: $e');
+    }
+  }
+
+  Future<void> editAnnouncement({
+    required String id,
+    required String title,
+    required String content,
+  }) async {
+    final index = _announcements.indexWhere((a) => a.id == id);
+    if (index != -1) {
+      final existing = _announcements[index];
+      _announcements[index] = Announcement(
+        id: existing.id,
+        societyId: existing.societyId,
+        title: title,
+        content: content,
+        date: existing.date,
+        authorId: existing.authorId,
+      );
+      notifyListeners();
+    }
+
+    try {
+      await FirebaseFirestore.instance.collection('announcements').doc(id).update({
+        'title': title,
+        'content': content,
+      });
+    } catch (e) {
+      debugPrint('editAnnouncement Firestore error: $e');
     }
   }
 
