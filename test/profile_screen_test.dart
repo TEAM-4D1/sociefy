@@ -17,13 +17,21 @@ void main() {
       );
     }
 
+    /// Helper to create and initialize an AppState with guest login
+    /// without calling Firebase methods.
+    void setupGuestAppState(AppState appState) {
+      appState.userId = 'guest';
+      appState.isAdmin = false;
+      appState.notifyListeners();
+    }
+
     /// Test 1: Guest user sees 'Guest User' display name and 'Browsing as guest' subtitle
     testWidgets('Guest user displays Guest User and Browsing as guest', (
       WidgetTester tester,
     ) async {
       // Arrange
       final appState = AppState(skipFirebase: true);
-      await appState.login(userId: 'guest', isAdmin: false);
+      setupGuestAppState(appState);
 
       // Act
       await tester.pumpWidget(buildTestWidget(appState: appState));
@@ -38,7 +46,7 @@ void main() {
     testWidgets('Sign Out button is present', (WidgetTester tester) async {
       // Arrange
       final appState = AppState(skipFirebase: true);
-      await appState.login(userId: 'guest', isAdmin: false);
+      setupGuestAppState(appState);
 
       // Act
       await tester.pumpWidget(buildTestWidget(appState: appState));
@@ -55,7 +63,7 @@ void main() {
     ) async {
       // Arrange
       final appState = AppState(skipFirebase: true);
-      await appState.login(userId: 'guest', isAdmin: false);
+      setupGuestAppState(appState);
 
       // Verify guest is authenticated before sign out
       expect(appState.isAuthenticated, isTrue);
