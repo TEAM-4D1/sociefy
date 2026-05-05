@@ -183,20 +183,6 @@ class _SignInScreenState extends State<SignInScreen>
 
                         const SizedBox(height: 12),
                         TextButton(
-                          onPressed: () async {
-                            final appState = Provider.of<AppState>(
-                              context,
-                              listen: false,
-                            );
-                            await appState.login(
-                              userId: 'guest',
-                              isAdmin: false,
-                            );
-                          },
-                          child: const Text('Continue as Guest'),
-                        ),
-                        const SizedBox(height: 12),
-                        TextButton(
                           onPressed: () {
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute<void>(
