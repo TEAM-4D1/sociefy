@@ -1,4 +1,4 @@
-import 'committee_member.dart';
+import '../models/committee_member.dart';
 
 class Society {
   final String id;
