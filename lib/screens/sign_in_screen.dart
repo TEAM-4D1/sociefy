@@ -5,6 +5,9 @@ import 'package:sociefy/screens/committee_sign_in_screen.dart';
 import 'package:sociefy/screens/register_screen.dart';
 import 'package:sociefy/services/auth_service.dart';
 
+/// The primary authentication entry point for Sociefy.
+/// Provides email/password login for students and a separate button for committee/admin sign in.
+/// Accessible to all users (guests, students, and admins) as the main entry screen.
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
 
@@ -14,6 +17,8 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen>
     with SingleTickerProviderStateMixin {
+  static const String _committeeAdminEmail = 'jburfoot12@gmail.com';
+
   late AnimationController _controller;
   late Animation<Color?> _color1;
   late Animation<Color?> _color2;
@@ -54,7 +59,20 @@ class _SignInScreenState extends State<SignInScreen>
     super.dispose();
   }
 
+  /// Handles student user sign in with email and password validation and Firebase authentication.
   Future<void> _signInWithUop(BuildContext context) async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final enteredEmail = _emailController.text.trim().toLowerCase();
+    if (enteredEmail == _committeeAdminEmail) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please use the admin sign in portal')),
+        );
+      }
+      return;
+    }
+
     setState(() => _isLoading = true);
     final result = await AuthService().signIn(
       _emailController.text.trim(),
@@ -62,9 +80,12 @@ class _SignInScreenState extends State<SignInScreen>
     );
     setState(() => _isLoading = false);
     if (result == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid email or password')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid email or password')),
+        );
+      }
+      return;
     }
     // Navigation handled by authStateChanges in AppState.
   }
@@ -175,13 +196,14 @@ class _SignInScreenState extends State<SignInScreen>
                               userId: 'guest',
                               isAdmin: false,
                             );
+                            if (!mounted) return;
                           },
                           child: const Text('Continue as Guest'),
                         ),
                         const SizedBox(height: 12),
                         TextButton(
                           onPressed: () {
-                            Navigator.of(context).push(
+                            Navigator.of(context).pushReplacement(
                               MaterialPageRoute<void>(
                                 builder: (_) => const RegisterScreen(),
                               ),
@@ -197,7 +219,7 @@ class _SignInScreenState extends State<SignInScreen>
                               'Are you a committee member or admin? Sign in here',
                             ),
                             onPressed: () {
-                              Navigator.of(context).push(
+                              Navigator.of(context).pushReplacement(
                                 MaterialPageRoute<void>(
                                   builder: (_) => const CommitteeSignInScreen(),
                                 ),

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import '../models/society.dart';
 import '../providers/app_state.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 
 class _CreateSocietyResult {
   final String name;
@@ -19,11 +23,13 @@ class _CreatePostResult {
   final String societyId;
   final String title;
   final String content;
+  final String? imageUrl;
 
   const _CreatePostResult({
     required this.societyId,
     required this.title,
     required this.content,
+    this.imageUrl,
   });
 }
 
@@ -33,6 +39,7 @@ class _AnnouncementCard extends StatelessWidget {
   final String title;
   final String date;
   final String content;
+  final String? imageUrl;
 
   const _AnnouncementCard({
     Key? key,
@@ -40,6 +47,7 @@ class _AnnouncementCard extends StatelessWidget {
     required this.title,
     required this.date,
     required this.content,
+    this.imageUrl,
   }) : super(key: key);
 
   @override
@@ -70,6 +78,11 @@ class _AnnouncementCard extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 6),
+            if (imageUrl != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Image.network(imageUrl!, height: 180, fit: BoxFit.cover),
+              ),
             Text(content),
           ],
         ),
@@ -78,6 +91,9 @@ class _AnnouncementCard extends StatelessWidget {
   }
 }
 
+/// Displays the main announcements feed with real-time updates from all societies.
+/// Provides admin capabilities to create societies and announcements. Shows pull-to-refresh functionality.
+/// Accessible to authenticated students and admins; guests can view but not create.
 class FeedScreen extends StatefulWidget {
   const FeedScreen({Key? key}) : super(key: key);
 
@@ -86,6 +102,7 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
+  /// Shows a dialog for creating a new society and creates it if confirmed.
   Future<void> _showCreateSocietyDialog(BuildContext context) async {
     final result = await showDialog<_CreateSocietyResult>(
       context: context,
@@ -104,6 +121,7 @@ class _FeedScreenState extends State<FeedScreen> {
     }
   }
 
+  /// Shows a dialog for creating a new announcement/post for a society and creates it if confirmed.
   Future<void> _showCreatePostDialog(BuildContext context) async {
     final appState = context.read<AppState>();
     final societies = List.of(appState.societies);
@@ -129,11 +147,13 @@ class _FeedScreenState extends State<FeedScreen> {
         societyId: result.societyId,
         title: result.title,
         content: result.content,
+        imageUrl: result.imageUrl,
       );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Post created successfully.')),
       );
     }
+    return null;
   }
 
   @override
@@ -236,6 +256,7 @@ class _FeedScreenState extends State<FeedScreen> {
                           date:
                               '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
                           content: announcement.content,
+                          imageUrl: announcement.imageUrl,
                         );
                       },
                     );
@@ -357,6 +378,8 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   late String _selectedSocietyId;
+  XFile? _pickedImage;
+  bool _uploading = false;
 
   @override
   void initState() {
@@ -371,6 +394,33 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
     super.dispose();
   }
 
+  /// Allows the user to select an image from the device gallery for attachment to announcements.
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _pickedImage = image;
+      });
+    }
+  }
+
+  Future<String?> _uploadImage(XFile image) async {
+    try {
+      final storageRef = FirebaseStorage.instance.ref();
+      final fileName =
+          'post_images/${DateTime.now().millisecondsSinceEpoch}_${image.name}';
+      final imageRef = storageRef.child(fileName);
+      final uploadTask = imageRef.putFile(File(image.path));
+      final snapshot = await uploadTask;
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      debugPrint('Image upload error: $e');
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -382,7 +432,7 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<String>(
-                value: _selectedSocietyId,
+                initialValue: _selectedSocietyId,
                 decoration: const InputDecoration(labelText: 'Society'),
                 items: widget.societies
                     .map(
@@ -423,6 +473,33 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
                   return null;
                 },
               ),
+              const SizedBox(height: 12),
+              if (_pickedImage != null)
+                Column(
+                  children: [
+                    kIsWeb
+                        ? Image.network(_pickedImage!.path, height: 120)
+                        : Image.file(File(_pickedImage!.path), height: 120),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _pickedImage = null;
+                        });
+                      },
+                      child: const Text('Remove Image'),
+                    ),
+                  ],
+                ),
+              if (_pickedImage == null)
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.image),
+                  label: const Text('Add Image'),
+                  onPressed: _pickImage,
+                ),
+              if (_uploading) ...[
+                const SizedBox(height: 8),
+                const CircularProgressIndicator(),
+              ],
             ],
           ),
         ),
@@ -433,16 +510,22 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             if (!_formKey.currentState!.validate()) {
               return;
             }
-
+            String? imageUrl;
+            if (_pickedImage != null) {
+              setState(() => _uploading = true);
+              imageUrl = await _uploadImage(_pickedImage!);
+              setState(() => _uploading = false);
+            }
             Navigator.of(context).pop(
               _CreatePostResult(
                 societyId: _selectedSocietyId,
                 title: _titleController.text.trim(),
                 content: _contentController.text.trim(),
+                imageUrl: imageUrl,
               ),
             );
           },

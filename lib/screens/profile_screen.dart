@@ -3,24 +3,28 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../providers/app_state.dart';
-import 'sign_in_screen.dart';
 
+/// Displays the current user's profile information including display name, email, and avatar.
+/// Provides a Sign Out button to end the current session and clear all session data.
+/// Accessible to all authenticated users and guests.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final currentUser = FirebaseAuth.instance.currentUser;
+    User? currentUser;
+    try {
+      currentUser = FirebaseAuth.instance.currentUser;
+    } catch (_) {
+      currentUser = null;
+    }
 
     // Determine display name and subtitle based on user type
     String displayName;
     String subtitle;
 
-    if (appState.userId == 'guest-committee') {
-      displayName = 'Guest Committee';
-      subtitle = 'Committee preview mode';
-    } else if (appState.isGuest) {
+    if (appState.isGuest) {
       displayName = 'Guest User';
       subtitle = 'Browsing as guest';
     } else {
@@ -61,28 +65,40 @@ class ProfileScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 32),
+            if (!appState.isGuest)
+              ElevatedButton.icon(
+                icon: const Icon(Icons.lock_reset),
+                label: const Text('Change Password'),
+                onPressed: () async {
+                  if (currentUser?.email != null) {
+                    await FirebaseAuth.instance.sendPasswordResetEmail(
+                      email: currentUser!.email!,
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Password reset email sent.'),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('No email found for this user.'),
+                      ),
+                    );
+                  }
+                },
+              ),
+            const SizedBox(height: 16),
             ElevatedButton.icon(
               icon: const Icon(Icons.logout),
               label: const Text('Sign Out'),
               onPressed: () async {
                 final appState = context.read<AppState>();
-
-                if (appState.userId == 'guest' ||
-                    appState.userId == 'guest-committee') {
+                if (appState.isGuest) {
                   appState.logout();
                 } else {
                   await AuthService().signOut();
                   appState.logout();
-                }
-
-                // Clear the entire navigation stack and go back to SignInScreen
-                if (context.mounted) {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const SignInScreen(),
-                    ),
-                    (route) => false,
-                  );
                 }
               },
             ),

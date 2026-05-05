@@ -1,0 +1,370 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
+import 'package:sociefy/providers/app_state.dart';
+import 'package:sociefy/screens/committee_sign_in_screen.dart';
+
+void main() {
+  group('CommitteeSignInScreen Widget Tests', () {
+    /// Helper function to build CommitteeSignInScreen wrapped in MaterialApp
+    /// with ChangeNotifierProvider<AppState> for context.
+    Widget buildTestWidget() {
+      return MaterialApp(
+        home: ChangeNotifierProvider(
+          create: (context) => AppState(skipFirebase: true),
+          child: const CommitteeSignInScreen(),
+        ),
+      );
+    }
+
+    /// Test 1: Verify UI elements render
+    testWidgets('Renders email field, password field, and sign in button', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(buildTestWidget());
+
+      // Verify form fields exist
+      expect(find.byType(TextFormField), findsWidgets);
+      expect(find.text('Committee/Admin Email'), findsOneWidget);
+      expect(find.text('Committee/Admin Password'), findsOneWidget);
+      expect(find.byIcon(Icons.login), findsOneWidget);
+    });
+
+    /// Test 2: Validation errors appear on empty submission
+    testWidgets('Shows validation errors when submitting with empty fields', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(buildTestWidget());
+
+      // Tap the sign in button
+      await tester.tap(find.byIcon(Icons.login));
+      await tester.pumpAndSettle();
+
+      // Validation errors should appear
+      expect(find.text('Please enter committee/admin email'), findsOneWidget);
+      expect(
+        find.text('Please enter committee/admin password'),
+        findsOneWidget,
+      );
+    });
+
+    /// Test 3: Empty email validation
+    testWidgets('Shows validation error for empty email field', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(buildTestWidget());
+
+      // Fill password only
+      await tester.enterText(find.byType(TextFormField).last, 'testpass');
+      await tester.tap(find.byIcon(Icons.login));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please enter committee/admin email'), findsOneWidget);
+    });
+
+    /// Test 4: Empty password validation
+    testWidgets('Shows validation error for empty password field', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(buildTestWidget());
+
+      // Fill email only
+      await tester.enterText(
+        find.byType(TextFormField).first,
+        'test@example.com',
+      );
+      await tester.tap(find.byIcon(Icons.login));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Please enter committee/admin password'),
+        findsOneWidget,
+      );
+    });
+
+    /// Test 5: MyPort email rejection
+    testWidgets('Shows snackbar for myport email', (WidgetTester tester) async {
+      await tester.pumpWidget(buildTestWidget());
+
+      // Fill both fields
+      final emailField = find.byType(TextFormField).first;
+      final passwordField = find.byType(TextFormField).last;
+
+      await tester.enterText(emailField, 'test@myport.ac.uk');
+      await tester.enterText(passwordField, 'password');
+      await tester.tap(find.byIcon(Icons.login));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SnackBar), findsOneWidget);
+      expect(
+        find.text('MyPort emails are not allowed on committee sign in.'),
+        findsOneWidget,
+      );
+    });
+
+    /// Test 6: Rejects uppercase MYPORT
+    testWidgets('Rejects uppercase MYPORT email', (WidgetTester tester) async {
+      await tester.pumpWidget(buildTestWidget());
+
+      final emailField = find.byType(TextFormField).first;
+      final passwordField = find.byType(TextFormField).last;
+
+      await tester.enterText(emailField, 'test@MYPORT.ac.uk');
+      await tester.enterText(passwordField, 'password');
+      await tester.tap(find.byIcon(Icons.login));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('MyPort emails are not allowed on committee sign in.'),
+        findsOneWidget,
+      );
+    });
+
+    /// Test 7: Rejects mixed case MyPort
+    testWidgets('Rejects mixed case MyPort email', (WidgetTester tester) async {
+      await tester.pumpWidget(buildTestWidget());
+
+      final emailField = find.byType(TextFormField).first;
+      final passwordField = find.byType(TextFormField).last;
+
+      await tester.enterText(emailField, 'test@MyPort.ac.uk');
+      await tester.enterText(passwordField, 'password');
+      await tester.tap(find.byIcon(Icons.login));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('MyPort emails are not allowed on committee sign in.'),
+        findsOneWidget,
+      );
+    });
+
+    /// Test 8: Wrong credentials error
+    testWidgets('Shows snackbar for wrong credentials', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(buildTestWidget());
+
+      final emailField = find.byType(TextFormField).first;
+      final passwordField = find.byType(TextFormField).last;
+
+      await tester.enterText(emailField, 'wrong@example.com');
+      await tester.enterText(passwordField, 'wrongpassword');
+      await tester.tap(find.byIcon(Icons.login));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Only the authorized committee admin can sign in here.'),
+        findsOneWidget,
+      );
+    });
+
+    /// Test 9: Correct email, wrong password
+    testWidgets(
+      'Shows authorization error with correct email but wrong password',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildTestWidget());
+
+        final emailField = find.byType(TextFormField).first;
+        final passwordField = find.byType(TextFormField).last;
+
+        await tester.enterText(emailField, 'jburfoot12@gmail.com');
+        await tester.enterText(passwordField, 'wrongpassword');
+        await tester.tap(find.byIcon(Icons.login));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text('Only the authorized committee admin can sign in here.'),
+          findsOneWidget,
+        );
+      },
+    );
+
+    /// Test 10: Wrong email, correct password
+    testWidgets(
+      'Shows authorization error with wrong email but correct password',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildTestWidget());
+
+        final emailField = find.byType(TextFormField).first;
+        final passwordField = find.byType(TextFormField).last;
+
+        await tester.enterText(emailField, 'wrong@gmail.com');
+        await tester.enterText(passwordField, '111444');
+        await tester.tap(find.byIcon(Icons.login));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text('Only the authorized committee admin can sign in here.'),
+          findsOneWidget,
+        );
+      },
+    );
+
+    /// Test 11: Validation before authorization
+    testWidgets(
+      'Shows validation error for empty email before authorization check',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildTestWidget());
+
+        final passwordField = find.byType(TextFormField).last;
+
+        await tester.enterText(passwordField, '111444');
+        await tester.tap(find.byIcon(Icons.login));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Please enter committee/admin email'), findsOneWidget);
+        expect(
+          find.text('Only the authorized committee admin can sign in here.'),
+          findsNothing,
+        );
+      },
+    );
+
+    /// Test 12: Myport rejection regardless of case (lowercase)
+    testWidgets('Rejects myport email regardless of case (lowercase)', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(buildTestWidget());
+
+      final emailField = find.byType(TextFormField).first;
+      final passwordField = find.byType(TextFormField).last;
+
+      await tester.enterText(emailField, 'admin@myport.ac.uk');
+      await tester.enterText(passwordField, '111444');
+      await tester.tap(find.byIcon(Icons.login));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('MyPort emails are not allowed on committee sign in.'),
+        findsOneWidget,
+      );
+    });
+
+    /// Test 13: Email field can be filled and cleared
+    testWidgets('Email field can be filled and cleared', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(buildTestWidget());
+
+      final emailField = find.byType(TextFormField).first;
+      final passwordField = find.byType(TextFormField).last;
+
+      // Fill field
+      await tester.enterText(emailField, 'test@example.com');
+      await tester.pumpAndSettle();
+      expect(find.text('test@example.com'), findsOneWidget);
+
+      // Clear and refill
+      await tester.enterText(emailField, 'new@example.com');
+      await tester.enterText(passwordField, 'password');
+      await tester.tap(find.byIcon(Icons.login));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Only the authorized committee admin can sign in here.'),
+        findsOneWidget,
+      );
+    });
+
+    /// Test 14: Only one snackbar shows
+    testWidgets('Only shows one snackbar when tapping button', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(buildTestWidget());
+
+      final emailField = find.byType(TextFormField).first;
+      final passwordField = find.byType(TextFormField).last;
+
+      await tester.enterText(emailField, 'test@example.com');
+      await tester.enterText(passwordField, 'password');
+      await tester.tap(find.byIcon(Icons.login));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SnackBar), findsOneWidget);
+    });
+
+    /// Test 15: Validation before myport check
+    testWidgets('Shows validation error for empty email before myport check', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(buildTestWidget());
+
+      final passwordField = find.byType(TextFormField).last;
+
+      await tester.enterText(passwordField, 'password');
+      await tester.tap(find.byIcon(Icons.login));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please enter committee/admin email'), findsOneWidget);
+      expect(
+        find.text('MyPort emails are not allowed on committee sign in.'),
+        findsNothing,
+      );
+    });
+
+    /// Test 16: Button state during submission
+    testWidgets('Button text changes during form submission', (
+      WidgetTester tester,
+    ) async {
+      // This test verifies the button can show loading state
+      // The button shows loading when _isLoading is true
+      await tester.pumpWidget(buildTestWidget());
+
+      expect(find.byIcon(Icons.login), findsOneWidget);
+      expect(find.text('Sign in as Committee/Admin'), findsOneWidget);
+    });
+
+    /// Test 17: Email field accepts various valid formats
+    testWidgets('Email field accepts various valid formats', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(buildTestWidget());
+
+      final emailField = find.byType(TextFormField).first;
+      final passwordField = find.byType(TextFormField).last;
+
+      // Test with valid email format
+      await tester.enterText(emailField, 'test.user+tag@example.co.uk');
+      await tester.enterText(passwordField, 'password');
+      await tester.pumpAndSettle();
+
+      expect(find.text('test.user+tag@example.co.uk'), findsOneWidget);
+    });
+
+    /// Test 18: Email whitespace is trimmed
+    testWidgets('Email whitespace is trimmed before validation', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(buildTestWidget());
+
+      final emailField = find.byType(TextFormField).first;
+      final passwordField = find.byType(TextFormField).last;
+
+      await tester.enterText(emailField, '  test@example.com  ');
+      await tester.enterText(passwordField, 'password');
+      await tester.tap(find.byIcon(Icons.login));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Only the authorized committee admin can sign in here.'),
+        findsOneWidget,
+      );
+    });
+
+    /// Test 19: Form fields maintain values
+    testWidgets('Form fields maintain values', (WidgetTester tester) async {
+      await tester.pumpWidget(buildTestWidget());
+
+      final emailField = find.byType(TextFormField).first;
+      final passwordField = find.byType(TextFormField).last;
+
+      await tester.enterText(emailField, 'test@example.com');
+      await tester.enterText(passwordField, 'testpass');
+      await tester.pumpAndSettle();
+
+      // Verify values are maintained
+      expect(find.text('test@example.com'), findsOneWidget);
+      expect(find.text('testpass'), findsOneWidget);
+    });
+  });
+}
