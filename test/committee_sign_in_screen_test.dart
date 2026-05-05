@@ -15,6 +15,7 @@ void main() {
           create: (context) => AppState(skipFirebase: true),
           child: const CommitteeSignInScreen(),
         ),
+        navigatorObservers: [],
       );
     }
 
@@ -24,6 +25,7 @@ void main() {
     ) async {
       // Arrange
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
 
       // Act & Assert
       expect(find.byType(TextFormField), findsNWidgets(2));
