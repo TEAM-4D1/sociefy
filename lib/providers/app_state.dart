@@ -232,6 +232,7 @@ class AppState extends ChangeNotifier {
 
     // Clear all cached data so fresh user gets a clean slate
     _societies.clear();
+    _mySocieties.clear();
     _events.clear();
     _announcements.clear();
 
