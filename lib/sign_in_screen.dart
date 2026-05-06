@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+/// Sign-in form. Front-end only — there is no backend yet, so submission
+/// just runs the validators. The [SI-01]..[SI-07] tests pin down the
+/// exact validation behaviour: empty / whitespace email is "Please enter
+/// your email", missing `@` is "Please enter a valid email", and an
+/// empty password is "Please enter your password". Layout fits inside an
+/// 800x600 widget-test viewport.
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
 
