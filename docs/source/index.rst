@@ -36,13 +36,22 @@ Features
 Tech Stack
 ----------
 
-| Component | Technology |
-| --- | --- |
-| Frontend | Flutter |
-| Database | Firebase Firestore |
-| Authentication | Firebase Authentication |
-| Storage | Firebase Storage |
-| Documentation | Sphinx + ReadTheDocs |
+.. list-table::
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Component
+     - Technology
+   * - Frontend
+     - Flutter
+   * - Database
+     - Firebase Firestore
+   * - Authentication
+     - Firebase Authentication
+   * - Storage
+     - Firebase Storage
+   * - Documentation
+     - Sphinx + ReadTheDocs
 
 Testing
 -------
