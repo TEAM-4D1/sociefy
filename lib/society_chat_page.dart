@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
 import 'society_model.dart';
 
+/// Group chat for a joined [Society].
+///
+/// This is the prototype-grade "Forum" surface referenced by the
+/// `Messages / Forums go here` screen. Messages are kept entirely in
+/// memory — there's no backend yet — so a fresh seeded conversation is
+/// rebuilt every time the page is opened. The page is reachable from two
+/// places:
+///   1. Tapping a row on the Messages tab.
+///   2. Tapping the `Chat` button on `SocietyDetailPage` after joining.
 class SocietyChatPage extends StatefulWidget {
+  /// The society whose group is being viewed. Used for the AppBar title,
+  /// member count, and to keep the seeded conversation in scope.
   final Society society;
 
   const SocietyChatPage({super.key, required this.society});
@@ -45,6 +56,9 @@ class _SocietyChatPageState extends State<SocietyChatPage> {
     super.dispose();
   }
 
+  /// Append the trimmed contents of [_msgCtrl] as a new message from the
+  /// current user, then scroll to the bottom on the next frame so the new
+  /// bubble is visible.
   void _sendMessage() {
     final text = _msgCtrl.text.trim();
     if (text.isEmpty) return;
@@ -68,6 +82,8 @@ class _SocietyChatPageState extends State<SocietyChatPage> {
     });
   }
 
+  /// Wall-clock timestamp formatted as `HH:mm`, used as the timestamp on
+  /// messages the user sends from this session.
   String _now() {
     final t = DateTime.now();
     return '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
@@ -166,10 +182,19 @@ class _SocietyChatPageState extends State<SocietyChatPage> {
   }
 }
 
+/// One entry in the in-memory chat log.
 class _ChatMessage {
+  /// Display name shown above the bubble for incoming messages.
   final String sender;
+
+  /// Body text of the message.
   final String text;
+
+  /// `HH:mm` timestamp shown beneath the bubble.
   final String time;
+
+  /// True when this message was sent by the current user — flips the
+  /// bubble alignment, colour, and corner radius.
   final bool isMe;
 
   const _ChatMessage({
@@ -180,6 +205,8 @@ class _ChatMessage {
   });
 }
 
+/// Single bubble row in the chat list. Layout direction, colour and corner
+/// radii flip based on `msg.isMe`.
 class _ChatBubble extends StatelessWidget {
   final _ChatMessage msg;
 

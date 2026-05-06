@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'society_model.dart';
 import 'society_chat_page.dart';
 
+/// Full-screen detail view for a single [Society].
+///
+/// Implements the **Join Society**, **Leave Society** and **View Society
+/// Members** use cases from the design chapter. The page is reactive: it
+/// listens to [notifier] so the Join button flips to Leave (and the Chat
+/// shortcut appears) the moment membership state changes — including when
+/// the change is initiated from the home card behind it.
 class SocietyDetailPage extends StatelessWidget {
+  /// The society being inspected.
   final Society society;
+
+  /// Shared store; needed so join/leave actions update both this page and
+  /// the home/messages tabs without ad-hoc callbacks.
   final SocietyNotifier notifier;
 
   const SocietyDetailPage({
@@ -13,6 +23,8 @@ class SocietyDetailPage extends StatelessWidget {
     required this.notifier,
   });
 
+  /// Toggle membership: leave if currently joined, otherwise join and show
+  /// a confirmation dialog directing the user to the Messages tab.
   void _toggleJoin(BuildContext context) {
     if (notifier.isJoined(society.name)) {
       notifier.leave(society.name);
@@ -74,10 +86,9 @@ class SocietyDetailPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  background: society.imagePath != null &&
-                          File(society.imagePath!).existsSync()
-                      ? Image.file(
-                          File(society.imagePath!),
+                  background: society.imageBytes != null
+                      ? Image.memory(
+                          society.imageBytes!,
                           fit: BoxFit.cover,
                         )
                       : Container(
@@ -230,6 +241,8 @@ class SocietyDetailPage extends StatelessWidget {
   }
 }
 
+/// Single row in the members list. Renders an avatar with the member's
+/// initial, the display name, and a "You" pill when [isYou] is true.
 class _MemberTile extends StatelessWidget {
   final String name;
   final bool isYou;
