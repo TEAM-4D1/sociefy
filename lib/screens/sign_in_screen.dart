@@ -219,7 +219,7 @@ class _SignInScreenState extends State<SignInScreen>
                               'Are you a committee member or admin? Sign in here',
                             ),
                             onPressed: () {
-                              Navigator.of(context).pushReplacement(
+                              Navigator.of(context).push(
                                 MaterialPageRoute<void>(
                                   builder: (_) => const CommitteeSignInScreen(),
                                 ),
