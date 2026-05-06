@@ -101,7 +101,11 @@ class FeedScreen extends StatefulWidget {
   State<FeedScreen> createState() => _FeedScreenState();
 }
 
-class _FeedScreenState extends State<FeedScreen> {
+class _FeedScreenState extends State<FeedScreen>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   /// Shows a dialog for creating a new society and creates it if confirmed.
   Future<void> _showCreateSocietyDialog(BuildContext context) async {
     final result = await showDialog<_CreateSocietyResult>(
@@ -158,6 +162,7 @@ class _FeedScreenState extends State<FeedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(title: const Text('My Societies Feed')),
       body: Consumer<AppState>(
