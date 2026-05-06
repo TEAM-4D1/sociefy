@@ -196,30 +196,39 @@ class AppState extends ChangeNotifier {
           .where('userId', isEqualTo: userId)
           .get();
 
-      final List<Society> results = [];
-
+      // Collect all societyIds from memberships
+      final societyIds = <String>[];
       for (final mem in membershipSnapshot.docs) {
         final sid = mem['societyId'] as String?;
-        if (sid == null) continue;
-        try {
-          final doc = await FirebaseFirestore.instance
-              .collection('societies')
-              .doc(sid)
-              .get();
-          if (doc.exists) {
-            final data = doc.data();
-            results.add(
-              Society(
-                id: doc.id,
-                name: data?['name'] ?? 'Unknown Society',
-                category: data?['category'] ?? 'General',
-                description: data?['description'] ?? '',
-              ),
-            );
-          }
-        } catch (e) {
-          debugPrint('fetchMySocieties: failed to load society $sid: $e');
+        if (sid != null) {
+          societyIds.add(sid);
         }
+      }
+
+      // Return early if no societies found
+      if (societyIds.isEmpty) {
+        _mySocieties = [];
+        notifyListeners();
+        return;
+      }
+
+      // Fetch all societies in a single query using whereIn
+      final societiesSnapshot = await FirebaseFirestore.instance
+          .collection('societies')
+          .where(FieldPath.documentId, whereIn: societyIds)
+          .get();
+
+      final List<Society> results = [];
+      for (final doc in societiesSnapshot.docs) {
+        final data = doc.data();
+        results.add(
+          Society(
+            id: doc.id,
+            name: data['name'] ?? 'Unknown Society',
+            category: data['category'] ?? 'General',
+            description: data['description'] ?? '',
+          ),
+        );
       }
 
       _mySocieties = results;
