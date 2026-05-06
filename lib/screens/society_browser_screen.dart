@@ -109,16 +109,7 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
                     );
                   }
 
-                  final societies = appState.societies.where((society) {
-                    final query = _searchQuery.toLowerCase();
-                    final matchesSearch =
-                        society.name.toLowerCase().contains(query) ||
-                        society.category.toLowerCase().contains(query);
-                    final matchesCategory =
-                        _selectedCategory == null ||
-                        society.category == _selectedCategory;
-                    return matchesSearch && matchesCategory;
-                  }).toList();
+                  final societies = filteredSocieties;
 
                   if (societies.isEmpty) {
                     return const Center(child: Text('No societies found.'));
