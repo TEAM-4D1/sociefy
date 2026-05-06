@@ -150,3 +150,28 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
     );
   }
 }
+
+/// Stateless search bar widget to prevent unnecessary rebuilds of filter chips when search changes.
+class _SearchBar extends StatelessWidget {
+  final String searchQuery;
+  final Function(String) onSearchChanged;
+
+  const _SearchBar({required this.searchQuery, required this.onSearchChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        decoration: InputDecoration(
+          prefixIcon: const Icon(Icons.search),
+          hintText: 'Search societies...',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+        onChanged: onSearchChanged,
+      ),
+    );
+  }
+}
