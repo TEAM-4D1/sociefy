@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'society_model.dart';
 import 'society_chat_page.dart';
 
@@ -74,10 +73,9 @@ class SocietyDetailPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  background: society.imagePath != null &&
-                          File(society.imagePath!).existsSync()
-                      ? Image.file(
-                          File(society.imagePath!),
+                  background: society.imageBytes != null
+                      ? Image.memory(
+                          society.imageBytes!,
                           fit: BoxFit.cover,
                         )
                       : Container(

@@ -1,11 +1,21 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'society_model.dart';
 import 'society_detail_page.dart';
+import 'widgets/society_image.dart';
 
+/// Home tab — lists every society and lets the user create or join one.
+///
+/// When [notifier] is provided (the in-app case from `MainTabs`) the screen
+/// reads and writes through the shared store, so a join here is reflected on
+/// the Messages tab. When [notifier] is omitted (the unit-test case) the
+/// page falls back to a private, locally-owned `SocietyNotifier` so each test
+/// starts from an empty state.
 class HomePage extends StatefulWidget {
+  /// Optional shared store. Null → page owns and disposes its own instance.
   final SocietyNotifier? notifier;
+
   const HomePage({super.key, this.notifier});
 
   @override
@@ -16,9 +26,11 @@ class _HomePageState extends State<HomePage> {
   late final SocietyNotifier _notifier;
   bool _ownNotifier = false;
 
+  // Form state for the "Create Society" dialog.
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descController = TextEditingController();
-  XFile? _pickedImage;
+  Uint8List? _pickedImageBytes;
+  String? _pickedImageName;
 
   @override
   void initState() {
@@ -39,112 +51,137 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  Future<void> _pickImage() async {
+  /// Launch the system image picker and read the result as bytes.
+  ///
+  /// Bytes are stored (rather than a path) so they render uniformly on
+  /// mobile, desktop and web — this is what removes the "_Namespace" error
+  /// triggered by `dart:io` File on platforms without a real filesystem.
+  Future<void> _pickImage(StateSetter setDialogState) async {
     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-    setState(() => _pickedImage = image);
+    if (image == null) return;
+    final bytes = await image.readAsBytes();
+    setDialogState(() {
+      _pickedImageBytes = bytes;
+      _pickedImageName = image.name;
+    });
   }
 
+  /// Show the modal that captures name/description/image and adds the
+  /// resulting [Society] to the store on Create.
   void _showCreateSocietyDialog() {
     nameController.clear();
     descController.clear();
-    _pickedImage = null;
+    _pickedImageBytes = null;
+    _pickedImageName = null;
+
     showDialog(
       context: context,
       builder: (ctx) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          title: Row(
-            children: [
-              Icon(Icons.groups,
-                  color: Theme.of(context).colorScheme.primary),
-              const SizedBox(width: 8),
-              const Text('Create Society'),
-            ],
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Society Name',
-                    prefixIcon: Icon(Icons.badge_outlined),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: descController,
-                  decoration: const InputDecoration(
-                    labelText: 'Description',
-                    prefixIcon: Icon(Icons.description_outlined),
-                  ),
-                  maxLines: 3,
-                  minLines: 1,
-                ),
-                const SizedBox(height: 8),
-                if (_pickedImage == null)
-                  TextButton.icon(
-                    onPressed: _pickImage,
-                    icon: const Icon(Icons.image_outlined),
-                    label: const Text('Pick Image'),
-                  )
-                else ...[
-                  Text(
-                    _pickedImage!.name,
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.w500),
-                  ),
-                  const SizedBox(height: 8),
-                  if (_pickedImage!.path.isNotEmpty &&
-                      File(_pickedImage!.path).existsSync())
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        File(_pickedImage!.path),
-                        height: 120,
-                        fit: BoxFit.cover,
+        // StatefulBuilder lets the picked-image preview rebuild without
+        // triggering setState on the underlying HomePage.
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              title: Row(
+                children: [
+                  Icon(Icons.groups,
+                      color: Theme.of(context).colorScheme.primary),
+                  const SizedBox(width: 8),
+                  const Text('Create Society'),
+                ],
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Society Name',
+                        prefixIcon: Icon(Icons.badge_outlined),
                       ),
                     ),
-                ],
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: descController,
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                        prefixIcon: Icon(Icons.description_outlined),
+                      ),
+                      maxLines: 3,
+                      minLines: 1,
+                    ),
+                    const SizedBox(height: 8),
+                    if (_pickedImageBytes == null)
+                      TextButton.icon(
+                        onPressed: () => _pickImage(setDialogState),
+                        icon: const Icon(Icons.image_outlined),
+                        label: const Text('Pick Image'),
+                      )
+                    else ...[
+                      Text(
+                        _pickedImageName ?? 'Selected image',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.memory(
+                          _pickedImageBytes!,
+                          height: 120,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    nameController.clear();
+                    descController.clear();
+                    _pickedImageBytes = null;
+                    _pickedImageName = null;
+                    Navigator.of(ctx).pop();
+                  },
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (nameController.text.isNotEmpty &&
+                        descController.text.isNotEmpty) {
+                      _notifier.add(Society(
+                        name: nameController.text,
+                        description: descController.text,
+                        imageBytes: _pickedImageBytes,
+                      ));
+                      nameController.clear();
+                      descController.clear();
+                      _pickedImageBytes = null;
+                      _pickedImageName = null;
+                      Navigator.of(ctx).pop();
+                    }
+                  },
+                  child: const Text('Create'),
+                ),
               ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                nameController.clear();
-                descController.clear();
-                setState(() => _pickedImage = null);
-                Navigator.of(ctx).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (nameController.text.isNotEmpty &&
-                    descController.text.isNotEmpty) {
-                  _notifier.add(Society(
-                    name: nameController.text,
-                    description: descController.text,
-                    imagePath: _pickedImage?.path,
-                  ));
-                  nameController.clear();
-                  descController.clear();
-                  setState(() => _pickedImage = null);
-                  Navigator.of(ctx).pop();
-                }
-              },
-              child: const Text('Create'),
-            ),
-          ],
+            );
+          },
         );
       },
     );
   }
 
+  /// Mark a society as joined and confirm it via dialog. The confirmation
+  /// dialog is required by the HP-10 / HP-11 test cases.
   void _showJoinConfirmation(String societyName) {
     _notifier.join(societyName);
     showDialog(
@@ -171,6 +208,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  /// Push the society detail route, sharing the same notifier so a
+  /// join/leave on the detail page reflects back here immediately.
   void _openDetail(Society society) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -182,6 +221,9 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  /// Build a single animated card. Cycles through [gradients] by index so
+  /// the empty-banner placeholders feel varied without needing per-society
+  /// colour fields.
   Widget _buildSocietyCard(Society society, int index) {
     final cs = Theme.of(context).colorScheme;
     final gradients = [
@@ -205,73 +247,52 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Tappable gradient / image banner → opens detail page
+            // Tappable banner → opens detail page.
             GestureDetector(
               onTap: () => _openDetail(society),
               child: ClipRRect(
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(16)),
-                child: SizedBox(
-                  height: 160,
-                  width: double.infinity,
-                  child: society.imagePath != null &&
-                          File(society.imagePath!).existsSync()
-                      ? Image.file(
-                          File(society.imagePath!),
-                          fit: BoxFit.cover,
-                        )
-                      : Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: gradient,
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                          ),
-                          child: Stack(
-                            children: [
-                              const Center(
-                                child: Icon(
-                                  Icons.groups,
-                                  size: 64,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 10,
-                                right: 12,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black26,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.open_in_new,
-                                          size: 12, color: Colors.white70),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        'View details',
-                                        style: TextStyle(
-                                          color: Colors.white70,
-                                          fontSize: 11,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                child: Stack(
+                  children: [
+                    SocietyImage(
+                      bytes: society.imageBytes,
+                      gradientColors: gradient,
+                      height: 160,
+                    ),
+                    Positioned(
+                      bottom: 10,
+                      right: 12,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
                         ),
+                        decoration: BoxDecoration(
+                          color: Colors.black38,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.open_in_new,
+                                size: 12, color: Colors.white),
+                            SizedBox(width: 4),
+                            Text(
+                              'View details',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-
-            // Society info row
             Padding(
               padding: const EdgeInsets.all(14),
               child: Column(
@@ -279,7 +300,6 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Row(
                     children: [
-                      // Tapping the name also opens detail
                       Expanded(
                         child: GestureDetector(
                           onTap: () => _openDetail(society),
@@ -295,8 +315,10 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(width: 8),
                       if (joined)
                         Chip(
-                          label: const Text('Joined',
-                              style: TextStyle(fontSize: 12)),
+                          label: const Text(
+                            'Joined',
+                            style: TextStyle(fontSize: 12),
+                          ),
                           backgroundColor: cs.primaryContainer,
                           labelStyle:
                               TextStyle(color: cs.onPrimaryContainer),
@@ -313,10 +335,9 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 6),
                   Text(
                     society.description,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(color: Colors.grey.shade600),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey.shade600,
+                        ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -329,7 +350,9 @@ class _HomePageState extends State<HomePage> {
                       Text(
                         '${society.members.length} members',
                         style: TextStyle(
-                            fontSize: 12, color: Colors.grey.shade500),
+                          fontSize: 12,
+                          color: Colors.grey.shade500,
+                        ),
                       ),
                     ],
                   ),
@@ -372,7 +395,9 @@ class _HomePageState extends State<HomePage> {
                       const Text(
                         'No societies yet.',
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w500),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                       const SizedBox(height: 6),
                       Text(
