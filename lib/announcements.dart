@@ -242,6 +242,8 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
     super.dispose();
   }
 
+  /// Open the platform date picker (1 year past, 5 years future) and
+  /// store the result.
   Future<void> _pickDate() async {
     final now = DateTime.now();
     final picked = await showDatePicker(
@@ -253,6 +255,7 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
     if (picked != null) setState(() => _selectedDate = picked);
   }
 
+  /// Open the platform time picker and store the result.
   Future<void> _pickTime() async {
     final picked = await showTimePicker(
       context: context,
@@ -261,6 +264,8 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
     if (picked != null) setState(() => _selectedTime = picked);
   }
 
+  /// Validate the form, ensure date+time were picked, then pop with the
+  /// constructed [Announcement] as the route result.
   void _save() {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedDate == null || _selectedTime == null) {
