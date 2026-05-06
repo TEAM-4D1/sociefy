@@ -251,6 +251,7 @@ class _SignInScreenState extends State<SignInScreen>
     );
   }
 
+  /// Creates an InputDecoration with a labeled field, white fill, and rounded border for consistent form styling.
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       labelText: label,
@@ -260,5 +261,3 @@ class _SignInScreenState extends State<SignInScreen>
     );
   }
 }
-
-
