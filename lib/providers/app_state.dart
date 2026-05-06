@@ -23,7 +23,6 @@ class AppState extends ChangeNotifier {
   final bool _skipFirebase;
 
   AppState({bool skipFirebase = false}) : _skipFirebase = skipFirebase {
-    // Remove Firebase.apps.isEmpty check, not needed in this context
     if (!_skipFirebase) {
       _initializeFirebaseListener();
     }
@@ -31,22 +30,26 @@ class AppState extends ChangeNotifier {
 
   /// Initialize the Firebase auth listener (called after construction in production).
   void _initializeFirebaseListener() {
-    FirebaseAuth.instance.authStateChanges().listen((user) {
-      if (user != null) {
-        final normalizedEmail = user.email?.trim().toLowerCase();
-        final isCommitteeAdmin = normalizedEmail == _committeeAdminEmail;
-        login(
-          userId: user.uid,
-          isAdmin: _pendingAdminLogin || isCommitteeAdmin,
-        );
-        _pendingAdminLogin = false;
-      } else {
-        // Only logout if not already in a guest session
-        if (!isGuest) {
-          logout();
+    try {
+      FirebaseAuth.instance.authStateChanges().listen((user) {
+        if (user != null) {
+          final normalizedEmail = user.email?.trim().toLowerCase();
+          final isCommitteeAdmin = normalizedEmail == _committeeAdminEmail;
+          login(
+            userId: user.uid,
+            isAdmin: _pendingAdminLogin || isCommitteeAdmin,
+          );
+          _pendingAdminLogin = false;
+        } else {
+          // Only logout if not already in a guest session
+          if (!isGuest) {
+            logout();
+          }
         }
-      }
-    });
+      });
+    } catch (e) {
+      debugPrint('Firebase not initialized, auth listener skipped: $e');
+    }
   }
 
   /// Initialize Firebase listener for auth state changes.
@@ -379,7 +382,12 @@ class AppState extends ChangeNotifier {
     required String title,
     required String content,
     String? imageUrl,
+    String? venue,
+    String? startTime,
+    String? endTime,
+    DateTime? date,
   }) {
+    final announcementDate = date ?? DateTime.now();
     _announcements.insert(
       0,
       Announcement(
@@ -387,10 +395,10 @@ class AppState extends ChangeNotifier {
         societyId: societyId,
         title: title,
         content: content,
-        date: DateTime.now(),
+        date: announcementDate,
         imageUrl: imageUrl,
-        time: null, // Set if needed
-        venue: '',
+        time: null,
+        venue: venue ?? '',
         description: '',
       ),
     );
@@ -403,6 +411,9 @@ class AppState extends ChangeNotifier {
         'content': content,
         'date': FieldValue.serverTimestamp(),
         if (imageUrl != null) 'imageUrl': imageUrl,
+        if (venue != null) 'venue': venue,
+        if (startTime != null) 'startTime': startTime,
+        if (endTime != null) 'endTime': endTime,
       });
     } catch (e) {
       debugPrint('createAnnouncement Firestore error: $e');

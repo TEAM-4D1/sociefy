@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sociefy/providers/app_state.dart';
-import 'package:sociefy/screens/society_chat_screen.dart';
-import 'package:sociefy/screens/member_approval_screen.dart';
+import '../providers/app_state.dart';
+import 'society_chat_screen.dart';
+import 'member_approval_screen.dart';
 
 /// Displays a list of society group chat channels that the user is a member of.
 /// Provides quick access to messages and member approval features for committee admins.

@@ -153,6 +153,7 @@ class _FeedScreenState extends State<FeedScreen> {
         const SnackBar(content: Text('Post created successfully.')),
       );
     }
+    return null;
   }
 
   @override

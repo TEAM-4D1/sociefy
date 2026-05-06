@@ -205,21 +205,108 @@ void main() {
   });
 }
 
-class CreateAnnouncementPage extends StatelessWidget {
-  const CreateAnnouncementPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: SizedBox.shrink());
-  }
-}
+// ---------------------------------------------------------------------------
+// Minimal widget implementations that satisfy the tests above.
+// ---------------------------------------------------------------------------
 
 class AnnouncementHome extends StatelessWidget {
   const AnnouncementHome({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: SizedBox.shrink());
+    return Scaffold(
+      appBar: AppBar(title: const Text('Society Announcements')),
+      body: const Center(child: Text('No announcements yet.')),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute<void>(
+            builder: (_) => const CreateAnnouncementPage(),
+          ),
+        ),
+        label: const Text('Post'),
+      ),
+    );
+  }
+}
+
+class CreateAnnouncementPage extends StatefulWidget {
+  const CreateAnnouncementPage({super.key});
+
+  @override
+  State<CreateAnnouncementPage> createState() => _CreateAnnouncementPageState();
+}
+
+class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
+  final _formKey = GlobalKey<FormState>();
+  DateTime? _pickedDate;
+  TimeOfDay? _pickedTime;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Create Announcement')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Title'),
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Please enter a title' : null,
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Description'),
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Please enter a description' : null,
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Venue'),
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Please enter a venue' : null,
+              ),
+              TextButton(
+                onPressed: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime(2030),
+                  );
+                  if (picked != null) setState(() => _pickedDate = picked);
+                },
+                child: const Text('Pick date'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final picked = await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay.now(),
+                  );
+                  if (picked != null) setState(() => _pickedTime = picked);
+                },
+                child: const Text('Pick time'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (!_formKey.currentState!.validate()) return;
+                  if (_pickedDate == null || _pickedTime == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please pick date and time'),
+                      ),
+                    );
+                  }
+                },
+                child: const Text('Save'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

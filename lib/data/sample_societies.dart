@@ -1,6 +1,26 @@
-import '../models/society.dart';
+class Society {
+  final String id;
+  final String name;
+  final String description;
+  final String category;
+  final String contactName;
+  final String contactEmail;
+  final int memberCount;
+  final bool isJoined;
 
-final List<Society> sampleSocieties = [
+  const Society({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.category,
+    this.contactName = '',
+    this.contactEmail = '',
+    this.memberCount = 0,
+    this.isJoined = false,
+  });
+}
+
+const List<Society> sampleSocieties = [
   Society(
     id: 'soc1',
     name: 'Chess Club',

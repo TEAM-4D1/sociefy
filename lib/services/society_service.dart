@@ -23,7 +23,7 @@ class SocietyService {
         );
       }).toList();
     } catch (e) {
-      debugPrint('getAllSocieties error: \$e');
+      debugPrint('getAllSocieties error: $e');
       return [];
     }
   }
