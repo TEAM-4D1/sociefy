@@ -379,6 +379,28 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
                     ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
+              if (widget.societyOptions.isNotEmpty) ...[
+                DropdownButtonFormField<String?>(
+                  initialValue: _selectedSociety,
+                  decoration: const InputDecoration(
+                    labelText: 'Post under society',
+                    prefixIcon: Icon(Icons.groups_outlined),
+                  ),
+                  items: [
+                    const DropdownMenuItem<String?>(
+                      value: null,
+                      child: Text('General announcement'),
+                    ),
+                    for (final name in widget.societyOptions)
+                      DropdownMenuItem<String?>(
+                        value: name,
+                        child: Text(name),
+                      ),
+                  ],
+                  onChanged: (v) => setState(() => _selectedSociety = v),
+                ),
+                const SizedBox(height: 14),
+              ],
               TextFormField(
                 controller: _titleCtrl,
                 decoration: const InputDecoration(
