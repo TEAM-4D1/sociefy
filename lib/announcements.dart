@@ -397,16 +397,275 @@ class _AnnouncementHomeState extends State<AnnouncementHome> {
                 ],
               ),
             )
-          : ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              itemCount: _announcements.length,
-              itemBuilder: (context, i) =>
-                  _buildAnnouncementCard(_announcements[i], i),
+          : Column(
+              children: [
+                _FilterBar(
+                  current: _filter,
+                  onChanged: (f) => setState(() => _filter = f),
+                  upcomingCount:
+                      _announcements.where((a) => a.isUpcomingFrom()).length,
+                  pastCount:
+                      _announcements.where((a) => !a.isUpcomingFrom()).length,
+                ),
+                Expanded(
+                  child: _visible.isEmpty
+                      ? Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Text(
+                              _filter == _FilterMode.upcoming
+                                  ? 'No upcoming events.\nTap + to post one.'
+                                  : 'No matching announcements.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.grey.shade500),
+                            ),
+                          ),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+                          itemCount: _visible.length,
+                          itemBuilder: (context, i) =>
+                              _buildAnnouncementCard(_visible[i], i),
+                        ),
+                ),
+              ],
             ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openCreatePage,
         label: const Text('Post'),
         icon: const Icon(Icons.post_add),
+      ),
+    );
+  }
+}
+
+/// Horizontal bar of `ChoiceChip`s sitting above the announcement list.
+/// Lets the user flip between Upcoming / Past / All. Selection is
+/// driven by [current] / [onChanged] so the parent state stays the
+/// single source of truth.
+class _FilterBar extends StatelessWidget {
+  final _FilterMode current;
+  final ValueChanged<_FilterMode> onChanged;
+  final int upcomingCount;
+  final int pastCount;
+
+  const _FilterBar({
+    required this.current,
+    required this.onChanged,
+    required this.upcomingCount,
+    required this.pastCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      child: Row(
+        children: [
+          _chip('Upcoming ($upcomingCount)', _FilterMode.upcoming),
+          const SizedBox(width: 8),
+          _chip('Past ($pastCount)', _FilterMode.past),
+          const SizedBox(width: 8),
+          _chip('All', _FilterMode.all),
+        ],
+      ),
+    );
+  }
+
+  Widget _chip(String label, _FilterMode mode) => ChoiceChip(
+        label: Text(label),
+        selected: current == mode,
+        onSelected: (_) => onChanged(mode),
+      );
+}
+
+/// Read-only detail view for a single [Announcement].
+///
+/// Implements the **View Event Details** use case from the design
+/// chapter: shows full description, formatted date/time/venue, and
+/// exposes the same RSVP and Save-to-Calendar actions as the card —
+/// but bigger, and with a reminder toggle for User Req 1.
+///
+/// [onChanged] is invoked whenever a toggle is flipped so the host
+/// `AnnouncementHome` can rebuild the card list with the new state.
+class AnnouncementDetailPage extends StatefulWidget {
+  final Announcement announcement;
+  final VoidCallback onChanged;
+
+  const AnnouncementDetailPage({
+    super.key,
+    required this.announcement,
+    required this.onChanged,
+  });
+
+  @override
+  State<AnnouncementDetailPage> createState() =>
+      _AnnouncementDetailPageState();
+}
+
+class _AnnouncementDetailPageState extends State<AnnouncementDetailPage> {
+  Announcement get a => widget.announcement;
+
+  void _flip(VoidCallback mutate, String message) {
+    setState(mutate);
+    widget.onChanged();
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+      ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Event Details'),
+        backgroundColor: cs.surface,
+        foregroundColor: cs.onSurface,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          if (a.societyName != null)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: cs.primaryContainer,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                a.societyName!,
+                style: TextStyle(
+                  color: cs.onPrimaryContainer,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          const SizedBox(height: 12),
+          Text(
+            a.title,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            a.relativeTime(),
+            style: TextStyle(
+              color: a.isUpcomingFrom() ? cs.primary : Colors.grey.shade600,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 20),
+          _DetailRow(
+            icon: Icons.event,
+            label: a.dateTimeVenueString,
+          ),
+          const SizedBox(height: 28),
+          Text(
+            'About this event',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Text(a.description, style: const TextStyle(height: 1.5)),
+          const SizedBox(height: 28),
+          _ActionRow(
+            icon:
+                a.isGoing ? Icons.check_circle : Icons.check_circle_outline,
+            label: a.isGoing ? "You're going" : 'Mark as going',
+            highlighted: a.isGoing,
+            onTap: () => _flip(
+              () => a.isGoing = !a.isGoing,
+              a.isGoing ? 'Marked as going' : 'Removed RSVP',
+            ),
+          ),
+          _ActionRow(
+            icon: a.reminderOn
+                ? Icons.event_available
+                : Icons.calendar_month_outlined,
+            label: a.reminderOn ? 'Saved to calendar' : 'Save to calendar',
+            highlighted: a.reminderOn,
+            onTap: () => _flip(
+              () => a.reminderOn = !a.reminderOn,
+              a.reminderOn
+                  ? 'Saved to calendar'
+                  : 'Removed from calendar',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// One read-only row of icon + label, used by [AnnouncementDetailPage]
+/// for static info like the date/time/venue line.
+class _DetailRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  const _DetailRow({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: Colors.grey.shade600),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(label, style: const TextStyle(fontSize: 14)),
+        ),
+      ],
+    );
+  }
+}
+
+/// Tappable row used for the toggleable RSVP and Save-to-Calendar
+/// actions on [AnnouncementDetailPage]. Highlighted when the action is
+/// currently "on".
+class _ActionRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool highlighted;
+  final VoidCallback onTap;
+
+  const _ActionRow({
+    required this.icon,
+    required this.label,
+    required this.highlighted,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+        child: Row(
+          children: [
+            Icon(icon, color: highlighted ? cs.primary : null),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: highlighted ? cs.primary : null,
+                ),
+              ),
+            ),
+            Switch(value: highlighted, onChanged: (_) => onTap()),
+          ],
+        ),
       ),
     );
   }
