@@ -2,13 +2,22 @@ import 'package:flutter/material.dart';
 import 'society_model.dart';
 import 'society_chat_page.dart';
 
+/// Messages tab — entry point to every group chat the user has joined.
+///
+/// When [notifier] is null (the unit-test path) the screen always shows the
+/// `Messages / Forums go here` placeholder. When a notifier is provided
+/// (the in-app path from `MainTabs`) the screen subscribes via
+/// `ListenableBuilder` and switches between the placeholder and the joined
+/// society list as memberships change in real time.
 class MessagesPage extends StatelessWidget {
+  /// Optional shared store. Null → unit-test mode (placeholder only).
   final SocietyNotifier? notifier;
+
   const MessagesPage({super.key, this.notifier});
 
   @override
   Widget build(BuildContext context) {
-    // No notifier → standalone / test usage → always show placeholder
+    // No notifier → standalone / test usage → always show placeholder.
     if (notifier == null) return _Placeholder(key: key);
 
     return ListenableBuilder(
@@ -24,6 +33,9 @@ class MessagesPage extends StatelessWidget {
 
 // ── Placeholder ──────────────────────────────────────────────────────────────
 
+/// Empty-state body shown when no societies are joined. Preserves the exact
+/// `Messages / Forums go here` Center→Text structure required by MP-02 and
+/// MP-03 in the test plan.
 class _Placeholder extends StatelessWidget {
   const _Placeholder({super.key});
 
@@ -72,6 +84,8 @@ class _Placeholder extends StatelessWidget {
 
 // ── Joined groups list ────────────────────────────────────────────────────────
 
+/// Body shown once at least one society is joined. A simple ListView of
+/// `_GroupTile` rows that push `SocietyChatPage` when tapped.
 class _GroupList extends StatelessWidget {
   final List<Society> societies;
   const _GroupList({required this.societies});
@@ -96,6 +110,8 @@ class _GroupList extends StatelessWidget {
   }
 }
 
+/// Single ListTile-style row for one joined society. Tapping pushes the
+/// chat page for that society's group.
 class _GroupTile extends StatelessWidget {
   final Society society;
   const _GroupTile({required this.society});
