@@ -78,6 +78,7 @@ class _SignInScreenState extends State<SignInScreen>
       _emailController.text.trim(),
       _passwordController.text.trim(),
     );
+    if (!mounted) return;
     setState(() => _isLoading = false);
     if (result == null) {
       if (mounted) {
