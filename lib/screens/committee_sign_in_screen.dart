@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sociefy/main_tabs.dart';
 import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/services/auth_service.dart';
 
@@ -77,11 +76,8 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
       ).showSnackBar(const SnackBar(content: Text('Invalid credentials')));
       return;
     }
-
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute<void>(builder: (context) => const MainTabs()),
-      (route) => false,
-    );
+    // Navigation to MainTabs is handled reactively by the Consumer<AppState> in main.dart
+    // when isAuthenticated becomes true, so no manual navigation is needed here.
   }
 
   @override
