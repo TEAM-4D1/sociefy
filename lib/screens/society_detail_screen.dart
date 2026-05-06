@@ -240,7 +240,7 @@ class SocietyDetailScreen extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 height: 48,
-                  child: ElevatedButton(
+                child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isJoined
                         ? Colors.grey[300]
@@ -299,6 +299,7 @@ class SocietyDetailScreen extends StatelessWidget {
     );
   }
 
+  /// Shows a modal dialog for admins to create a new event for this society with date, time, and venue details.
   void _showCreateEventDialog(BuildContext context, AppState appState) {
     final formKey = GlobalKey<FormState>();
     final titleController = TextEditingController();
