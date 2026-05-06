@@ -30,7 +30,8 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
     super.dispose();
   }
 
-  /// Validates committee/admin credentials and signs in the user via Firebase Authentication with admin status detection.
+  /// Validates committee/admin credentials and signs in via Firebase Authentication.
+  /// Navigation to MainTabs is handled reactively by Consumer<AppState> in main.dart.
   Future<void> _signInAsCommitteeOrAdmin(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -38,6 +39,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
     final enteredPassword = _passwordController.text.trim();
 
     if (enteredEmail.toLowerCase().contains('myport')) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('MyPort emails are not allowed on committee sign in.'),
@@ -48,6 +50,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
 
     if (enteredEmail.toLowerCase() != _adminEmail ||
         enteredPassword != _adminPassword) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -60,7 +63,6 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
 
     setState(() => _isLoading = true);
 
-    // Set admin pending flag before Firebase auth
     final appState = Provider.of<AppState>(context, listen: false);
     appState.setAdminPending(true);
 
@@ -76,8 +78,8 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
       ).showSnackBar(const SnackBar(content: Text('Invalid credentials')));
       return;
     }
-    // Navigation to MainTabs is handled reactively by the Consumer<AppState> in main.dart
-    // when isAuthenticated becomes true, so no manual navigation is needed here.
+    // Navigation to MainTabs handled reactively by Consumer<AppState> in main.dart
+    // when isAuthenticated becomes true. No manual push needed here.
   }
 
   @override
@@ -85,11 +87,10 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Committee/Admin Sign in'),
+        // Simple pop — this screen is pushed onto the stack from SignInScreen
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+          onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: Container(
@@ -102,134 +103,139 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
             colors: [Color(0xFF4A148C), Color(0xFF7B1FA2)],
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 520),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.admin_panel_settings,
-                      size: 72,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Committee & Admin Portal',
-                      style: TextStyle(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 520),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(height: 40),
+                      const Icon(
+                        Icons.admin_panel_settings,
+                        size: 72,
                         color: Colors.white,
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      'Use your committee/admin credentials to sign in.',
-                      style: TextStyle(color: Colors.white70),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 28),
-                    TextFormField(
-                      controller: _emailController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter committee/admin email';
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'Committee/Admin Email',
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Committee & Admin Portal',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
+                        textAlign: TextAlign.center,
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter committee/admin password';
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'Committee/Admin Password',
-                        filled: true,
-                        fillColor: Colors.white,
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_off
-                                : Icons.visibility,
+                      const SizedBox(height: 10),
+                      const Text(
+                        'Use your committee/admin credentials to sign in.',
+                        style: TextStyle(color: Colors.white70),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 28),
+                      TextFormField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter committee/admin email';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Committee/Admin Email',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: _isLoading
-                            ? null
-                            : () {
-                                if (_formKey.currentState!.validate()) {
-                                  _signInAsCommitteeOrAdmin(context);
-                                }
-                              },
-                        icon: _isLoading
-                            ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Icon(Icons.login),
-                        label: Text(
-                          _isLoading
-                              ? 'Signing in...'
-                              : 'Sign in as Committee/Admin',
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: const Color(0xFF4A148C),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          textStyle: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: _obscurePassword,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter committee/admin password';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Committee/Admin Password',
+                          filled: true,
+                          fillColor: Colors.white,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: _isLoading
+                              ? null
+                              : () {
+                                  if (_formKey.currentState!.validate()) {
+                                    _signInAsCommitteeOrAdmin(context);
+                                  }
+                                },
+                          icon: _isLoading
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.login),
+                          label: Text(
+                            _isLoading
+                                ? 'Signing in...'
+                                : 'Sign in as Committee/Admin',
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: const Color(0xFF4A148C),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            textStyle: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
                 ),
               ),
             ),
