@@ -36,7 +36,7 @@ class _MainTabsState extends State<MainTabs> {
     super.initState();
     _pages = [
       HomePage(notifier: _societyNotifier),
-      const AnnouncementHome(),
+      AnnouncementHome(societies: _societyNotifier),
       MessagesPage(notifier: _societyNotifier),
     ];
   }
