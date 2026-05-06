@@ -272,7 +272,20 @@ class _AnnouncementHomeState extends State<AnnouncementHome> {
 /// pickers don't fit the validator pattern. On a successful save the page
 /// pops with the new `Announcement` as the route result.
 class CreateAnnouncementPage extends StatefulWidget {
-  const CreateAnnouncementPage({super.key});
+  /// Names of the societies the current user has joined. Used to populate
+  /// the optional "Post under society" dropdown so committee members can
+  /// scope an announcement to one of their groups (User Req 7).
+  ///
+  /// When this list is empty (e.g. the standalone widget-test path
+  /// `MaterialApp(home: CreateAnnouncementPage())`) the dropdown is
+  /// omitted entirely and the form keeps exactly 3 `TextFormField`s, so
+  /// CAP-01 still passes unchanged.
+  final List<String> societyOptions;
+
+  const CreateAnnouncementPage({
+    super.key,
+    this.societyOptions = const [],
+  });
 
   @override
   State<CreateAnnouncementPage> createState() =>
@@ -286,6 +299,10 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
   final _venueCtrl = TextEditingController();
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
+
+  /// Currently-selected society name for the post. Null = general
+  /// announcement (no society chip on the resulting card).
+  String? _selectedSociety;
 
   @override
   void dispose() {
