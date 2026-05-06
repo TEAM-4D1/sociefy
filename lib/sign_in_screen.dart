@@ -42,6 +42,9 @@ class _SignInPageState extends State<SignInPage>
     super.dispose();
   }
 
+  /// Run the form validators. With no backend wired up, success is
+  /// silent — the validation messages are the only externally observable
+  /// behaviour (see SI-02..SI-04 / SI-06).
   void _signIn() {
     _formKey.currentState!.validate();
   }
