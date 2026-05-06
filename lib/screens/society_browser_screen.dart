@@ -14,9 +14,13 @@ class SocietyBrowserScreen extends StatefulWidget {
   State<SocietyBrowserScreen> createState() => _SocietyBrowserScreenState();
 }
 
-class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
+class _SocietyBrowserScreenState extends State<SocietyBrowserScreen>
+    with AutomaticKeepAliveClientMixin {
   String _searchQuery = '';
   String? _selectedCategory;
+
+  @override
+  bool get wantKeepAlive => true;
 
   /// Filters societies by search query and selected category.
   List<Society> get _filteredSocieties {
