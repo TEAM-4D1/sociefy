@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'main_tabs.dart';
 
+/// Application entry point. Boots the Flutter framework and inserts
+/// [MyApp] at the root of the widget tree.
 void main() => runApp(const MyApp());
 
+/// Root widget. Owns the global [MaterialApp], the Material 3 theme, and
+/// hands the home slot off to [MainTabs] which manages the bottom-nav
+/// experience (Home / Announcements / Messages).
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
