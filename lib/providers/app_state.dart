@@ -373,11 +373,14 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      FirebaseFirestore.instance.collection('societies').doc(id).set({
-        'name': name,
-        'category': category,
-        'description': description,
-      });
+      FirebaseFirestore.instance
+          .collection('societies')
+          .doc(id)
+          .set({'name': name, 'category': category, 'description': description})
+          .then((_) {
+            // Force reload societies after successful Firestore write to ensure consistency
+            loadSocieties(forceReload: true);
+          });
     } catch (e) {
       debugPrint('createSociety Firestore error: $e');
     }
