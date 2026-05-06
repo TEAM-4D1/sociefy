@@ -192,11 +192,14 @@ class _AnnouncementHomeState extends State<AnnouncementHome> {
       ));
   }
 
-  /// Build a single announcement card with a coloured accent strip on the
-  /// left, slide+fade entrance animation, and the formatted
-  /// date/time/venue line at the bottom.
+  /// Build a single announcement card. Accent strip turns dimmer for past
+  /// events; the row of action buttons at the bottom implements RSVP
+  /// (User Req 3 / interview pattern) and Save-to-Calendar (User Req 1).
   Widget _buildAnnouncementCard(Announcement a, int index) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final cs = Theme.of(context).colorScheme;
+    final isUpcoming = a.isUpcomingFrom();
+    final accent = isUpcoming ? cs.primary : Colors.grey.shade400;
+
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: Duration(milliseconds: 300 + index * 60),
@@ -210,64 +213,144 @@ class _AnnouncementHomeState extends State<AnnouncementHome> {
       ),
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 6),
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                width: 5,
-                decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    bottomLeft: Radius.circular(16),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        a.title,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        a.description,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.schedule,
-                            size: 13,
-                            color: Colors.grey.shade500,
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              a.dateTimeVenueString,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => _openDetail(a),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(width: 5, color: accent),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 12, 12, 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Top row: optional society chip + relative time
+                        Row(
+                          children: [
+                            if (a.societyName != null)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: cs.primaryContainer,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  a.societyName!,
+                                  style: TextStyle(
+                                    color: cs.onPrimaryContainer,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            const Spacer(),
+                            Text(
+                              a.relativeTime(),
                               style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontSize: 12,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: isUpcoming
+                                    ? cs.primary
+                                    : Colors.grey.shade500,
                               ),
                             ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          a.title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          a.description,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Icon(Icons.schedule,
+                                size: 13, color: Colors.grey.shade500),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                a.dateTimeVenueString,
+                                style: TextStyle(
+                                  color: Colors.grey.shade600,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        // Action row: RSVP + Save to calendar
+                        Row(
+                          children: [
+                            TextButton.icon(
+                              onPressed: () => _toggleGoing(a),
+                              icon: Icon(
+                                a.isGoing
+                                    ? Icons.check_circle
+                                    : Icons.check_circle_outline,
+                                size: 18,
+                                color: a.isGoing ? cs.primary : null,
+                              ),
+                              label: Text(a.isGoing ? 'Going' : 'Going?'),
+                              style: TextButton.styleFrom(
+                                visualDensity: VisualDensity.compact,
+                              ),
+                            ),
+                            TextButton.icon(
+                              onPressed: () => _saveToCalendar(a),
+                              icon: Icon(
+                                a.reminderOn
+                                    ? Icons.event_available
+                                    : Icons.calendar_month_outlined,
+                                size: 18,
+                                color: a.reminderOn ? cs.primary : null,
+                              ),
+                              label:
+                                  Text(a.reminderOn ? 'Saved' : 'Save'),
+                              style: TextButton.styleFrom(
+                                visualDensity: VisualDensity.compact,
+                              ),
+                            ),
+                            const Spacer(),
+                            Icon(Icons.chevron_right,
+                                color: Colors.grey.shade400, size: 20),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+        ),
+      ),
+    );
+  }
+
+  /// Push the placeholder detail page; replaced by [AnnouncementDetailPage]
+  /// in a follow-up commit. Wraps `Navigator.push` so callers don't need
+  /// to know the route shape.
+  void _openDetail(Announcement a) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AnnouncementDetailPage(
+          announcement: a,
+          onChanged: () => setState(() {}),
         ),
       ),
     );
