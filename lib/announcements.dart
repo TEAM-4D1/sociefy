@@ -21,13 +21,66 @@ class Announcement {
   /// Free-text venue label (e.g. "Main Hall Room 2A").
   final String venue;
 
+  /// Optional society this announcement is posted under. Null means a
+  /// general (non-society) announcement and renders without a chip.
+  /// Maps to User Requirement 7 (committee can post per-society
+  /// announcements) and Requirement 6 (filter by joined societies).
+  final String? societyName;
+
+  /// Whether the current user has RSVPed "Going". Mutable so the card
+  /// can toggle without rebuilding the whole list.
+  bool isGoing;
+
+  /// Whether a local reminder is set for this event.
+  bool reminderOn;
+
   Announcement({
     required this.title,
     required this.description,
     required this.date,
     required this.time,
     required this.venue,
+    this.societyName,
+    this.isGoing = false,
+    this.reminderOn = false,
   });
+
+  /// Combined start `DateTime` (date + time). Useful for sorting and for
+  /// the upcoming/past filter.
+  DateTime get eventDateTime => DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
+
+  /// True when [eventDateTime] is in the future relative to [now]
+  /// (defaults to `DateTime.now()`). Drives the "Upcoming" filter chip.
+  bool isUpcomingFrom([DateTime? now]) =>
+      eventDateTime.isAfter(now ?? DateTime.now());
+
+  /// Short, human-friendly delta to display alongside each card, e.g.
+  /// `"In 3 days"`, `"Tomorrow"`, `"In 2h"`, `"Started 30m ago"`,
+  /// `"5 days ago"`. The reference time defaults to `DateTime.now()`.
+  String relativeTime([DateTime? now]) {
+    final reference = now ?? DateTime.now();
+    final diff = eventDateTime.difference(reference);
+
+    if (diff.inMinutes.abs() < 60) {
+      if (diff.isNegative) return 'Started ${(-diff).inMinutes}m ago';
+      return 'In ${diff.inMinutes}m';
+    }
+    if (diff.inHours.abs() < 24) {
+      if (diff.isNegative) return 'Started ${(-diff).inHours}h ago';
+      return 'In ${diff.inHours}h';
+    }
+    if (diff.inDays == 0) return 'Today';
+    if (diff.inDays == 1) return 'Tomorrow';
+    if (diff.inDays == -1) return 'Yesterday';
+    if (diff.isNegative) return '${(-diff).inDays} days ago';
+    return 'In ${diff.inDays} days';
+  }
 
   /// Renders the announcement's date, time and venue as a single human
   /// string, e.g. `"2026-03-05, 09:30 AM @ Room A"`.
