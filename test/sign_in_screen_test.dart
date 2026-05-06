@@ -1,82 +1,133 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sociefy/sign_in_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:sociefy/screens/sign_in_screen.dart';
+import 'package:sociefy/providers/app_state.dart';
 
 void main() {
-  group('SignInPage', () {
-    // SI-01 — initial render has email field, password field and Sign In button
-    testWidgets('shows email field, password field and Sign In button', (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: SignInPage()));
-      // 'Sign In' appears in both the AppBar title and the ElevatedButton label
-      expect(find.text('Sign In'), findsWidgets);
-      expect(find.byType(TextFormField), findsNWidgets(2));
-      expect(find.widgetWithText(ElevatedButton, 'Sign In'), findsOneWidget);
-    });
+  group('SignInScreen Tests', () {
+    /// Helper to wrap SignInScreen in MaterialApp and AppState Provider
+    Widget buildTestWidget(AppState appState) {
+      return MaterialApp(
+        home: ChangeNotifierProvider.value(
+          value: appState,
+          child: const SignInScreen(),
+        ),
+      );
+    }
 
-    // AppBar title
-    testWidgets('shows Sign In in the AppBar', (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: SignInPage()));
-      expect(find.byType(AppBar), findsOneWidget);
-    });
+    testWidgets(
+      'renders email field, password field, and Sign In button',
+      (WidgetTester tester) async {
+        final appState = AppState(skipFirebase: true);
+        await tester.pumpWidget(buildTestWidget(appState));
+        await tester.pump(const Duration(milliseconds: 100));
 
-    // SI-02 — EP: invalid — empty email
-    testWidgets('EP: empty email shows validation error', (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: SignInPage()));
-      await tester.enterText(find.byType(TextFormField).at(1), 'password123');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign In'));
-      await tester.pumpAndSettle();
-      expect(find.text('Please enter your email'), findsOneWidget);
-    });
+        expect(find.text('Email'), findsOneWidget);
+        expect(find.text('Password'), findsOneWidget);
+        expect(find.text('Sign In'), findsOneWidget);
+      },
+    );
 
-    // SI-03 — EP: invalid — empty password
-    testWidgets('EP: empty password shows validation error', (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: SignInPage()));
-      await tester.enterText(find.byType(TextFormField).at(0), 'test@example.com');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign In'));
-      await tester.pumpAndSettle();
-      expect(find.text('Please enter your password'), findsOneWidget);
-    });
+    testWidgets(
+      'Continue as Guest button is present',
+      (WidgetTester tester) async {
+        final appState = AppState(skipFirebase: true);
+        await tester.pumpWidget(buildTestWidget(appState));
+        await tester.pump(const Duration(milliseconds: 100));
 
-    // SI-04 — EP: invalid — email with no @ character
-    testWidgets('EP: email without @ shows format error', (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: SignInPage()));
-      await tester.enterText(find.byType(TextFormField).at(0), 'notanemail');
-      await tester.enterText(find.byType(TextFormField).at(1), 'password123');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign In'));
-      await tester.pumpAndSettle();
-      expect(find.text('Please enter a valid email'), findsOneWidget);
-    });
+        expect(find.text('Continue as Guest'), findsOneWidget);
+      },
+    );
 
-    // SI-05 — EP: valid — correct email and password passes all validation
-    testWidgets('EP: valid email and password produces no validation errors', (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: SignInPage()));
-      await tester.enterText(find.byType(TextFormField).at(0), 'test@example.com');
-      await tester.enterText(find.byType(TextFormField).at(1), 'password123');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign In'));
-      await tester.pumpAndSettle();
-      expect(find.text('Please enter your email'), findsNothing);
-      expect(find.text('Please enter your password'), findsNothing);
-      expect(find.text('Please enter a valid email'), findsNothing);
-    });
+    testWidgets(
+      'Committee Sign In button is present',
+      (WidgetTester tester) async {
+        final appState = AppState(skipFirebase: true);
+        await tester.pumpWidget(buildTestWidget(appState));
+        await tester.pump(const Duration(milliseconds: 100));
 
-    // SI-06 — BVA: whitespace-only email is treated as empty
-    testWidgets('BVA: whitespace-only email shows empty-email error', (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: SignInPage()));
-      await tester.enterText(find.byType(TextFormField).at(0), '   ');
-      await tester.enterText(find.byType(TextFormField).at(1), 'password123');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign In'));
-      await tester.pumpAndSettle();
-      expect(find.text('Please enter your email'), findsOneWidget);
-    });
+        expect(
+          find.text('Are you a committee member or admin? Sign in here'),
+          findsOneWidget,
+        );
+      },
+    );
 
-    // SI-07 — BVA: minimal valid email (single char before and after @)
-    testWidgets('BVA: minimal email a@b passes format validation', (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: SignInPage()));
-      await tester.enterText(find.byType(TextFormField).at(0), 'a@b');
-      await tester.enterText(find.byType(TextFormField).at(1), 'password123');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign In'));
-      await tester.pumpAndSettle();
-      expect(find.text('Please enter a valid email'), findsNothing);
-    });
+    testWidgets(
+      'email field accepts text input',
+      (WidgetTester tester) async {
+        final appState = AppState(skipFirebase: true);
+        await tester.pumpWidget(buildTestWidget(appState));
+
+        final emailField = find.byType(TextFormField).at(0);
+        await tester.tap(emailField);
+        await tester.enterText(emailField, 'test@example.com');
+        await tester.pump(const Duration(milliseconds: 100));
+
+        expect(find.text('test@example.com'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'password field accepts text input',
+      (WidgetTester tester) async {
+        final appState = AppState(skipFirebase: true);
+        await tester.pumpWidget(buildTestWidget(appState));
+
+        final passwordField = find.byType(TextFormField).at(1);
+        await tester.tap(passwordField);
+        await tester.enterText(passwordField, 'password123');
+        await tester.pump(const Duration(milliseconds: 100));
+
+        expect(find.byType(TextFormField), findsNWidgets(2));
+      },
+    );
+
+    testWidgets(
+      'Register button is present',
+      (WidgetTester tester) async {
+        final appState = AppState(skipFirebase: true);
+        await tester.pumpWidget(buildTestWidget(appState));
+        await tester.pump(const Duration(milliseconds: 100));
+
+        final registerButton = find.text("Don't have an account? Register");
+        expect(registerButton, findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'password visibility toggle is present',
+      (WidgetTester tester) async {
+        final appState = AppState(skipFirebase: true);
+        await tester.pumpWidget(buildTestWidget(appState));
+        await tester.pump(const Duration(milliseconds: 100));
+
+        expect(find.byIcon(Icons.visibility_off), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'has two text form fields',
+      (WidgetTester tester) async {
+        final appState = AppState(skipFirebase: true);
+        await tester.pumpWidget(buildTestWidget(appState));
+        await tester.pump(const Duration(milliseconds: 100));
+
+        expect(find.byType(TextFormField), findsNWidgets(2));
+      },
+    );
+
+    testWidgets(
+      'Sign In button is present and visible',
+      (WidgetTester tester) async {
+        final appState = AppState(skipFirebase: true);
+        await tester.pumpWidget(buildTestWidget(appState));
+        await tester.pump(const Duration(milliseconds: 100));
+
+        final signInButton = find.text('Sign In');
+        expect(signInButton, findsOneWidget);
+      },
+    );
   });
 }

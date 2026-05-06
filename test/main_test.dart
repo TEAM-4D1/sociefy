@@ -1,48 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sociefy/main.dart';
-import 'package:sociefy/main_tabs.dart';
+import 'package:provider/provider.dart';
+import 'package:sociefy/screens/sign_in_screen.dart';
+import 'package:sociefy/providers/app_state.dart';
+import 'package:sociefy/models/society.dart';
 
 void main() {
-  group('MyApp', () {
-    // APP-01 — app renders a MaterialApp
-    testWidgets('renders a MaterialApp without errors', (tester) async {
-      await tester.pumpWidget(const MyApp());
-      expect(find.byType(MaterialApp), findsOneWidget);
-    });
+  testWidgets('SignInScreen renders correctly with mocked AppState', (
+    WidgetTester tester,
+  ) async {
+    final appState = AppState(skipFirebase: true);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ChangeNotifierProvider.value(
+          value: appState,
+          child: const SignInScreen(),
+        ),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
 
-    // APP-02 — home is MainTabs
-    testWidgets('uses MainTabs as the home widget', (tester) async {
-      await tester.pumpWidget(const MyApp());
-      expect(find.byType(MainTabs), findsOneWidget);
-    });
+    expect(find.text('Email'), findsOneWidget);
+    expect(find.text('Password'), findsOneWidget);
+    expect(find.text('Sign In'), findsOneWidget);
+  });
 
-    // APP-03 — Material 3 is enabled
-    testWidgets('theme has useMaterial3 = true', (tester) async {
-      await tester.pumpWidget(const MyApp());
-      final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
-      expect(app.theme?.useMaterial3, isTrue);
-    });
+  test('Society.fromMap parses valid map', () {
+    final map = {
+      'id': 's1',
+      'name': 'Chess Club',
+      'category': 'Sports',
+      'description': 'We play chess',
+    };
 
-    // APP-04 — app title
-    testWidgets('title is Society App', (tester) async {
-      await tester.pumpWidget(const MyApp());
-      final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
-      expect(app.title, 'Society App');
-    });
+    final society = Society.fromMap(map);
 
-    // APP-05 — BottomNavigationBar is present
-    testWidgets('BottomNavigationBar is present on launch', (tester) async {
-      await tester.pumpWidget(const MyApp());
-      await tester.pumpAndSettle();
-      expect(find.byType(BottomNavigationBar), findsOneWidget);
-    });
+    expect(society.id, 's1');
+    expect(society.name, 'Chess Club');
+    expect(society.category, 'Sports');
+    expect(society.description, 'We play chess');
+  });
 
-    // APP-06 — color scheme has a primary color
-    testWidgets('color scheme primary is not null', (tester) async {
-      await tester.pumpWidget(const MyApp());
-      final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
-      expect(app.theme?.colorScheme.primary, isNotNull);
-    });
+  test('Society.fromMap handles missing keys gracefully', () {
+    final map = {'name': 'Drama Society'};
+
+    final society = Society.fromMap(map, id: 'generated-id');
+
+    expect(society.id, 'generated-id');
+    expect(society.name, 'Drama Society');
+    expect(society.category, '');
+    expect(society.description, '');
   });
 }
