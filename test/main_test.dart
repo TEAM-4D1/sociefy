@@ -6,8 +6,9 @@ import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/models/society.dart';
 
 void main() {
-  testWidgets('SignInScreen renders correctly with mocked AppState',
-      (WidgetTester tester) async {
+  testWidgets('SignInScreen renders correctly with mocked AppState', (
+    WidgetTester tester,
+  ) async {
     final appState = AppState(skipFirebase: true);
     await tester.pumpWidget(
       MaterialApp(
@@ -41,9 +42,7 @@ void main() {
   });
 
   test('Society.fromMap handles missing keys gracefully', () {
-    final map = {
-      'name': 'Drama Society',
-    };
+    final map = {'name': 'Drama Society'};
 
     final society = Society.fromMap(map, id: 'generated-id');
 
