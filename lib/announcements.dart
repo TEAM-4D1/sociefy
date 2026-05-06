@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'society_model.dart';
 
 /// Domain entity representing a single society announcement / event.
 ///
@@ -100,13 +101,24 @@ class Announcement {
   }
 }
 
-/// Announcements tab — feed of upcoming society events.
+/// Logical view filter for the announcement feed. `upcoming` is the
+/// default because the iteration-1 interviews flagged "missing events"
+/// as the primary pain point.
+enum _FilterMode { upcoming, past, all }
+
+/// Announcements tab — feed of upcoming and past society events.
 ///
-/// Lists every [Announcement] the user has posted (newest first). Tapping
-/// the FAB / empty-state button pushes [CreateAnnouncementPage] and, on a
-/// successful save, prepends the returned `Announcement` to the list.
+/// When [societies] is provided the page populates the "Post under
+/// society" dropdown on [CreateAnnouncementPage] from the user's
+/// **joined** societies (User Req 6 — separate experience for joined
+/// societies). When it is null the page still works in isolation, which
+/// keeps the AH-* unit tests green.
 class AnnouncementHome extends StatefulWidget {
-  const AnnouncementHome({super.key});
+  /// Optional shared store. Only used to source society names for the
+  /// post dropdown and to scope the Upcoming filter.
+  final SocietyNotifier? societies;
+
+  const AnnouncementHome({super.key, this.societies});
 
   @override
   State<AnnouncementHome> createState() => _AnnouncementHomeState();
@@ -114,16 +126,70 @@ class AnnouncementHome extends StatefulWidget {
 
 class _AnnouncementHomeState extends State<AnnouncementHome> {
   final List<Announcement> _announcements = [];
+  _FilterMode _filter = _FilterMode.upcoming;
+
+  /// Returns [_announcements] filtered by [_filter] and sorted: upcoming
+  /// soonest-first, past most-recent-first.
+  List<Announcement> get _visible {
+    final now = DateTime.now();
+    final list = switch (_filter) {
+      _FilterMode.upcoming =>
+        _announcements.where((a) => a.isUpcomingFrom(now)).toList(),
+      _FilterMode.past =>
+        _announcements.where((a) => !a.isUpcomingFrom(now)).toList(),
+      _FilterMode.all => List.of(_announcements),
+    };
+    list.sort((a, b) => _filter == _FilterMode.past
+        ? b.eventDateTime.compareTo(a.eventDateTime)
+        : a.eventDateTime.compareTo(b.eventDateTime));
+    return list;
+  }
 
   /// Push the create-announcement route and prepend the returned
-  /// [Announcement] to the feed if the user saved one.
+  /// [Announcement] to the feed if the user saved one. Joined-society
+  /// names (if any) are forwarded so the dropdown can show them.
   Future<void> _openCreatePage() async {
+    final options = widget.societies?.joinedSocieties
+            .map((s) => s.name)
+            .toList(growable: false) ??
+        const <String>[];
     final result = await Navigator.of(context).push<Announcement>(
-      MaterialPageRoute(builder: (_) => const CreateAnnouncementPage()),
+      MaterialPageRoute(
+        builder: (_) => CreateAnnouncementPage(societyOptions: options),
+      ),
     );
     if (result != null) {
       setState(() => _announcements.insert(0, result));
     }
+  }
+
+  /// Toggle the user's RSVP state for [a] and surface confirmation via
+  /// snackbar so the action feels acknowledged on a single-user
+  /// prototype.
+  void _toggleGoing(Announcement a) {
+    setState(() => a.isGoing = !a.isGoing);
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(
+        content: Text(a.isGoing
+            ? 'Marked as going to "${a.title}"'
+            : 'No longer going to "${a.title}"'),
+        duration: const Duration(seconds: 2),
+      ));
+  }
+
+  /// Implements the "Save Event to Calendar" use case (User Req 1).
+  /// In the prototype there's no real calendar integration; we simply
+  /// flip the [Announcement.reminderOn] flag and confirm via snackbar
+  /// — the live-demo behaviour the design chapter specifies.
+  void _saveToCalendar(Announcement a) {
+    setState(() => a.reminderOn = true);
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(
+        content: Text('"${a.title}" saved to calendar'),
+        duration: const Duration(seconds: 2),
+      ));
   }
 
   /// Build a single announcement card with a coloured accent strip on the
