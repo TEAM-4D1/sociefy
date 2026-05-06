@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
+import '../models/society.dart';
 import 'society_detail_screen.dart';
 
 /// Allows users to discover and search all available societies with category filtering.
