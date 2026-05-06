@@ -21,6 +21,7 @@ void main() {
       (WidgetTester tester) async {
         final appState = AppState(skipFirebase: true);
         await tester.pumpWidget(buildTestWidget(appState));
+        await tester.pump(const Duration(milliseconds: 100));
 
         expect(find.text('Email'), findsOneWidget);
         expect(find.text('Password'), findsOneWidget);
@@ -33,6 +34,7 @@ void main() {
     ) async {
       final appState = AppState(skipFirebase: true);
       await tester.pumpWidget(buildTestWidget(appState));
+      await tester.pump(const Duration(milliseconds: 100));
 
       expect(find.text('Continue as Guest'), findsOneWidget);
     });
@@ -42,6 +44,7 @@ void main() {
     ) async {
       final appState = AppState(skipFirebase: true);
       await tester.pumpWidget(buildTestWidget(appState));
+      await tester.pump(const Duration(milliseconds: 100));
 
       expect(
         find.text('Are you a committee member or admin? Sign in here'),
@@ -73,7 +76,7 @@ void main() {
       final passwordField = find.byType(TextFormField).at(1);
       await tester.tap(passwordField);
       await tester.enterText(passwordField, 'password123');
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 100));
 
       // Password fields use obscureText, so we verify the field received focus
       // and text was entered (without displaying the actual text)
@@ -85,12 +88,12 @@ void main() {
     ) async {
       final appState = AppState(skipFirebase: true);
       await tester.pumpWidget(buildTestWidget(appState));
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 100));
 
       // Tap the Sign In button without entering any text
       final signInButton = find.text('Sign In');
       await tester.tap(signInButton);
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 100));
 
       // Screen should still be present (no crash)
       expect(find.byType(SignInScreen), findsOneWidget);
@@ -105,7 +108,7 @@ void main() {
       // Try to submit without entering email
       final signInButton = find.text('Sign In');
       await tester.tap(signInButton);
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 100));
 
       // Validation error should appear
       expect(find.text('Enter email'), findsOneWidget);
@@ -121,12 +124,12 @@ void main() {
       final emailField = find.byType(TextFormField).at(0);
       await tester.tap(emailField);
       await tester.enterText(emailField, 'test@example.com');
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 100));
 
       // Try to submit
       final signInButton = find.text('Sign In');
       await tester.tap(signInButton);
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 100));
 
       // Password validation error should appear
       expect(find.text('Enter password'), findsOneWidget);
@@ -142,18 +145,18 @@ void main() {
       final emailField = find.byType(TextFormField).at(0);
       await tester.tap(emailField);
       await tester.enterText(emailField, 'invalidemail');
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 100));
 
       // Enter password
       final passwordField = find.byType(TextFormField).at(1);
       await tester.tap(passwordField);
       await tester.enterText(passwordField, 'password123');
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 100));
 
       // Try to submit
       final signInButton = find.text('Sign In');
       await tester.tap(signInButton);
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 100));
 
       // Email validation error should appear
       expect(find.text('Enter valid email'), findsOneWidget);
@@ -164,8 +167,9 @@ void main() {
     ) async {
       final appState = AppState(skipFirebase: true);
       await tester.pumpWidget(buildTestWidget(appState));
+      await tester.pump(const Duration(milliseconds: 100));
 
-      final registerButton = find.text("Don't have an account? Register");
+      final registerButton = find.text("Don'"'"'t have an account? Register");
       expect(registerButton, findsOneWidget);
     });
 
@@ -174,6 +178,7 @@ void main() {
     ) async {
       final appState = AppState(skipFirebase: true);
       await tester.pumpWidget(buildTestWidget(appState));
+      await tester.pump(const Duration(milliseconds: 100));
 
       // Password field should have a visibility icon
       expect(find.byIcon(Icons.visibility_off), findsOneWidget);
