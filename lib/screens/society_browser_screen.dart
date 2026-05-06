@@ -38,6 +38,7 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final filteredSocieties = _filteredSocieties;
 
     return Scaffold(
