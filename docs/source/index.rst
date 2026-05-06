@@ -43,3 +43,8 @@ Tech Stack
 | Authentication | Firebase Authentication |
 | Storage | Firebase Storage |
 | Documentation | Sphinx + ReadTheDocs |
+
+Testing
+-------
+
+Test results and coverage data are available in the repository. Test results are available in ``test_report.json`` and coverage data in ``coverage/lcov.info``.
