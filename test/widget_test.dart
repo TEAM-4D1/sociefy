@@ -17,6 +17,7 @@ void main() {
         ),
       ),
     );
+
     expect(find.byType(SignInScreen), findsOneWidget);
   });
 
@@ -32,7 +33,6 @@ void main() {
         ),
       ),
     );
-    await tester.pump(const Duration(milliseconds: 200));
 
     expect(find.text('Email'), findsOneWidget);
     expect(find.text('Password'), findsOneWidget);
