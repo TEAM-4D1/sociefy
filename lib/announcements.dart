@@ -351,6 +351,7 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
         date: _selectedDate!,
         time: _selectedTime!,
         venue: _venueCtrl.text.trim(),
+        societyName: _selectedSociety,
       ),
     );
   }
