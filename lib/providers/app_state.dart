@@ -78,8 +78,8 @@ class AppState extends ChangeNotifier {
 
   /// Fetches all available societies from the Firestore 'societies' collection and caches them locally.
   /// Calls [notifyListeners] after loading. Only fetches once per session.
-  Future<void> loadSocieties() async {
-    if (_societies.isNotEmpty) return;
+  Future<void> loadSocieties({bool forceReload = false}) async {
+    if (_societies.isNotEmpty && !forceReload) return;
     final querySnapshot = await FirebaseFirestore.instance
         .collection('societies')
         .get();
@@ -96,9 +96,9 @@ class AppState extends ChangeNotifier {
   }
 
   /// Fetches upcoming events from the Firestore 'events' collection with a 100-event limit and caches them locally.
-  /// Calls [notifyListeners] after loading. Only fetches once per session.
-  Future<void> loadEvents() async {
-    if (_events.isNotEmpty) return;
+  /// Calls [notifyListeners] after loading. Only fetches once per session unless [forceReload] is true.
+  Future<void> loadEvents({bool forceReload = false}) async {
+    if (_events.isNotEmpty && !forceReload) return;
     final querySnapshot = await FirebaseFirestore.instance
         .collection('events')
         .where(
@@ -266,8 +266,11 @@ class AppState extends ChangeNotifier {
     _events.clear();
     _announcements.clear();
 
-    // Reload loadSocieties and loadEvents in parallel, then load announcements
-    await Future.wait<void>([loadSocieties(), loadEvents()]);
+    // Reload loadSocieties and loadEvents in parallel with forceReload: true to fetch fresh data
+    await Future.wait<void>([
+      loadSocieties(forceReload: true),
+      loadEvents(forceReload: true),
+    ]);
 
     // loadAnnouncements is stream-based, just call it
     loadAnnouncements();
