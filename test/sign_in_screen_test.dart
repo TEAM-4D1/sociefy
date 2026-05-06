@@ -162,14 +162,14 @@ void main() {
       expect(find.text('Enter valid email'), findsOneWidget);
     });
 
-    testWidgets('Register button navigates to RegisterScreen', (
+    testWidgets('Register button is present', (
       WidgetTester tester,
     ) async {
       final appState = AppState(skipFirebase: true);
       await tester.pumpWidget(buildTestWidget(appState));
       await tester.pump(const Duration(milliseconds: 100));
 
-      final registerButton = find.text("Don'"'"'t have an account? Register");
+      final registerButton = find.text("Don't have an account? Register");
       expect(registerButton, findsOneWidget);
     });
 
