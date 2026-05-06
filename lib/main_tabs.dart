@@ -4,6 +4,13 @@ import 'home_screen.dart';
 import 'messages_screen.dart';
 import 'society_model.dart';
 
+/// Bottom-nav shell that owns the three primary tabs of the app
+/// (Home / Announcements / Messages) and the [SocietyNotifier] shared
+/// between them.
+///
+/// Uses an [IndexedStack] so each tab keeps its scroll position and
+/// state when the user switches away — exactly the trade-off captured by
+/// MT-03 in the test plan.
 class MainTabs extends StatefulWidget {
   const MainTabs({super.key});
 
@@ -12,11 +19,16 @@ class MainTabs extends StatefulWidget {
 }
 
 class _MainTabsState extends State<MainTabs> {
+  /// Index of the active tab; matches `BottomNavigationBar.currentIndex`.
   int _currentIndex = 0;
 
-  // One shared notifier wires Home → Messages together
+  /// Single shared store. Both [HomePage] and [MessagesPage] point at
+  /// this instance, so a join performed on the home tab is reflected on
+  /// the messages tab without any explicit messaging.
   final _societyNotifier = SocietyNotifier();
 
+  /// Built lazily in [initState] so the notifier exists before the pages
+  /// are constructed.
   late final List<Widget> _pages;
 
   @override
