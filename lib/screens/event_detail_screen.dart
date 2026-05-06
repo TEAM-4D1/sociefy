@@ -118,6 +118,100 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               children: [
                 SizedBox(
                   width: double.infinity,
+                  child: isGuest
+                      ? ElevatedButton.icon(
+                          icon: const Icon(Icons.calendar_today),
+                          label: const Text('Add to Calendar'),
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Sign in to add events to your calendar',
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      : ElevatedButton.icon(
+                          icon: const Icon(Icons.calendar_today),
+                          label: const Text('Add to Calendar'),
+                          onPressed: () async {
+                            try {
+                              // Helper to parse time strings like "14:00" or "2:00 PM"
+                              DateTime _parseTime(
+                                String timeStr,
+                                DateTime baseDate,
+                              ) {
+                                try {
+                                  final parsed = DateFormat.Hm().parse(timeStr);
+                                  return DateTime(
+                                    baseDate.year,
+                                    baseDate.month,
+                                    baseDate.day,
+                                    parsed.hour,
+                                    parsed.minute,
+                                  );
+                                } catch (_) {
+                                  try {
+                                    final parsed = DateFormat.jm().parse(
+                                      timeStr,
+                                    );
+                                    return DateTime(
+                                      baseDate.year,
+                                      baseDate.month,
+                                      baseDate.day,
+                                      parsed.hour,
+                                      parsed.minute,
+                                    );
+                                  } catch (_) {
+                                    return baseDate;
+                                  }
+                                }
+                              }
+
+                              final startDateTime = _parseTime(
+                                event.startTime,
+                                event.date,
+                              );
+                              final endDateTime = _parseTime(
+                                event.endTime,
+                                event.date,
+                              );
+
+                              final calEvent = add2.Event(
+                                title: event.title,
+                                description: event.description,
+                                location: event.venue,
+                                startDate: startDateTime,
+                                endDate: endDateTime,
+                              );
+
+                              await add2.Add2Calendar.addEvent2Cal(calEvent);
+
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Event added to calendar!'),
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Error adding to calendar: $e',
+                                    ),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                        ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.how_to_reg),
                     // Guests see a disabled button with a sign-in prompt
