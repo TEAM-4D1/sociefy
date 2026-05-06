@@ -1,10 +1,24 @@
 import 'package:flutter/material.dart';
 
+/// Domain entity representing a single society announcement / event.
+///
+/// Holds the data captured by [CreateAnnouncementPage] and is the unit
+/// formatted by the [dateTimeVenueString] getter, which is the function
+/// directly exercised by the ANN-01..ANN-08 boundary-value tests.
 class Announcement {
+  /// Headline shown in bold on the card.
   final String title;
+
+  /// Free-text description / body.
   final String description;
+
+  /// Calendar date the event occurs on.
   final DateTime date;
+
+  /// Wall-clock start time.
   final TimeOfDay time;
+
+  /// Free-text venue label (e.g. "Main Hall Room 2A").
   final String venue;
 
   Announcement({
@@ -15,6 +29,15 @@ class Announcement {
     required this.venue,
   });
 
+  /// Renders the announcement's date, time and venue as a single human
+  /// string, e.g. `"2026-03-05, 09:30 AM @ Room A"`.
+  ///
+  /// Notes:
+  /// * Year/month/day and hour/minute components are zero-padded so the
+  ///   ANN-05 / ANN-08 single-digit boundaries produce two-digit output.
+  /// * Hour conversion goes through `time.hourOfPeriod` so the noon /
+  ///   midnight boundaries return `12:00 PM` and `12:00 AM` (ANN-03 /
+  ///   ANN-04) rather than `00:00`.
   String get dateTimeVenueString {
     final dateStr =
         "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
@@ -24,6 +47,11 @@ class Announcement {
   }
 }
 
+/// Announcements tab — feed of upcoming society events.
+///
+/// Lists every [Announcement] the user has posted (newest first). Tapping
+/// the FAB / empty-state button pushes [CreateAnnouncementPage] and, on a
+/// successful save, prepends the returned `Announcement` to the list.
 class AnnouncementHome extends StatefulWidget {
   const AnnouncementHome({super.key});
 
@@ -34,6 +62,8 @@ class AnnouncementHome extends StatefulWidget {
 class _AnnouncementHomeState extends State<AnnouncementHome> {
   final List<Announcement> _announcements = [];
 
+  /// Push the create-announcement route and prepend the returned
+  /// [Announcement] to the feed if the user saved one.
   Future<void> _openCreatePage() async {
     final result = await Navigator.of(context).push<Announcement>(
       MaterialPageRoute(builder: (_) => const CreateAnnouncementPage()),
@@ -43,6 +73,9 @@ class _AnnouncementHomeState extends State<AnnouncementHome> {
     }
   }
 
+  /// Build a single announcement card with a coloured accent strip on the
+  /// left, slide+fade entrance animation, and the formatted
+  /// date/time/venue line at the bottom.
   Widget _buildAnnouncementCard(Announcement a, int index) {
     final colorScheme = Theme.of(context).colorScheme;
     return TweenAnimationBuilder<double>(
@@ -177,6 +210,14 @@ class _AnnouncementHomeState extends State<AnnouncementHome> {
   }
 }
 
+/// Form page that captures a new [Announcement].
+///
+/// All three text fields use `TextFormField.validator` to enforce
+/// non-empty input (with `trim()` to reject whitespace-only). Date and
+/// time selection is checked separately in [_save] — if either is
+/// missing, a SnackBar is shown rather than a field error, because the
+/// pickers don't fit the validator pattern. On a successful save the page
+/// pops with the new `Announcement` as the route result.
 class CreateAnnouncementPage extends StatefulWidget {
   const CreateAnnouncementPage({super.key});
 
