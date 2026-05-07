@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'providers/app_state.dart';
 import 'main_tabs.dart';
 
 /// Application entry point. Boots the Flutter framework and inserts
@@ -69,7 +71,10 @@ class MyApp extends StatelessWidget {
           elevation: 4,
         ),
       ),
-      home: const MainTabs(),
+      home: ChangeNotifierProvider(
+        create: (_) => AppState(),
+        child: const MainTabs(),
+      ),
     );
   }
 }
