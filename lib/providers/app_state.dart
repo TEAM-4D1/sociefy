@@ -3,6 +3,7 @@ import '../models/society.dart';
 import '../models/event.dart';
 import '../models/announcement.dart';
 import '../services/society_service.dart';
+import '../data/sample_events.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -99,33 +100,45 @@ class AppState extends ChangeNotifier {
   /// Calls [notifyListeners] after loading. Only fetches once per session unless [forceReload] is true.
   Future<void> loadEvents({bool forceReload = false}) async {
     if (_events.isNotEmpty && !forceReload) return;
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('events')
-        .where(
-          'date',
-          isGreaterThanOrEqualTo: Timestamp.fromDate(
-            DateTime.now().subtract(Duration(days: 1)),
-          ),
-        )
-        .limit(100)
-        .get();
-    _events = querySnapshot.docs.map((doc) {
-      final data = doc.data();
-      return Event(
-        id: doc.id,
-        societyId: data['societyId'] ?? '',
-        societyName: data['societyName'] ?? 'Unknown Society',
-        title: data['title'] ?? 'Untitled Event',
-        description: data['description'] ?? '',
-        date: data['date'] != null
-            ? (data['date'] as Timestamp).toDate()
-            : DateTime.now(),
-        startTime: data['startTime'] ?? '',
-        endTime: data['endTime'] ?? '',
-        venue: data['venue'] ?? '',
-        isSaved: false,
-      );
-    }).toList();
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('events')
+          .where(
+            'date',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(
+              DateTime.now().subtract(Duration(days: 1)),
+            ),
+          )
+          .limit(100)
+          .get();
+      _events = querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        return Event(
+          id: doc.id,
+          societyId: data['societyId'] ?? '',
+          societyName: data['societyName'] ?? 'Unknown Society',
+          title: data['title'] ?? 'Untitled Event',
+          description: data['description'] ?? '',
+          date: data['date'] != null
+              ? (data['date'] as Timestamp).toDate()
+              : DateTime.now(),
+          startTime: data['startTime'] ?? '',
+          endTime: data['endTime'] ?? '',
+          venue: data['venue'] ?? '',
+          isSaved: false,
+        );
+      }).toList();
+
+      // If no events from Firestore, use sample events
+      if (_events.isEmpty) {
+        _events = List.from(sampleEvents);
+        debugPrint('Loaded ${_events.length} sample events as fallback');
+      }
+    } catch (e) {
+      debugPrint('loadEvents Firestore error: $e, loading sample events');
+      // Load sample events as fallback if Firestore fails
+      _events = List.from(sampleEvents);
+    }
     notifyListeners();
   }
 
