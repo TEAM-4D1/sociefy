@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../models/society.dart';
+import '../models/announcement.dart';
 import '../providers/app_state.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -34,7 +35,7 @@ class _CreatePostResult {
 }
 
 // Announcement card for feed
-class _AnnouncementCard extends StatelessWidget {
+class _AnnouncementCard extends StatefulWidget {
   final String societyName;
   final String title;
   final String date;
@@ -43,6 +44,8 @@ class _AnnouncementCard extends StatelessWidget {
   final int likeCount;
   final bool isLikedByCurrentUser;
   final VoidCallback onLikeTap;
+  final List<Comment> comments;
+  final Function(String) onCommentAdded;
 
   const _AnnouncementCard({
     Key? key,
@@ -54,10 +57,39 @@ class _AnnouncementCard extends StatelessWidget {
     required this.likeCount,
     required this.isLikedByCurrentUser,
     required this.onLikeTap,
+    required this.comments,
+    required this.onCommentAdded,
   }) : super(key: key);
 
   @override
+  State<_AnnouncementCard> createState() => _AnnouncementCardState();
+}
+
+class _AnnouncementCardState extends State<_AnnouncementCard> {
+  final TextEditingController _commentController = TextEditingController();
+  bool _showAllComments = false;
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  void _addComment() {
+    final text = _commentController.text.trim();
+    if (text.isEmpty) return;
+    widget.onCommentAdded(text);
+    _commentController.clear();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final displayedComments = _showAllComments
+        ? widget.comments
+        : widget.comments.take(2).toList();
+    final hasMoreComments = widget.comments.length > 2;
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
       child: Padding(
@@ -70,28 +102,28 @@ class _AnnouncementCard extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    societyName,
+                    widget.societyName,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Text(
-                  date,
+                  widget.date,
                   style: const TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
-              title,
+              widget.title,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 6),
-            if (imageUrl != null)
+            if (widget.imageUrl != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Image.network(
-                  imageUrl!,
+                  widget.imageUrl!,
                   height: 180,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -99,26 +131,26 @@ class _AnnouncementCard extends StatelessWidget {
                       const SizedBox.shrink(),
                 ),
               ),
-            Text(content),
+            Text(widget.content),
             const SizedBox(height: 12),
             GestureDetector(
-              onTap: onLikeTap,
+              onTap: widget.onLikeTap,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    isLikedByCurrentUser
+                    widget.isLikedByCurrentUser
                         ? Icons.favorite
                         : Icons.favorite_border,
                     size: 18,
-                    color: isLikedByCurrentUser
+                    color: widget.isLikedByCurrentUser
                         ? Colors.red
                         : Colors.grey.shade500,
                   ),
-                  if (likeCount > 0) ...[
+                  if (widget.likeCount > 0) ...[
                     const SizedBox(width: 6),
                     Text(
-                      likeCount.toString(),
+                      widget.likeCount.toString(),
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey.shade600,
@@ -127,6 +159,123 @@ class _AnnouncementCard extends StatelessWidget {
                   ],
                 ],
               ),
+            ),
+            const SizedBox(height: 16),
+            Divider(color: Colors.grey.shade300),
+            const SizedBox(height: 8),
+            Text(
+              'Comments (${widget.comments.length})',
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 8),
+            if (widget.comments.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                child: Text(
+                  'No comments yet. Be the first!',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade500,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              )
+            else
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ...displayedComments.map(
+                    (comment) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                comment.author,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              Text(
+                                '${comment.dateTime.hour.toString().padLeft(2, '0')}:${comment.dateTime.minute.toString().padLeft(2, '0')}',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.grey.shade500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            comment.content,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (hasMoreComments && !_showAllComments)
+                    GestureDetector(
+                      onTap: () => setState(() => _showAllComments = true),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          'View ${widget.comments.length - 2} more comments',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: cs.primary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _commentController,
+                    decoration: InputDecoration(
+                      hintText: 'Add a comment...',
+                      filled: true,
+                      fillColor: cs.surfaceContainerHighest,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    style: const TextStyle(fontSize: 12),
+                    maxLines: null,
+                    minLines: 1,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: _addComment,
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: cs.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.send, size: 16, color: cs.onPrimary),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -308,6 +457,12 @@ class _FeedScreenState extends State<FeedScreen>
                             onLikeTap: () {
                               setState(() {
                                 announcement.toggleLike('You');
+                              });
+                            },
+                            comments: announcement.comments,
+                            onCommentAdded: (commentText) {
+                              setState(() {
+                                announcement.addComment('You', commentText);
                               });
                             },
                           );
