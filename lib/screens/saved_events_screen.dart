@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
+import '../utils/society_image_mapper.dart';
 import 'event_detail_screen.dart';
 
 /// Displays the user's bookmarked/saved events with quick access to event details.
@@ -12,7 +13,7 @@ class SavedEventsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Saved Events')),
+      appBar: AppBar(title: const Text('Events')),
       body: Consumer<AppState>(
         builder: (context, appState, _) {
           // Ensure events are loaded (will no-op if already loaded)
@@ -32,40 +33,65 @@ class SavedEventsScreen extends StatelessWidget {
             itemCount: displayEvents.length,
             itemBuilder: (context, index) {
               final event = displayEvents[index];
+              final imageAsset = getSocietyImageAsset(event.societyName);
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
-                child: ListTile(
-                  title: Text(event.title),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(event.formattedDate),
-                      Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(4),
+                        topRight: Radius.circular(4),
+                      ),
+                      child: Image.asset(
+                        imageAsset,
+                        height: 140,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    ListTile(
+                      title: Text(event.title),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(
-                            Icons.location_on,
-                            size: 16,
-                            color: Colors.grey,
+                          Text(
+                            event.societyName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey,
+                            ),
                           ),
-                          const SizedBox(width: 4),
-                          Text(event.venue),
+                          Text(event.formattedDate),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.location_on,
+                                size: 16,
+                                color: Colors.grey,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(event.venue),
+                            ],
+                          ),
                         ],
                       ),
-                    ],
-                  ),
-                  onTap: () {
-                    final userId = appState.userId ?? '';
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => EventDetailScreen(
-                          event: event,
-                          userId: userId,
-                          isSaved: appState.isEventSaved(event.id),
-                        ),
-                      ),
-                    );
-                  },
+                      onTap: () {
+                        final userId = appState.userId ?? '';
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => EventDetailScreen(
+                              event: event,
+                              userId: userId,
+                              isSaved: appState.isEventSaved(event.id),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               );
             },

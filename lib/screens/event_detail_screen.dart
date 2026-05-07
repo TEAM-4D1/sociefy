@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:add_2_calendar/add_2_calendar.dart' as add2;
 import '../models/event.dart';
 import '../providers/app_state.dart';
+import '../utils/society_image_mapper.dart';
 
 /// Parses a time string like "14:00" or "2:00 PM" against a base date.
 /// Returns the base date unchanged if parsing fails.
@@ -199,6 +200,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     final event = widget.event;
     final appState = context.watch<AppState>();
     final isGuest = appState.isGuest;
+    final imageAsset = getSocietyImageAsset(event.societyName);
 
     return Scaffold(
       appBar: AppBar(title: Text(event.title)),
@@ -210,6 +212,16 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             Text(
               event.title,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                imageAsset,
+                height: 200,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
             const SizedBox(height: 16),
             Text(event.description, style: const TextStyle(fontSize: 16)),
@@ -231,18 +243,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               ],
             ),
             const SizedBox(height: 24),
-            Container(
-              height: 150,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Center(
-                child: Icon(Icons.map, size: 48, color: Colors.grey),
-              ),
-            ),
-            const SizedBox(height: 32),
 
             // Add to Calendar
             SizedBox(

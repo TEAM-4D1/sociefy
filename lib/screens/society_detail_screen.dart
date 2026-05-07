@@ -4,6 +4,7 @@ import '../models/society.dart';
 import '../providers/app_state.dart';
 import '../theme/colours.dart';
 import '../theme/text_styles.dart';
+import '../utils/society_image_mapper.dart';
 import 'event_detail_screen.dart';
 import 'contact_info_screen.dart';
 
@@ -128,41 +129,66 @@ class SocietyDetailScreen extends StatelessWidget {
                         itemCount: events.length,
                         itemBuilder: (context, index) {
                           final event = events[index];
+                          final imageAsset = getSocietyImageAsset(
+                            event.societyName,
+                          );
 
                           return Card(
                             margin: const EdgeInsets.symmetric(vertical: 6),
-                            child: ListTile(
-                              title: Text(event.title),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(event.formattedDate),
-                                  Row(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(4),
+                                    topRight: Radius.circular(4),
+                                  ),
+                                  child: Image.asset(
+                                    imageAsset,
+                                    height: 120,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                ListTile(
+                                  title: Text(event.title),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      const Icon(
-                                        Icons.location_on,
-                                        size: 16,
-                                        color: Colors.grey,
+                                      Text(event.formattedDate),
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.location_on,
+                                            size: 16,
+                                            color: Colors.grey,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(event.venue),
+                                        ],
                                       ),
-                                      const SizedBox(width: 4),
-                                      Text(event.venue),
                                     ],
                                   ),
-                                ],
-                              ),
-                              onTap: () {
-                                final userId = context.read<AppState>().userId;
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => EventDetailScreen(
-                                      event: event,
-                                      userId: userId ?? '',
-                                      isSaved: appState.isEventSaved(event.id),
-                                    ),
-                                  ),
-                                );
-                              },
+                                  onTap: () {
+                                    final userId = context
+                                        .read<AppState>()
+                                        .userId;
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => EventDetailScreen(
+                                          event: event,
+                                          userId: userId ?? '',
+                                          isSaved: appState.isEventSaved(
+                                            event.id,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
                             ),
                           );
                         },
