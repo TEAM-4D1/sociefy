@@ -323,8 +323,8 @@ void main() {
         endTime: '12:00',
         venue: 'Lab',
       );
-      // createEvent inserts at index 0, so Event B is [0] and Event A is [1]
-      final idA = appState.events[1].id;
+      // find by title to avoid millisecond-collision IDs
+      final idA = appState.events.firstWhere((e) => e.title == 'Event A').id;
       appState.saveEvent(idA);
       expect(appState.savedEvents.length, equals(1));
       expect(appState.savedEvents.first.title, equals('Event A'));

@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
-import 'announcements.dart';
-import 'home_screen.dart';
-import 'messages_screen.dart';
-import 'society_model.dart';
+import 'screens/feed_screen.dart';
+import 'screens/society_browser_screen.dart';
+import 'screens/messages_screen.dart';
+import 'screens/saved_events_screen.dart';
+import 'screens/profile_screen.dart';
 
-/// Bottom-nav shell that owns the three primary tabs of the app
-/// (Home / Announcements / Messages) and the [SocietyNotifier] shared
-/// between them.
-///
-/// Uses an [IndexedStack] so each tab keeps its scroll position and
-/// state when the user switches away — exactly the trade-off captured by
-/// MT-03 in the test plan.
+/// Bottom-nav shell with 5 primary tabs: Home/Feed, Discover, Messages, Saved, Profile.
+/// Uses an [IndexedStack] so each tab keeps its scroll position when switching.
 class MainTabs extends StatefulWidget {
   const MainTabs({super.key});
 
@@ -19,33 +15,15 @@ class MainTabs extends StatefulWidget {
 }
 
 class _MainTabsState extends State<MainTabs> {
-  /// Index of the active tab; matches `BottomNavigationBar.currentIndex`.
   int _currentIndex = 0;
 
-  /// Single shared store. Both [HomePage] and [MessagesPage] point at
-  /// this instance, so a join performed on the home tab is reflected on
-  /// the messages tab without any explicit messaging.
-  final _societyNotifier = SocietyNotifier();
-
-  /// Built lazily in [initState] so the notifier exists before the pages
-  /// are constructed.
-  late final List<Widget> _pages;
-
-  @override
-  void initState() {
-    super.initState();
-    _pages = [
-      HomePage(notifier: _societyNotifier),
-      AnnouncementHome(societies: _societyNotifier),
-      MessagesPage(notifier: _societyNotifier),
-    ];
-  }
-
-  @override
-  void dispose() {
-    _societyNotifier.dispose();
-    super.dispose();
-  }
+  final List<Widget> _pages = const [
+    FeedScreen(),
+    SocietyBrowserScreen(),
+    MessagesPage(),
+    SavedEventsScreen(),
+    ProfileScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -75,13 +53,26 @@ class _MainTabsState extends State<MainTabs> {
             fontSize: 12,
           ),
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
             BottomNavigationBarItem(
-              icon: Icon(Icons.announcement),
-              label: 'Announcements',
+              icon: Icon(Icons.dynamic_feed),
+              label: 'Home/Feed',
             ),
             BottomNavigationBarItem(
-                icon: Icon(Icons.message), label: 'Messages'),
+              icon: Icon(Icons.search),
+              label: 'Discover',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.message),
+              label: 'Messages',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bookmark),
+              label: 'Saved',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
           ],
         ),
       ),
