@@ -72,6 +72,7 @@ class _AnnouncementCard extends StatefulWidget {
 class _AnnouncementCardState extends State<_AnnouncementCard> {
   final TextEditingController _commentController = TextEditingController();
   bool _showAllComments = false;
+  bool _showCommentInput = false;
 
   @override
   void dispose() {
@@ -84,6 +85,7 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
     if (text.isEmpty) return;
     widget.onCommentAdded(text);
     _commentController.clear();
+    setState(() => _showCommentInput = false);
   }
 
   @override
@@ -244,43 +246,69 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
                 ],
               ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _commentController,
-                    decoration: InputDecoration(
-                      hintText: 'Add a comment...',
-                      filled: true,
-                      fillColor: cs.surfaceContainerHighest,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+            
+            // Comment bubble or input
+            if (!_showCommentInput)
+              GestureDetector(
+                onTap: () => setState(() => _showCommentInput = true),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: cs.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.chat_bubble_outline, size: 16, color: cs.onSurface),
+                      const SizedBox(width: 6),
+                      Text(
+                        widget.comments.isEmpty ? 'Add comment' : '${widget.comments.length} comment${widget.comments.length != 1 ? 's' : ''}',
+                        style: TextStyle(fontSize: 12, color: cs.onSurface),
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    style: const TextStyle(fontSize: 12),
-                    maxLines: null,
-                    minLines: 1,
+                    ],
                   ),
                 ),
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: _addComment,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: cs.primary,
-                      shape: BoxShape.circle,
+              )
+            else
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _commentController,
+                      decoration: InputDecoration(
+                        hintText: 'Add a comment...',
+                        filled: true,
+                        fillColor: cs.surfaceContainerHighest,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      style: const TextStyle(fontSize: 12),
+                      maxLines: null,
+                      minLines: 1,
+                      autofocus: true,
                     ),
-                    child: Icon(Icons.send, size: 16, color: cs.onPrimary),
                   ),
-                ),
-              ],
-            ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: _addComment,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: cs.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.send, size: 16, color: cs.onPrimary),
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
       ),
