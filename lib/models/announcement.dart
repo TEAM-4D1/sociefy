@@ -1,5 +1,19 @@
 import 'package:flutter/material.dart';
 
+class Comment {
+  final String id;
+  final String author;
+  final String content;
+  final DateTime dateTime;
+
+  const Comment({
+    required this.id,
+    required this.author,
+    required this.content,
+    required this.dateTime,
+  });
+}
+
 class Announcement {
   final String id;
   final String societyId;
@@ -13,6 +27,8 @@ class Announcement {
 
   /// Set of user identifiers who have liked this announcement.
   final Set<String> likedBy = {};
+
+  final List<Comment> comments = [];
 
   /// Number of likes on this announcement.
   int get likeCount => likedBy.length;
@@ -39,6 +55,17 @@ class Announcement {
     } else {
       likedBy.add(userId);
     }
+  }
+
+  /// Add a comment to this announcement.
+  void addComment(String author, String content) {
+    final comment = Comment(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      author: author,
+      content: content,
+      dateTime: DateTime.now(),
+    );
+    comments.add(comment);
   }
 
   String? get dateTimeVenueString {
