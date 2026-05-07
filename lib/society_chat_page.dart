@@ -36,7 +36,10 @@ class _SocietyChatPageState extends State<SocietyChatPage> {
           text: 'Looking forward to the next meetup!',
           time: '09:12'),
       _ChatMessage(
-          sender: 'Sam R.', text: "When's the next session?", time: '09:15'),
+        sender: 'Sam R.',
+        text: "When's the next session?",
+        time: '09:15',
+      ),
       _ChatMessage(
           sender: 'Morgan W.',
           text: 'Check the announcements tab 📢',
@@ -63,12 +66,9 @@ class _SocietyChatPageState extends State<SocietyChatPage> {
     final text = _msgCtrl.text.trim();
     if (text.isEmpty) return;
     setState(() {
-      _messages.add(_ChatMessage(
-        sender: 'You',
-        text: text,
-        time: _now(),
-        isMe: true,
-      ));
+      _messages.add(
+        _ChatMessage(sender: 'You', text: text, time: _now(), isMe: true),
+      );
     });
     _msgCtrl.clear();
     WidgetsBinding.instance.addPostFrameCallback((_) {
