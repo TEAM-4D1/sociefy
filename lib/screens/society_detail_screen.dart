@@ -196,9 +196,10 @@ class SocietyDetailScreen extends StatelessWidget {
                                 ),
                               ),
                             );
-                          }
-                        },
-                      );
+                              );
+                            }
+                          },
+                        );
                     },
                   ),
 
