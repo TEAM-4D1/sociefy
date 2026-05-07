@@ -186,13 +186,13 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
                         size: 16,
                         color: cs.onSurface,
                       ),
-                      const SizedBox(width: 6),
-                      Text(
-                        widget.comments.isEmpty
-                            ? 'Add comment'
-                            : '${widget.comments.length}',
-                        style: TextStyle(fontSize: 12, color: cs.onSurface),
-                      ),
+                      if (widget.comments.isNotEmpty) ...[
+                        const SizedBox(width: 6),
+                        Text(
+                          '${widget.comments.length}',
+                          style: TextStyle(fontSize: 12, color: cs.onSurface),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -297,7 +297,6 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
     );
   }
 }
-
 
 /// Displays the main announcements feed with real-time updates from all societies.
 /// Provides admin capabilities to create societies and announcements. Shows pull-to-refresh functionality.
