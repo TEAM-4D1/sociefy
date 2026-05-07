@@ -17,7 +17,7 @@ class Comment {
   /// Create a Comment from Firestore data
   factory Comment.fromFirestore(Map<String, dynamic> data, String docId) {
     DateTime parsedDateTime;
-    
+
     if (data['dateTime'] is Timestamp) {
       // Handle Firestore Timestamp
       parsedDateTime = (data['dateTime'] as Timestamp).toDate();
@@ -26,12 +26,14 @@ class Comment {
       parsedDateTime = data['dateTime'] as DateTime;
     } else if (data['dateTime'] is int) {
       // Handle milliseconds since epoch
-      parsedDateTime = DateTime.fromMillisecondsSinceEpoch(data['dateTime'] as int);
+      parsedDateTime = DateTime.fromMillisecondsSinceEpoch(
+        data['dateTime'] as int,
+      );
     } else {
       // Default to now if no valid dateTime
       parsedDateTime = DateTime.now();
     }
-    
+
     return Comment(
       id: docId,
       author: data['author'] ?? 'Unknown',
