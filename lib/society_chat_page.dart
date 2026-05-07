@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'society_model.dart';
 
 /// Group chat for a joined [Society].
@@ -37,23 +38,13 @@ class _SocietyChatPageState extends State<SocietyChatPage> {
       ),
       _ChatMessage(
         sender: 'Alex T.',
-        text: 'Looking forward to the next meetup!',
+        text: 'Did you see the poster for the event?',
         time: '09:12',
       ),
       _ChatMessage(
-        sender: 'Sam R.',
-        text: "When's the next session?",
-        time: '09:15',
-      ),
-      _ChatMessage(
-        sender: 'Morgan W.',
-        text: 'Check the announcements tab 📢',
-        time: '09:20',
-      ),
-      _ChatMessage(
         sender: 'You',
-        text: 'Just joined — really excited to be here! 🎉',
-        time: '09:25',
+        text: 'Looks great — I can help set up.',
+        time: '09:15',
         isMe: true,
       ),
     ];
@@ -69,7 +60,7 @@ class _SocietyChatPageState extends State<SocietyChatPage> {
   /// Append the trimmed contents of [_msgCtrl] as a new message from the
   /// current user, then scroll to the bottom on the next frame so the new
   /// bubble is visible.
-  void _sendMessage() {
+  Future<void> _sendMessage() async {
     final text = _msgCtrl.text.trim();
     if (text.isEmpty) return;
     setState(() {
@@ -78,6 +69,25 @@ class _SocietyChatPageState extends State<SocietyChatPage> {
       );
     });
     _msgCtrl.clear();
+    // Persist the newly created message to Firestore and attach the doc id.
+    try {
+      final col = FirebaseFirestore.instance
+          .collection('society_messages')
+          .doc(widget.society.name)
+          .collection('messages');
+      final docRef = await col.add({
+        'sender': 'You',
+        'text': text,
+        'createdAt': FieldValue.serverTimestamp(),
+        'edited': false,
+      });
+      setState(() {
+        final last = _messages.lastWhere((m) => m.text == text && m.isMe);
+        last.id = docRef.id;
+      });
+    } catch (e) {
+      debugPrint('Firestore write failed: $e');
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollCtrl.hasClients) {
         _scrollCtrl.animateTo(
@@ -100,7 +110,17 @@ class _SocietyChatPageState extends State<SocietyChatPage> {
   void _deleteMessage(int index) {
     setState(() {
       if (index >= 0 && index < _messages.length) {
-        _messages.removeAt(index);
+        final msg = _messages.removeAt(index);
+        // also remove from Firestore if persisted
+        if (msg.id != null) {
+          FirebaseFirestore.instance
+              .collection('society_messages')
+              .doc(widget.society.name)
+              .collection('messages')
+              .doc(msg.id)
+              .delete()
+              .catchError((e) => debugPrint('Failed to delete message: $e'));
+        }
       }
     });
   }
@@ -135,7 +155,25 @@ class _SocietyChatPageState extends State<SocietyChatPage> {
     if (result != null && result.isNotEmpty) {
       setState(() {
         _messages[index].text = result;
+        _messages[index].edited = true;
       });
+      final id = _messages[index].id;
+      if (id != null) {
+        try {
+          final docRef = FirebaseFirestore.instance
+              .collection('society_messages')
+              .doc(widget.society.name)
+              .collection('messages')
+              .doc(id);
+          await docRef.update({
+            'text': result,
+            'edited': true,
+            'editedAt': FieldValue.serverTimestamp(),
+          });
+        } catch (e) {
+          debugPrint('Failed to persist edit: $e');
+        }
+      }
     }
   }
 
@@ -332,11 +370,19 @@ class _ChatMessage {
   /// bubble alignment, colour, and corner radius.
   final bool isMe;
 
+  /// Firestore document id for persisted messages. Null for local-only.
+  String? id;
+
+  /// Whether this message has been edited after creation.
+  bool edited = false;
+
   _ChatMessage({
     required this.sender,
     required this.text,
     required this.time,
     this.isMe = false,
+    this.id,
+    this.edited = false,
   });
 }
 
@@ -345,8 +391,15 @@ class _ChatMessage {
 class _ChatBubble extends StatelessWidget {
   final _ChatMessage msg;
   final VoidCallback? onLongPress;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
-  const _ChatBubble({required this.msg, this.onLongPress});
+  const _ChatBubble({
+    required this.msg,
+    this.onLongPress,
+    this.onEdit,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -425,18 +478,51 @@ class _ChatBubble extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 3, left: 4, right: 4),
-                    child: Text(
-                      msg.time,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey.shade500,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          msg.time,
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey.shade500,
+                          ),
+                        ),
+                        if (msg.edited) ...[
+                          const SizedBox(width: 6),
+                          Text(
+                            'edited',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey.shade500,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-            if (isMe) const SizedBox(width: 6),
+            if (isMe) ...[
+              PopupMenuButton<String>(
+                padding: EdgeInsets.zero,
+                icon: Icon(Icons.more_vert, size: 18, color: cs.onSurface),
+                onSelected: (v) {
+                  if (v == 'edit') {
+                    onEdit?.call();
+                  } else if (v == 'delete') {
+                    onDelete?.call();
+                  }
+                },
+                itemBuilder: (ctx) => const [
+                  PopupMenuItem(value: 'edit', child: Text('Edit')),
+                  PopupMenuItem(value: 'delete', child: Text('Delete')),
+                ],
+              ),
+              const SizedBox(width: 6),
+            ],
           ],
         ),
       ),
