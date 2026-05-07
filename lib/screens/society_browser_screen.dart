@@ -18,6 +18,7 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen>
     with AutomaticKeepAliveClientMixin {
   String _searchQuery = '';
   String? _selectedCategory;
+  String? _selectedCategoryKey;
 
   @override
   bool get wantKeepAlive => true;
@@ -31,7 +32,8 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen>
           society.name.toLowerCase().contains(query) ||
           society.category.toLowerCase().contains(query);
       final matchesCategory =
-          _selectedCategory == null || society.category == _selectedCategory;
+          _selectedCategoryKey == null ||
+          society.category.trim().toLowerCase() == _selectedCategoryKey;
       return matchesSearch && matchesCategory;
     }).toList();
   }
@@ -62,7 +64,7 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen>
                 // Preserve the first-seen display value for casing
                 normalized.putIfAbsent(key, () => raw.trim());
               }
-              final categories = normalized.values.toList();
+              final categories = normalized.entries.toList();
 
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -73,17 +75,17 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen>
                     children: [
                       FilterChip(
                         label: const Text('All'),
-                        selected: _selectedCategory == null,
+                        selected: _selectedCategoryKey == null,
                         onSelected: (_) {
-                          setState(() => _selectedCategory = null);
+                          setState(() => _selectedCategoryKey = null);
                         },
                       ),
                       ...categories.map(
-                        (category) => FilterChip(
-                          label: Text(category),
-                          selected: _selectedCategory == category,
+                        (entry) => FilterChip(
+                          label: Text(entry.value),
+                          selected: _selectedCategoryKey == entry.key,
                           onSelected: (_) {
-                            setState(() => _selectedCategory = category);
+                            setState(() => _selectedCategoryKey = entry.key);
                           },
                         ),
                       ),
