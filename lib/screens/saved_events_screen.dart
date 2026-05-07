@@ -39,6 +39,13 @@ class SavedEventsScreen extends StatelessWidget {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(
+                        event.societyName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
+                        ),
+                      ),
                       Text(event.formattedDate),
                       Row(
                         children: [
