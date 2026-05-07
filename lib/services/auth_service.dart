@@ -50,8 +50,16 @@ class AuthService {
 
   /// Gets the currently authenticated user from Firebase Authentication.
   ///
-  /// Returns the current [User] object if a user is authenticated, or null if no user is signed in.
+  /// Returns the current [User] object if a user is authenticated, null if
+  /// no user is signed in, and null (rather than throwing) if Firebase is not
+  /// initialised — this lets widget tests pump screens that touch this getter
+  /// without booting Firebase.
   User? get currentUser {
-    return FirebaseAuth.instance.currentUser;
+    try {
+      return FirebaseAuth.instance.currentUser;
+    } catch (e) {
+      debugPrint('currentUser error: $e');
+      return null;
+    }
   }
 }

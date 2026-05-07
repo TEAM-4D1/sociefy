@@ -67,7 +67,7 @@ class _MainTabsState extends State<MainTabs> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.bookmark),
-              label: 'Events',
+              label: 'Saved',
             ),
             BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
           ],
