@@ -79,7 +79,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
       ).showSnackBar(const SnackBar(content: Text('Invalid credentials')));
       return;
     }
-    
+
     // Sign-in successful — navigate immediately to MainTabs
     if (mounted) {
       Navigator.of(context).pushAndRemoveUntil(
