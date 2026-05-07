@@ -90,10 +90,6 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final displayedComments = _showAllComments
-        ? widget.comments
-        : widget.comments.take(2).toList();
-    final hasMoreComments = widget.comments.length > 2;
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
@@ -301,6 +297,7 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
     );
   }
 }
+
 
 /// Displays the main announcements feed with real-time updates from all societies.
 /// Provides admin capabilities to create societies and announcements. Shows pull-to-refresh functionality.
