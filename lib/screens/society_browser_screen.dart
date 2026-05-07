@@ -24,7 +24,7 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen>
 
   /// Filters societies by search query and selected category.
   List<Society> get _filteredSocieties {
-    final appState = context.read<AppState>();
+    final appState = context.watch<AppState>();
     return appState.societies.where((society) {
       final query = _searchQuery.toLowerCase();
       final matchesSearch =
