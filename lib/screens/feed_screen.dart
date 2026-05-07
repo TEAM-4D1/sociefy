@@ -204,6 +204,28 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
                         ),
                       ),
                     ),
+                  )
+                else
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () => setState(() => _showCommentInput = false),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: cs.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Icon(
+                          Icons.arrow_upward,
+                          size: 16,
+                          color: cs.onSurface,
+                        ),
+                      ),
+                    ),
                   ),
               ],
             ),
