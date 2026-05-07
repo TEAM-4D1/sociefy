@@ -134,70 +134,79 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
               ),
             Text(widget.content),
             const SizedBox(height: 12),
-            GestureDetector(
-              onTap: widget.onLikeTap,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    widget.isLikedByCurrentUser
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    size: 18,
-                    color: widget.isLikedByCurrentUser
-                        ? Colors.red
-                        : Colors.grey.shade500,
-                  ),
-                  if (widget.likeCount > 0) ...[
-                    const SizedBox(width: 6),
-                    Text(
-                      widget.likeCount.toString(),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            Divider(color: Colors.grey.shade300),
-            const SizedBox(height: 12),
-
-            // Comment bubble or expanded view
-            if (!_showCommentInput)
-              GestureDetector(
-                onTap: () => setState(() => _showCommentInput = true),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: cs.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: widget.onLikeTap,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        Icons.chat_bubble_outline,
-                        size: 16,
-                        color: cs.onSurface,
+                        widget.isLikedByCurrentUser
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        size: 18,
+                        color: widget.isLikedByCurrentUser
+                            ? Colors.red
+                            : Colors.grey.shade500,
                       ),
-                      if (widget.comments.isNotEmpty) ...[
+                      if (widget.likeCount > 0) ...[
                         const SizedBox(width: 6),
                         Text(
-                          '${widget.comments.length}',
-                          style: TextStyle(fontSize: 12, color: cs.onSurface),
+                          widget.likeCount.toString(),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                          ),
                         ),
                       ],
                     ],
                   ),
                 ),
-              )
-            else
+                const SizedBox(width: 16),
+                if (!_showCommentInput)
+                  GestureDetector(
+                    onTap: () => setState(() => _showCommentInput = true),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: cs.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.chat_bubble_outline,
+                            size: 16,
+                            color: cs.onSurface,
+                          ),
+                          if (widget.comments.isNotEmpty) ...[
+                            const SizedBox(width: 6),
+                            Text(
+                              '${widget.comments.length}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: cs.onSurface,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Divider(color: Colors.grey.shade300),
+            const SizedBox(height: 12),
+
+            // Expanded comments view
+            if (_showCommentInput)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
