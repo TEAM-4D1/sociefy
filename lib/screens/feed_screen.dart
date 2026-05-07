@@ -246,13 +246,16 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
                 ],
               ),
             const SizedBox(height: 12),
-            
+
             // Comment bubble or input
             if (!_showCommentInput)
               GestureDetector(
                 onTap: () => setState(() => _showCommentInput = true),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: cs.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(16),
@@ -260,10 +263,16 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.chat_bubble_outline, size: 16, color: cs.onSurface),
+                      Icon(
+                        Icons.chat_bubble_outline,
+                        size: 16,
+                        color: cs.onSurface,
+                      ),
                       const SizedBox(width: 6),
                       Text(
-                        widget.comments.isEmpty ? 'Add comment' : '${widget.comments.length} comment${widget.comments.length != 1 ? 's' : ''}',
+                        widget.comments.isEmpty
+                            ? 'Add comment'
+                            : '${widget.comments.length} comment${widget.comments.length != 1 ? 's' : ''}',
                         style: TextStyle(fontSize: 12, color: cs.onSurface),
                       ),
                     ],
