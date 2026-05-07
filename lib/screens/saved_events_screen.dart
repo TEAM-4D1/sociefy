@@ -57,49 +57,50 @@ class SavedEventsScreen extends StatelessWidget {
                     child: Card(
                       margin: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(4),
-                            topRight: Radius.circular(4),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(4),
+                              topRight: Radius.circular(4),
+                            ),
+                            child: Image.asset(
+                              imageAsset,
+                              height: 140,
+                              width: double.infinity,
+                              fit: BoxFit.contain,
+                              alignment: Alignment.center,
+                            ),
                           ),
-                          child: Image.asset(
-                            imageAsset,
-                            height: 140,
-                            width: double.infinity,
-                            fit: BoxFit.contain,
-                            alignment: Alignment.center,
-                          ),
-                        ),
-                        ListTile(
-                          title: Text(event.title),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                event.societyName,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              Text(event.formattedDate),
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.location_on,
-                                    size: 16,
+                          ListTile(
+                            title: Text(event.title),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  event.societyName,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
                                     color: Colors.grey,
                                   ),
-                                  const SizedBox(width: 4),
-                                  Text(event.venue),
-                                ],
-                              ),
-                            ],
+                                ),
+                                Text(event.formattedDate),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.location_on,
+                                      size: 16,
+                                      color: Colors.grey,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(event.venue),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
