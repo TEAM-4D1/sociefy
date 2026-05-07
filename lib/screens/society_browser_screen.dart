@@ -17,6 +17,7 @@ class SocietyBrowserScreen extends StatefulWidget {
 class _SocietyBrowserScreenState extends State<SocietyBrowserScreen>
     with AutomaticKeepAliveClientMixin {
   String _searchQuery = '';
+  // ignore: unused_field
   String? _selectedCategory;
   String? _selectedCategoryKey;
 

@@ -206,7 +206,7 @@ class SocietyDetailScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
-                          );
+                          ));
                         },
                       );
                     },

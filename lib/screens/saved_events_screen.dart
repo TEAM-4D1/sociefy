@@ -106,7 +106,7 @@ class SavedEventsScreen extends StatelessWidget {
                       ),
                     ),
                 ),
-              );
+              ));
             },
           );
         },
