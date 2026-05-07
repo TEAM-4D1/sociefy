@@ -34,28 +34,29 @@ class SavedEventsScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final event = displayEvents[index];
               final imageAsset = getSocietyImageAsset(event.societyName);
-              return MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    final userId = appState.userId ?? '';
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => EventDetailScreen(
-                          event: event,
-                          userId: userId,
-                          isSaved: appState.isEventSaved(event.id),
+              return Container(
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(vertical: 6),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      final userId = appState.userId ?? '';
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => EventDetailScreen(
+                            event: event,
+                            userId: userId,
+                            isSaved: appState.isEventSaved(event.id),
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  child: Card(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 6,
-                      horizontal: 16,
-                    ),
-                    child: Column(
+                      );
+                    },
+                    child: Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ClipRRect(

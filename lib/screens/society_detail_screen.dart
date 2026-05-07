@@ -133,25 +133,29 @@ class SocietyDetailScreen extends StatelessWidget {
                             event.societyName,
                           );
 
-                          return MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            child: GestureDetector(
-                              onTap: () {
-                                final userId = context.read<AppState>().userId;
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => EventDetailScreen(
-                                      event: event,
-                                      userId: userId ?? '',
-                                      isSaved: appState.isEventSaved(event.id),
+                          return Container(
+                            width: double.infinity,
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () {
+                                  final userId = context.read<AppState>().userId;
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => EventDetailScreen(
+                                        event: event,
+                                        userId: userId ?? '',
+                                        isSaved: appState.isEventSaved(event.id),
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                              child: Card(
-                                margin: const EdgeInsets.symmetric(vertical: 6),
-                                child: Column(
+                                  );
+                                },
+                                child: Card(
+                                  margin: const EdgeInsets.symmetric(vertical: 6),
+                                  child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     ClipRRect(
@@ -191,8 +195,8 @@ class SocietyDetailScreen extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                            ),
-                          );
+                            );
+                          }
                         },
                       );
                     },
