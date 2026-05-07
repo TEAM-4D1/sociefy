@@ -243,18 +243,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               ],
             ),
             const SizedBox(height: 24),
-            Container(
-              height: 150,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Center(
-                child: Icon(Icons.map, size: 48, color: Colors.grey),
-              ),
-            ),
-            const SizedBox(height: 32),
 
             // Add to Calendar
             SizedBox(
