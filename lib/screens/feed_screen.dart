@@ -71,7 +71,6 @@ class _AnnouncementCard extends StatefulWidget {
 
 class _AnnouncementCardState extends State<_AnnouncementCard> {
   final TextEditingController _commentController = TextEditingController();
-  bool _showAllComments = false;
   bool _showCommentInput = false;
 
   @override
@@ -91,10 +90,6 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final displayedComments = _showAllComments
-        ? widget.comments
-        : widget.comments.take(2).toList();
-    final hasMoreComments = widget.comments.length > 2;
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
@@ -139,182 +134,197 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
               ),
             Text(widget.content),
             const SizedBox(height: 12),
-            GestureDetector(
-              onTap: widget.onLikeTap,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    widget.isLikedByCurrentUser
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    size: 18,
-                    color: widget.isLikedByCurrentUser
-                        ? Colors.red
-                        : Colors.grey.shade500,
-                  ),
-                  if (widget.likeCount > 0) ...[
-                    const SizedBox(width: 6),
-                    Text(
-                      widget.likeCount.toString(),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            Divider(color: Colors.grey.shade300),
-            const SizedBox(height: 8),
-            Text(
-              'Comments (${widget.comments.length})',
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 8),
-            if (widget.comments.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12.0),
-                child: Text(
-                  'No comments yet. Be the first!',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade500,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              )
-            else
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ...displayedComments.map(
-                    (comment) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                comment.author,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              Text(
-                                '${comment.dateTime.hour.toString().padLeft(2, '0')}:${comment.dateTime.minute.toString().padLeft(2, '0')}',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey.shade500,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: widget.onLikeTap,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          widget.isLikedByCurrentUser
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          size: 18,
+                          color: widget.isLikedByCurrentUser
+                              ? Colors.red
+                              : Colors.grey.shade500,
+                        ),
+                        if (widget.likeCount > 0) ...[
+                          const SizedBox(width: 6),
                           Text(
-                            comment.content,
-                            style: const TextStyle(fontSize: 12),
+                            widget.likeCount.toString(),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
                           ),
                         ],
-                      ),
+                      ],
                     ),
-                  ),
-                  if (hasMoreComments && !_showAllComments)
-                    GestureDetector(
-                      onTap: () => setState(() => _showAllComments = true),
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          'View ${widget.comments.length - 2} more comments',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: cs.primary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            const SizedBox(height: 12),
-
-            // Comment bubble or input
-            if (!_showCommentInput)
-              GestureDetector(
-                onTap: () => setState(() => _showCommentInput = true),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: cs.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.chat_bubble_outline,
-                        size: 16,
-                        color: cs.onSurface,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        widget.comments.isEmpty
-                            ? 'Add comment'
-                            : '${widget.comments.length} comment${widget.comments.length != 1 ? 's' : ''}',
-                        style: TextStyle(fontSize: 12, color: cs.onSurface),
-                      ),
-                    ],
                   ),
                 ),
-              )
-            else
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _commentController,
-                      decoration: InputDecoration(
-                        hintText: 'Add a comment...',
-                        filled: true,
-                        fillColor: cs.surfaceContainerHighest,
-                        contentPadding: const EdgeInsets.symmetric(
+                const SizedBox(width: 16),
+                if (!_showCommentInput)
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () => setState(() => _showCommentInput = true),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 8,
                         ),
-                        border: OutlineInputBorder(
+                        decoration: BoxDecoration(
+                          color: cs.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.chat_bubble_outline,
+                              size: 16,
+                              color: cs.onSurface,
+                            ),
+                            if (widget.comments.isNotEmpty) ...[
+                              const SizedBox(width: 6),
+                              Text(
+                                '${widget.comments.length}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: cs.onSurface,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
-                      style: const TextStyle(fontSize: 12),
-                      maxLines: null,
-                      minLines: 1,
-                      autofocus: true,
+                    ),
+                  )
+                else
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () => setState(() => _showCommentInput = false),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: cs.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Icon(
+                          Icons.arrow_upward,
+                          size: 16,
+                          color: cs.onSurface,
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: _addComment,
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: cs.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(Icons.send, size: 16, color: cs.onPrimary),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Divider(color: Colors.grey.shade300),
+            const SizedBox(height: 12),
+
+            // Expanded comments view
+            if (_showCommentInput)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Show all comments when expanded
+                  if (widget.comments.isNotEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ...widget.comments.map(
+                          (comment) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      comment.author,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${comment.dateTime.hour.toString().padLeft(2, '0')}:${comment.dateTime.minute.toString().padLeft(2, '0')}',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.grey.shade500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  comment.content,
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Divider(color: Colors.grey.shade300),
+                        const SizedBox(height: 12),
+                      ],
                     ),
+                  // Comment input
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _commentController,
+                          decoration: InputDecoration(
+                            hintText: 'Add a comment...',
+                            filled: true,
+                            fillColor: cs.surfaceContainerHighest,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          style: const TextStyle(fontSize: 12),
+                          maxLines: null,
+                          minLines: 1,
+                          autofocus: true,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: _addComment,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: cs.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.send,
+                            size: 16,
+                            color: cs.onPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
