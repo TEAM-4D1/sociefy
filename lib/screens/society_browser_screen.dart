@@ -53,10 +53,16 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen>
           ),
           Consumer<AppState>(
             builder: (context, appState, _) {
-              final categories = appState.societies
-                  .map((s) => s.category)
-                  .toSet()
-                  .toList();
+              // Normalize and deduplicate categories (case-insensitive, trimmed)
+              final Map<String, String> normalized = {};
+              for (final s in appState.societies) {
+                final raw = s.category ?? '';
+                final key = raw.trim().toLowerCase();
+                if (key.isEmpty) continue;
+                // Preserve the first-seen display value for casing
+                normalized.putIfAbsent(key, () => raw.trim());
+              }
+              final categories = normalized.values.toList();
 
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
