@@ -381,8 +381,6 @@ class _ChatMessage {
     required this.text,
     required this.time,
     this.isMe = false,
-    this.id,
-    this.edited = false,
   });
 }
 
