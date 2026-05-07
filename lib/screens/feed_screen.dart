@@ -482,6 +482,7 @@ class _FeedScreenState extends State<FeedScreen>
                         padding: const EdgeInsets.all(24.0),
                         itemCount: visibleAnnouncements.length,
                         itemBuilder: (context, index) {
+                          final announcement = visibleAnnouncements[index];
                           final userId =
                               FirebaseAuth.instance.currentUser?.uid ?? '';
                           final displayName =
