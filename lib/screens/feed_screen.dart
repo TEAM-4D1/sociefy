@@ -153,18 +153,18 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
                               ? Colors.red
                               : Colors.grey.shade500,
                         ),
-                        if (widget.likeCount > 0) ..[
-                        const SizedBox(width: 6),
-                        Text(
-                          widget.likeCount.toString(),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade600,
+                        if (widget.likeCount > 0) ...[
+                          const SizedBox(width: 6),
+                          Text(
+                            widget.likeCount.toString(),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
                           ),
-                        ),
+                        ],
                       ],
-                    ],
-                  ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -174,35 +174,35 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
                     child: GestureDetector(
                       onTap: () => setState(() => _showCommentInput = true),
                       child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: cs.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.chat_bubble_outline,
-                            size: 16,
-                            color: cs.onSurface,
-                          ),
-                          if (widget.comments.isNotEmpty) ...[
-                            const SizedBox(width: 6),
-                            Text(
-                              '${widget.comments.length}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: cs.onSurface,
-                              ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: cs.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.chat_bubble_outline,
+                              size: 16,
+                              color: cs.onSurface,
                             ),
+                            if (widget.comments.isNotEmpty) ...[
+                              const SizedBox(width: 6),
+                              Text(
+                                '${widget.comments.length}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: cs.onSurface,
+                                ),
+                              ),
+                            ],
                           ],
-                        ],
+                        ),
                       ),
-                    ),
                     ),
                   ),
               ],
