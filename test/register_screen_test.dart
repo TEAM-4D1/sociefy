@@ -198,7 +198,7 @@ void main() {
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 300));
 
-        expect(find.text('Registration failed'), findsOneWidget);
+        expect(find.text('Registration failed. Please try again.'), findsOneWidget);
       },
     );
 
