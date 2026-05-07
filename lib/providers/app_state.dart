@@ -576,7 +576,15 @@ class AppState extends ChangeNotifier {
   /// Returns a filtered list of events for a specific society.
   /// [societyId] The ID of the society to filter events for.
   List<Event> eventsForSociety(String societyId) =>
-      _events.where((e) => e.societyId == societyId).toList();
+      // Some sample events may use a placeholder societyId (e.g., 'soc_1').
+      // Match by `societyId` first, and also fall back to matching by
+      // society name to ensure sample events appear for the correct
+      // society details screen when Firestore IDs don't line up.
+      _events.where((e) {
+        if (e.societyId == societyId) return true;
+        final expectedName = societyNameById(societyId).toLowerCase();
+        return e.societyName.toLowerCase() == expectedName;
+      }).toList();
 
   /// Adds an event to the user's saved events list and persists to Firestore.
   /// [id] The ID of the event to save.
