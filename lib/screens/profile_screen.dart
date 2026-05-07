@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../providers/app_state.dart';
+import 'sign_in_screen.dart';
 
 /// Displays the current user's profile information including display name, email, and avatar.
 /// Provides a Sign Out button to end the current session and clear all session data.
@@ -99,6 +100,17 @@ class ProfileScreen extends StatelessWidget {
                 } else {
                   await AuthService().signOut();
                   appState.logout();
+                }
+                // Ensure the user returns to the Sign In screen and clear navigation history
+                if (Navigator.canPop(context)) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const SignInScreen()),
+                    (route) => false,
+                  );
+                } else {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const SignInScreen()),
+                  );
                 }
               },
             ),
