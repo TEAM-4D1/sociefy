@@ -34,65 +34,70 @@ class SavedEventsScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final event = displayEvents[index];
               final imageAsset = getSocietyImageAsset(event.societyName);
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(4),
-                        topRight: Radius.circular(4),
-                      ),
-                      child: Image.asset(
-                        imageAsset,
-                        height: 140,
-                        width: double.infinity,
-                        fit: BoxFit.contain,
-                        alignment: Alignment.center,
+              return GestureDetector(
+                onTap: () {
+                  final userId = appState.userId ?? '';
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EventDetailScreen(
+                        event: event,
+                        userId: userId,
+                        isSaved: appState.isEventSaved(event.id),
                       ),
                     ),
-                    ListTile(
-                      title: Text(event.title),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            event.societyName,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          Text(event.formattedDate),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.location_on,
-                                size: 16,
+                  );
+                },
+                child: Card(
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 6,
+                    horizontal: 16,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(4),
+                          topRight: Radius.circular(4),
+                        ),
+                        child: Image.asset(
+                          imageAsset,
+                          height: 140,
+                          width: double.infinity,
+                          fit: BoxFit.contain,
+                          alignment: Alignment.center,
+                        ),
+                      ),
+                      ListTile(
+                        title: Text(event.title),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              event.societyName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
                                 color: Colors.grey,
                               ),
-                              const SizedBox(width: 4),
-                              Text(event.venue),
-                            ],
-                          ),
-                        ],
-                      ),
-                      onTap: () {
-                        final userId = appState.userId ?? '';
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => EventDetailScreen(
-                              event: event,
-                              userId: userId,
-                              isSaved: appState.isEventSaved(event.id),
                             ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+                            Text(event.formattedDate),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.location_on,
+                                  size: 16,
+                                  color: Colors.grey,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(event.venue),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
