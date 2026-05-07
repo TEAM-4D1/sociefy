@@ -16,6 +16,16 @@ String getSocietyImageAsset(String societyName) {
     'mmasociety': 'assets/mmasoc.png',
     'southasian': 'assets/southasiansoc.png',
     'southasiansociety': 'assets/southasiansoc.png',
+    'filmsociety': 'assets/animesoc.png', // Film uses anime theme as default
+    'film': 'assets/animesoc.png',
+    'chesssociety': 'assets/compscisoc.png', // Chess uses computer science theme
+    'chess': 'assets/compscisoc.png',
+    'dramasociety': 'assets/literaturesoc.png', // Drama uses literature theme
+    'drama': 'assets/literaturesoc.png',
+    'codingclub': 'assets/compscisoc.png', // Coding uses computer science
+    'coding': 'assets/compscisoc.png',
+    'basketballsociety': 'assets/badmintonsoc.png', // Basketball uses sports theme
+    'basketball': 'assets/badmintonsoc.png',
   };
 
   return imageMap[name] ?? 'assets/animesoc.png'; // Default image
