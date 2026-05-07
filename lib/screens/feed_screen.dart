@@ -40,6 +40,9 @@ class _AnnouncementCard extends StatelessWidget {
   final String date;
   final String content;
   final String? imageUrl;
+  final int likeCount;
+  final bool isLikedByCurrentUser;
+  final VoidCallback onLikeTap;
 
   const _AnnouncementCard({
     Key? key,
@@ -48,6 +51,9 @@ class _AnnouncementCard extends StatelessWidget {
     required this.date,
     required this.content,
     this.imageUrl,
+    required this.likeCount,
+    required this.isLikedByCurrentUser,
+    required this.onLikeTap,
   }) : super(key: key);
 
   @override
@@ -94,6 +100,34 @@ class _AnnouncementCard extends StatelessWidget {
                 ),
               ),
             Text(content),
+            const SizedBox(height: 12),
+            GestureDetector(
+              onTap: onLikeTap,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    isLikedByCurrentUser
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    size: 18,
+                    color: isLikedByCurrentUser
+                        ? Colors.red
+                        : Colors.grey.shade500,
+                  ),
+                  if (likeCount > 0) ...[
+                    const SizedBox(width: 6),
+                    Text(
+                      likeCount.toString(),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -268,6 +302,14 @@ class _FeedScreenState extends State<FeedScreen>
                                 '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
                             content: announcement.content,
                             imageUrl: announcement.imageUrl,
+                            likeCount: announcement.likeCount,
+                            isLikedByCurrentUser:
+                                announcement.isLikedByCurrentUser,
+                            onLikeTap: () {
+                              setState(() {
+                                announcement.toggleLike('You');
+                              });
+                            },
                           );
                         },
                       );

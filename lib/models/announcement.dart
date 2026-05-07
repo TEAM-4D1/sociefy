@@ -11,6 +11,15 @@ class Announcement {
   final String? venue;
   final String? description;
 
+  /// Set of user identifiers who have liked this announcement.
+  final Set<String> likedBy = {};
+
+  /// Number of likes on this announcement.
+  int get likeCount => likedBy.length;
+
+  /// Check if the current user ('You') has liked this announcement.
+  bool get isLikedByCurrentUser => likedBy.contains('You');
+
   Announcement({
     required this.id,
     required this.societyId,
@@ -22,6 +31,15 @@ class Announcement {
     this.venue,
     this.description,
   });
+
+  /// Toggle like status for the given user.
+  void toggleLike(String userId) {
+    if (likedBy.contains(userId)) {
+      likedBy.remove(userId);
+    } else {
+      likedBy.add(userId);
+    }
+  }
 
   String? get dateTimeVenueString {
     if (time == null || venue == null) return null;
