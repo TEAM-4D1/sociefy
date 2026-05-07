@@ -53,13 +53,6 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  /// Initialize Firebase listener for auth state changes.
-  void initializeFirebaseListener() {
-    if (!_skipFirebase) {
-      _initializeFirebaseListener();
-    }
-  }
-
   /// Sets the pending admin login flag for committee/admin authentication.
   /// [value] The admin pending flag value.
   void setAdminPending(bool value) {
@@ -344,6 +337,7 @@ class AppState extends ChangeNotifier {
   void logout() {
     userId = null;
     isAdmin = false;
+    _pendingAdminLogin = false;
     _joinedSocietyIds.clear();
     _savedEventIds.clear();
 
