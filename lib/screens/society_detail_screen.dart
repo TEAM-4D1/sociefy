@@ -147,7 +147,8 @@ class SocietyDetailScreen extends StatelessWidget {
                                     imageAsset,
                                     height: 120,
                                     width: double.infinity,
-                                    fit: BoxFit.cover,
+                                    fit: BoxFit.contain,
+                                    alignment: Alignment.center,
                                   ),
                                 ),
                                 ListTile(

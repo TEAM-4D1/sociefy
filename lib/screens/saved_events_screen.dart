@@ -48,7 +48,8 @@ class SavedEventsScreen extends StatelessWidget {
                         imageAsset,
                         height: 140,
                         width: double.infinity,
-                        fit: BoxFit.cover,
+                        fit: BoxFit.contain,
+                        alignment: Alignment.center,
                       ),
                     ),
                     ListTile(
