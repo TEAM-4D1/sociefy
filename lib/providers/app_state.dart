@@ -11,6 +11,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 
+/// Centralised application state shared across the widget tree via
+/// [provider].
+///
+/// Holds the authenticated user, joined societies, saved events, cached
+/// society/event/announcement lists, and exposes mutation methods that
+/// update local state synchronously and persist to Firestore in the
+/// background.
+///
+/// Construct with `AppState(skipFirebase: true)` in tests so the auth
+/// listener is not registered.
 class AppState extends ChangeNotifier {
   static const String _committeeAdminEmail = 'jburfoot12@gmail.com';
 

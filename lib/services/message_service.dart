@@ -2,8 +2,11 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-// Simple in-memory service for mapping userId -> set of societyChannelIds.
-// Replace internals with your backend (Firebase, REST call, socket join, etc.)
+/// Maintains an in-memory map of `userId → joined societyChannelIds` and a
+/// per-user broadcast stream so chat-list UIs can react to membership
+/// changes. On `joinSociety` it also writes a `memberships` document to
+/// Firestore and subscribes the device to the society's FCM topic so push
+/// notifications can be received.
 class MessageService {
   MessageService({
     FirebaseFirestore? firestore,
