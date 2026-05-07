@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../main_tabs.dart';
-import '../providers/app_state.dart';
 
 /// Allows new students to create an account with display name, email, and password.
 /// Includes form validation and navigation back to SignInScreen.
