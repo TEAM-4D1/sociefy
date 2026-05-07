@@ -137,21 +137,23 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                GestureDetector(
-                  onTap: widget.onLikeTap,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        widget.isLikedByCurrentUser
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                        size: 18,
-                        color: widget.isLikedByCurrentUser
-                            ? Colors.red
-                            : Colors.grey.shade500,
-                      ),
-                      if (widget.likeCount > 0) ...[
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: widget.onLikeTap,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          widget.isLikedByCurrentUser
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          size: 18,
+                          color: widget.isLikedByCurrentUser
+                              ? Colors.red
+                              : Colors.grey.shade500,
+                        ),
+                        if (widget.likeCount > 0) ..[
                         const SizedBox(width: 6),
                         Text(
                           widget.likeCount.toString(),
@@ -163,12 +165,15 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
                       ],
                     ],
                   ),
+                  ),
                 ),
                 const SizedBox(width: 16),
                 if (!_showCommentInput)
-                  GestureDetector(
-                    onTap: () => setState(() => _showCommentInput = true),
-                    child: Container(
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () => setState(() => _showCommentInput = true),
+                      child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 8,
@@ -197,6 +202,7 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
                           ],
                         ],
                       ),
+                    ),
                     ),
                   ),
               ],
