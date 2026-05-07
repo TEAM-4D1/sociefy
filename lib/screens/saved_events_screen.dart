@@ -13,7 +13,7 @@ class SavedEventsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Saved Events')),
+      appBar: AppBar(title: const Text('Events')),
       body: Consumer<AppState>(
         builder: (context, appState, _) {
           // Ensure events are loaded (will no-op if already loaded)
