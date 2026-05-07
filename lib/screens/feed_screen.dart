@@ -6,6 +6,8 @@ import '../models/society.dart';
 import '../models/announcement.dart';
 import '../providers/app_state.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 class _CreateSocietyResult {
@@ -43,6 +45,7 @@ class _AnnouncementCard extends StatefulWidget {
   final String? imageUrl;
   final int likeCount;
   final bool isLikedByCurrentUser;
+  final String? userId;
   final VoidCallback onLikeTap;
   final List<Comment> comments;
   final Function(String) onCommentAdded;
@@ -56,6 +59,7 @@ class _AnnouncementCard extends StatefulWidget {
     this.imageUrl,
     required this.likeCount,
     required this.isLikedByCurrentUser,
+    this.userId,
     required this.onLikeTap,
     required this.comments,
     required this.onCommentAdded,
@@ -441,7 +445,12 @@ class _FeedScreenState extends State<FeedScreen>
                         padding: const EdgeInsets.all(24.0),
                         itemCount: visibleAnnouncements.length,
                         itemBuilder: (context, index) {
-                          final announcement = visibleAnnouncements[index];
+                          final userId =
+                              FirebaseAuth.instance.currentUser?.uid ?? '';
+                          final displayName =
+                              FirebaseAuth.instance.currentUser?.displayName ??
+                              'You';
+
                           return _AnnouncementCard(
                             societyName: appState.societyNameById(
                               announcement.societyId,
@@ -452,18 +461,88 @@ class _FeedScreenState extends State<FeedScreen>
                             content: announcement.content,
                             imageUrl: announcement.imageUrl,
                             likeCount: announcement.likeCount,
-                            isLikedByCurrentUser:
-                                announcement.isLikedByCurrentUser,
-                            onLikeTap: () {
+                            isLikedByCurrentUser: announcement.isLikedByUser(
+                              userId,
+                            ),
+                            userId: userId,
+                            onLikeTap: () async {
+                              if (userId.isEmpty) return;
+
+                              final wasLiked = announcement.isLikedByUser(
+                                userId,
+                              );
                               setState(() {
-                                announcement.toggleLike('You');
+                                announcement.toggleLike(userId);
                               });
+
+                              try {
+                                if (wasLiked) {
+                                  // Remove like from Firestore
+                                  await FirebaseFirestore.instance
+                                      .collection('announcements')
+                                      .doc(announcement.id)
+                                      .collection('likes')
+                                      .doc(userId)
+                                      .delete();
+                                } else {
+                                  // Add like to Firestore
+                                  await FirebaseFirestore.instance
+                                      .collection('announcements')
+                                      .doc(announcement.id)
+                                      .collection('likes')
+                                      .doc(userId)
+                                      .set({
+                                        'userId': userId,
+                                        'createdAt':
+                                            FieldValue.serverTimestamp(),
+                                      });
+                                }
+                              } catch (e) {
+                                debugPrint('Error toggling like: $e');
+                                // Revert local state on error
+                                setState(() {
+                                  announcement.toggleLike(userId);
+                                });
+                              }
                             },
                             comments: announcement.comments,
-                            onCommentAdded: (commentText) {
-                              setState(() {
-                                announcement.addComment('You', commentText);
-                              });
+                            onCommentAdded: (commentText) async {
+                              if (userId.isEmpty || commentText.trim().isEmpty)
+                                return;
+
+                              try {
+                                // Add comment to Firestore
+                                final docRef = await FirebaseFirestore.instance
+                                    .collection('announcements')
+                                    .doc(announcement.id)
+                                    .collection('comments')
+                                    .add({
+                                      'author': displayName,
+                                      'content': commentText.trim(),
+                                      'dateTime': FieldValue.serverTimestamp(),
+                                    });
+
+                                // Add to local state
+                                setState(() {
+                                  announcement.comments.add(
+                                    Comment(
+                                      id: docRef.id,
+                                      author: displayName,
+                                      content: commentText.trim(),
+                                      dateTime: DateTime.now(),
+                                    ),
+                                  );
+                                });
+                              } catch (e) {
+                                debugPrint('Error adding comment: $e');
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Failed to add comment'),
+                                    ),
+                                  );
+                                }
+                              }
                             },
                           );
                         },

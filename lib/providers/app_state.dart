@@ -143,7 +143,7 @@ class AppState extends ChangeNotifier {
   }
 
   /// Sets up a real-time stream listener for announcements from the Firestore 'announcements' collection.
-  /// Automatically updates the announcements list when new announcements are added. Calls [notifyListeners] on updates.
+  /// Also fetches likes and comments for each announcement. Calls [notifyListeners] on updates.
   void loadAnnouncements() {
     // Cancel any existing subscription to prevent duplicates
     _announcementsSubscription?.cancel();
@@ -155,7 +155,7 @@ class AppState extends ChangeNotifier {
         .orderBy('date', descending: true)
         .limit(50)
         .snapshots()
-        .listen((querySnapshot) {
+        .listen((querySnapshot) async {
           _announcements = querySnapshot.docs.map((doc) {
             final data = doc.data();
             return Announcement(
@@ -172,8 +172,58 @@ class AppState extends ChangeNotifier {
               description: data['description'],
             );
           }).toList();
+
+          // Fetch likes and comments for each announcement
+          for (final announcement in _announcements) {
+            await _loadLikesForAnnouncement(announcement);
+            await _loadCommentsForAnnouncement(announcement);
+          }
+
           notifyListeners();
         });
+  }
+
+  /// Loads all likes for a specific announcement from Firestore.
+  Future<void> _loadLikesForAnnouncement(Announcement announcement) async {
+    try {
+      final likesSnapshot = await FirebaseFirestore.instance
+          .collection('announcements')
+          .doc(announcement.id)
+          .collection('likes')
+          .get();
+
+      announcement.likedBy.clear();
+      for (final doc in likesSnapshot.docs) {
+        final userId = doc['userId'] as String?;
+        if (userId != null) {
+          announcement.likedBy.add(userId);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading likes for announcement ${announcement.id}: $e');
+    }
+  }
+
+  /// Loads all comments for a specific announcement from Firestore.
+  Future<void> _loadCommentsForAnnouncement(Announcement announcement) async {
+    try {
+      final commentsSnapshot = await FirebaseFirestore.instance
+          .collection('announcements')
+          .doc(announcement.id)
+          .collection('comments')
+          .orderBy('dateTime', descending: false)
+          .get();
+
+      announcement.comments.clear();
+      for (final doc in commentsSnapshot.docs) {
+        final comment = Comment.fromFirestore(doc.data(), doc.id);
+        announcement.comments.add(comment);
+      }
+    } catch (e) {
+      debugPrint(
+        'Error loading comments for announcement ${announcement.id}: $e',
+      );
+    }
   }
 
   /// Returns true if a user is currently logged in (userId is not null and not empty).

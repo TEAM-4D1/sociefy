@@ -12,6 +12,20 @@ class Comment {
     required this.content,
     required this.dateTime,
   });
+
+  /// Create a Comment from Firestore data
+  factory Comment.fromFirestore(Map<String, dynamic> data, String docId) {
+    return Comment(
+      id: docId,
+      author: data['author'] ?? 'Unknown',
+      content: data['content'] ?? '',
+      dateTime: (data['dateTime'] is DateTime)
+          ? data['dateTime']
+          : DateTime.fromMillisecondsSinceEpoch(
+              (data['dateTime'] as int?) ?? 0,
+            ),
+    );
+  }
 }
 
 class Announcement {
@@ -25,7 +39,7 @@ class Announcement {
   final String? venue;
   final String? description;
 
-  /// Set of user identifiers who have liked this announcement.
+  /// Set of user IDs who have liked this announcement.
   final Set<String> likedBy = {};
 
   final List<Comment> comments = [];
@@ -33,7 +47,12 @@ class Announcement {
   /// Number of likes on this announcement.
   int get likeCount => likedBy.length;
 
-  /// Check if the current user ('You') has liked this announcement.
+  /// Check if the current user has liked this announcement (requires actual userId).
+  bool isLikedByUser(String? userId) =>
+      userId != null && likedBy.contains(userId);
+
+  /// Check if 'You' (deprecated) has liked this announcement.
+  @deprecated
   bool get isLikedByCurrentUser => likedBy.contains('You');
 
   Announcement({
