@@ -15,16 +15,23 @@ class SavedEventsScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Saved Events')),
       body: Consumer<AppState>(
         builder: (context, appState, _) {
-          final events = appState.savedEvents;
+          // Ensure events are loaded (will no-op if already loaded)
+          if (appState.events.isEmpty) {
+            appState.loadEvents();
+          }
 
-          if (events.isEmpty) {
-            return const Center(child: Text('No saved events yet.'));
+          final saved = appState.savedEvents;
+          // If user has no saved events, show all available events so the tab is populated
+          final displayEvents = saved.isNotEmpty ? saved : appState.events;
+
+          if (displayEvents.isEmpty) {
+            return const Center(child: Text('No events available.'));
           }
 
           return ListView.builder(
-            itemCount: events.length,
+            itemCount: displayEvents.length,
             itemBuilder: (context, index) {
-              final event = events[index];
+              final event = displayEvents[index];
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
                 child: ListTile(
