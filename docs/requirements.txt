@@ -1,2 +1,4 @@
-sphinx-rtd-theme
-sphinx
+sphinx==7.2.6
+sphinx-rtd-theme==2.0.0
+sphinx-copybutton==0.5.2
+myst-parser==2.0.0

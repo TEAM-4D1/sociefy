@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
+import '../models/society.dart';
 import 'society_detail_screen.dart';
 
 /// Allows users to discover and search all available societies with category filtering.
@@ -13,32 +14,42 @@ class SocietyBrowserScreen extends StatefulWidget {
   State<SocietyBrowserScreen> createState() => _SocietyBrowserScreenState();
 }
 
-class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
+class _SocietyBrowserScreenState extends State<SocietyBrowserScreen>
+    with AutomaticKeepAliveClientMixin {
   String _searchQuery = '';
   String? _selectedCategory;
 
   @override
+  bool get wantKeepAlive => true;
+
+  /// Filters societies by search query and selected category.
+  List<Society> get _filteredSocieties {
+    final appState = context.read<AppState>();
+    return appState.societies.where((society) {
+      final query = _searchQuery.toLowerCase();
+      final matchesSearch =
+          society.name.toLowerCase().contains(query) ||
+          society.category.toLowerCase().contains(query);
+      final matchesCategory =
+          _selectedCategory == null || society.category == _selectedCategory;
+      return matchesSearch && matchesCategory;
+    }).toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
+    final filteredSocieties = _filteredSocieties;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Discover Societies')),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-                hintText: 'Search societies...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-              onChanged: (value) {
-                setState(() => _searchQuery = value);
-              },
-            ),
+          _SearchBar(
+            searchQuery: _searchQuery,
+            onSearchChanged: (value) {
+              setState(() => _searchQuery = value);
+            },
           ),
           Consumer<AppState>(
             builder: (context, appState, _) {
@@ -103,16 +114,7 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
                     );
                   }
 
-                  final societies = appState.societies.where((society) {
-                    final query = _searchQuery.toLowerCase();
-                    final matchesSearch =
-                        society.name.toLowerCase().contains(query) ||
-                        society.category.toLowerCase().contains(query);
-                    final matchesCategory =
-                        _selectedCategory == null ||
-                        society.category == _selectedCategory;
-                    return matchesSearch && matchesCategory;
-                  }).toList();
+                  final societies = filteredSocieties;
 
                   if (societies.isEmpty) {
                     return const Center(child: Text('No societies found.'));
@@ -149,6 +151,31 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Stateless search bar widget to prevent unnecessary rebuilds of filter chips when search changes.
+class _SearchBar extends StatelessWidget {
+  final String searchQuery;
+  final Function(String) onSearchChanged;
+
+  const _SearchBar({required this.searchQuery, required this.onSearchChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        decoration: InputDecoration(
+          prefixIcon: const Icon(Icons.search),
+          hintText: 'Search societies...',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+        onChanged: onSearchChanged,
       ),
     );
   }

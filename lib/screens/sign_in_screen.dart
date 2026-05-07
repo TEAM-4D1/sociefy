@@ -59,7 +59,8 @@ class _SignInScreenState extends State<SignInScreen>
     super.dispose();
   }
 
-  /// Handles student user sign in with email and password validation and Firebase authentication.
+  /// Handles student user sign in with email/password validation and Firebase authentication.
+  /// Guards against admin email being used on the student portal.
   Future<void> _signInWithUop(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -78,16 +79,15 @@ class _SignInScreenState extends State<SignInScreen>
       _emailController.text.trim(),
       _passwordController.text.trim(),
     );
+    if (!mounted) return;
     setState(() => _isLoading = false);
     if (result == null) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Invalid email or password')),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid email or password')),
+      );
       return;
     }
-    // Navigation handled by authStateChanges in AppState.
+    // Navigation handled reactively by Consumer<AppState> in main.dart
   }
 
   @override
@@ -107,139 +107,171 @@ class _SignInScreenState extends State<SignInScreen>
               ),
             ),
             child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 520),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          'Sociefy',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-
-                        /// EMAIL
-                        TextFormField(
-                          controller: _emailController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Enter email';
-                            }
-                            if (!value.contains('@')) {
-                              return 'Enter valid email';
-                            }
-                            return null;
-                          },
-                          decoration: _inputDecoration('Email'),
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        /// PASSWORD
-                        TextFormField(
-                          controller: _passwordController,
-                          obscureText: _obscurePassword,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Enter password';
-                            }
-                            return null;
-                          },
-                          decoration: _inputDecoration('Password').copyWith(
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
+              child: SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 520),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'Sociefy',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
+                          const SizedBox(height: 24),
 
-                        const SizedBox(height: 24),
+                          // EMAIL
+                          TextFormField(
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Enter email';
+                              }
+                              if (!value.contains('@')) {
+                                return 'Enter valid email';
+                              }
+                              return null;
+                            },
+                            decoration: _inputDecoration('Email'),
+                          ),
 
-                        /// SIGN IN
-                        ElevatedButton(
-                          onPressed: _isLoading
-                              ? null
-                              : () {
-                                  if (_formKey.currentState!.validate()) {
-                                    _signInWithUop(context);
-                                  }
+                          const SizedBox(height: 16),
+
+                          // PASSWORD
+                          TextFormField(
+                            controller: _passwordController,
+                            obscureText: _obscurePassword,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Enter password';
+                              }
+                              return null;
+                            },
+                            decoration: _inputDecoration('Password').copyWith(
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
                                 },
-                          child: _isLoading
-                              ? const CircularProgressIndicator()
-                              : const Text('Sign In'),
-                        ),
-
-                        const SizedBox(height: 12),
-                        TextButton(
-                          onPressed: () async {
-                            final appState = Provider.of<AppState>(
-                              context,
-                              listen: false,
-                            );
-                            await appState.login(
-                              userId: 'guest',
-                              isAdmin: false,
-                            );
-                            if (!mounted) return;
-                          },
-                          child: const Text('Continue as Guest'),
-                        ),
-                        const SizedBox(height: 12),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute<void>(
-                                builder: (_) => const RegisterScreen(),
                               ),
-                            );
-                          },
-                          child: const Text("Don't have an account? Register"),
-                        ),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            icon: const Icon(Icons.admin_panel_settings),
-                            label: const Text(
-                              'Are you a committee member or admin? Sign in here',
                             ),
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          // SIGN IN
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: _isLoading
+                                  ? null
+                                  : () {
+                                      if (_formKey.currentState!.validate()) {
+                                        _signInWithUop(context);
+                                      }
+                                    },
+                              child: _isLoading
+                                  ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Text('Sign In'),
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+
+                          // GUEST
+                          TextButton(
+                            onPressed: () async {
+                              final appState = Provider.of<AppState>(
+                                context,
+                                listen: false,
+                              );
+                              await appState.login(
+                                userId: 'guest',
+                                isAdmin: false,
+                              );
+                              if (!mounted) return;
+                            },
+                            child: const Text(
+                              'Continue as Guest',
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                          ),
+
+                          const SizedBox(height: 4),
+
+                          // REGISTER — push (not pushReplacement) so back works
+                          TextButton(
                             onPressed: () {
-                              Navigator.of(context).pushReplacement(
+                              Navigator.of(context).push(
                                 MaterialPageRoute<void>(
-                                  builder: (_) => const CommitteeSignInScreen(),
+                                  builder: (_) => const RegisterScreen(),
                                 ),
                               );
                             },
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              side: const BorderSide(color: Color(0xFF4A148C)),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
+                            child: const Text(
+                              "Don't have an account? Register",
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          // COMMITTEE — push (not pushReplacement) so back button works
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              icon: const Icon(Icons.admin_panel_settings),
+                              label: const Text(
+                                'Are you a committee member or admin? Sign in here',
                               ),
-                              textStyle: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute<void>(
+                                    builder: (_) =>
+                                        const CommitteeSignInScreen(),
+                                  ),
+                                );
+                              },
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                side: const BorderSide(
+                                  color: Color(0xFF4A148C),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                textStyle: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -251,6 +283,7 @@ class _SignInScreenState extends State<SignInScreen>
     );
   }
 
+  /// Creates a consistent white-filled InputDecoration for form fields.
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       labelText: label,

@@ -14,11 +14,7 @@ release = '1.0'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-<<<<<<< HEAD
-extensions = []
-=======
 extensions = ['sphinx_rtd_theme']
->>>>>>> ae3b9827faa895c0f23cdbe649ff49e1e03afdfb
 
 templates_path = ['_templates']
 exclude_patterns = []
@@ -28,10 +24,6 @@ exclude_patterns = []
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-<<<<<<< HEAD
-html_theme = 'alabaster'
-html_static_path = ['_static']
-=======
 html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
     'navigation_depth': 4,
@@ -43,4 +35,3 @@ html_static_path = ['_static']
 rst_prolog = """
 .. |project_name| replace:: Sociefy
 """
->>>>>>> ae3b9827faa895c0f23cdbe649ff49e1e03afdfb

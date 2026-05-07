@@ -1,4 +1,4 @@
-# Sociefy App — Test Plan
+-# Sociefy App — Test Plan
 
 ## 1. Methodology
 

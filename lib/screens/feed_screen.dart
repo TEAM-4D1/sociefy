@@ -62,9 +62,12 @@ class _AnnouncementCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  societyName,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                Flexible(
+                  child: Text(
+                    societyName,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 Text(
                   date,
@@ -81,7 +84,14 @@ class _AnnouncementCard extends StatelessWidget {
             if (imageUrl != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
-                child: Image.network(imageUrl!, height: 180, fit: BoxFit.cover),
+                child: Image.network(
+                  imageUrl!,
+                  height: 180,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const SizedBox.shrink(),
+                ),
               ),
             Text(content),
           ],
@@ -91,12 +101,9 @@ class _AnnouncementCard extends StatelessWidget {
   }
 }
 
-<<<<<<< HEAD
-=======
 /// Displays the main announcements feed with real-time updates from all societies.
 /// Provides admin capabilities to create societies and announcements. Shows pull-to-refresh functionality.
 /// Accessible to authenticated students and admins; guests can view but not create.
->>>>>>> ae3b9827faa895c0f23cdbe649ff49e1e03afdfb
 class FeedScreen extends StatefulWidget {
   const FeedScreen({Key? key}) : super(key: key);
 
@@ -104,11 +111,12 @@ class FeedScreen extends StatefulWidget {
   State<FeedScreen> createState() => _FeedScreenState();
 }
 
-class _FeedScreenState extends State<FeedScreen> {
-<<<<<<< HEAD
-=======
+class _FeedScreenState extends State<FeedScreen>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   /// Shows a dialog for creating a new society and creates it if confirmed.
->>>>>>> ae3b9827faa895c0f23cdbe649ff49e1e03afdfb
   Future<void> _showCreateSocietyDialog(BuildContext context) async {
     final result = await showDialog<_CreateSocietyResult>(
       context: context,
@@ -127,7 +135,7 @@ class _FeedScreenState extends State<FeedScreen> {
     }
   }
 
-  /// Shows a dialog for creating a new announcement/post for a society and creates it if confirmed.
+  /// Shows a dialog for creating a new announcement for a society.
   Future<void> _showCreatePostDialog(BuildContext context) async {
     final appState = context.read<AppState>();
     final societies = List.of(appState.societies);
@@ -144,9 +152,7 @@ class _FeedScreenState extends State<FeedScreen> {
       builder: (_) => _CreatePostDialog(societies: societies),
     );
 
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
 
     if (result != null) {
       appState.createAnnouncement(
@@ -163,6 +169,7 @@ class _FeedScreenState extends State<FeedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(title: const Text('My Societies Feed')),
       body: Consumer<AppState>(
@@ -177,8 +184,8 @@ class _FeedScreenState extends State<FeedScreen> {
                     .toList();
 
           if (!isAdmin && joinedSocieties.isEmpty) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            return const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.0),
               child: Center(
                 child: Text(
                   "You haven't joined any societies yet. Explore to see updates here!",
@@ -187,6 +194,7 @@ class _FeedScreenState extends State<FeedScreen> {
               ),
             );
           }
+
           return Column(
             children: [
               if (isAdmin)
@@ -201,17 +209,13 @@ class _FeedScreenState extends State<FeedScreen> {
                       ElevatedButton.icon(
                         icon: const Icon(Icons.add),
                         label: const Text('Add Post'),
-                        onPressed: () {
-                          _showCreatePostDialog(context);
-                        },
+                        onPressed: () => _showCreatePostDialog(context),
                       ),
                       const SizedBox(width: 16),
                       ElevatedButton.icon(
                         icon: const Icon(Icons.group_add),
                         label: const Text('Create Society'),
-                        onPressed: () {
-                          _showCreateSocietyDialog(context);
-                        },
+                        onPressed: () => _showCreateSocietyDialog(context),
                       ),
                     ],
                   ),
@@ -221,51 +225,54 @@ class _FeedScreenState extends State<FeedScreen> {
                   onRefresh: () async {
                     await context.read<AppState>().refreshFeed();
                   },
-                  child: () {
-                    final isDataLoaded =
-                        appState.announcements.isNotEmpty ||
-                        appState.societies.isNotEmpty;
+                  child: Builder(
+                    builder: (context) {
+                      final isDataLoaded =
+                          appState.announcements.isNotEmpty ||
+                          appState.societies.isNotEmpty;
 
-                    if (!isDataLoaded) {
-                      // Show placeholder shimmer cards while data loads
+                      if (!isDataLoaded) {
+                        return ListView.builder(
+                          padding: const EdgeInsets.all(24.0),
+                          itemCount: 4,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              height: 80,
+                              margin: const EdgeInsets.symmetric(vertical: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade200,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            );
+                          },
+                        );
+                      }
+
+                      if (visibleAnnouncements.isEmpty) {
+                        return const Center(
+                          child: Text('No announcements yet.'),
+                        );
+                      }
+
                       return ListView.builder(
                         padding: const EdgeInsets.all(24.0),
-                        itemCount: 4,
+                        itemCount: visibleAnnouncements.length,
                         itemBuilder: (context, index) {
-                          return Container(
-                            height: 80,
-                            margin: const EdgeInsets.symmetric(vertical: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade200,
-                              borderRadius: BorderRadius.circular(12),
+                          final announcement = visibleAnnouncements[index];
+                          return _AnnouncementCard(
+                            societyName: appState.societyNameById(
+                              announcement.societyId,
                             ),
+                            title: announcement.title,
+                            date:
+                                '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
+                            content: announcement.content,
+                            imageUrl: announcement.imageUrl,
                           );
                         },
                       );
-                    }
-
-                    if (visibleAnnouncements.isEmpty) {
-                      return const Center(child: Text('No announcements yet.'));
-                    }
-
-                    return ListView.builder(
-                      padding: const EdgeInsets.all(24.0),
-                      itemCount: visibleAnnouncements.length,
-                      itemBuilder: (context, index) {
-                        final announcement = visibleAnnouncements[index];
-                        return _AnnouncementCard(
-                          societyName: appState.societyNameById(
-                            announcement.societyId,
-                          ),
-                          title: announcement.title,
-                          date:
-                              '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
-                          content: announcement.content,
-                          imageUrl: announcement.imageUrl,
-                        );
-                      },
-                    );
-                  }(),
+                    },
+                  ),
                 ),
               ),
             ],
@@ -350,10 +357,7 @@ class _CreateSocietyDialogState extends State<_CreateSocietyDialog> {
         ),
         ElevatedButton(
           onPressed: () {
-            if (!_formKey.currentState!.validate()) {
-              return;
-            }
-
+            if (!_formKey.currentState!.validate()) return;
             Navigator.of(context).pop(
               _CreateSocietyResult(
                 name: _nameController.text.trim(),
@@ -403,14 +407,16 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        _pickedImage = image;
-      });
+    if (image != null && mounted) {
+      setState(() => _pickedImage = image);
     }
   }
 
+  /// Uploads the picked image to Firebase Storage and returns the download URL.
+  /// Returns null if the upload fails or the platform is web (File not supported on web).
   Future<String?> _uploadImage(XFile image) async {
+    // File-based upload is not supported on web
+    if (kIsWeb) return null;
     try {
       final storageRef = FirebaseStorage.instance.ref();
       final fileName =
@@ -418,8 +424,7 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
       final imageRef = storageRef.child(fileName);
       final uploadTask = imageRef.putFile(File(image.path));
       final snapshot = await uploadTask;
-      final downloadUrl = await snapshot.ref.getDownloadURL();
-      return downloadUrl;
+      return await snapshot.ref.getDownloadURL();
     } catch (e) {
       debugPrint('Image upload error: $e');
       return null;
@@ -448,12 +453,8 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
                     )
                     .toList(),
                 onChanged: (value) {
-                  if (value == null) {
-                    return;
-                  }
-                  setState(() {
-                    _selectedSocietyId = value;
-                  });
+                  if (value == null) return;
+                  setState(() => _selectedSocietyId = value);
                 },
               ),
               TextFormField(
@@ -482,15 +483,12 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
               if (_pickedImage != null)
                 Column(
                   children: [
+                    // Safe image preview — never use File() on web
                     kIsWeb
-                        ? Image.network(_pickedImage!.path, height: 120)
+                        ? const Icon(Icons.image, size: 60, color: Colors.grey)
                         : Image.file(File(_pickedImage!.path), height: 120),
                     TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _pickedImage = null;
-                        });
-                      },
+                      onPressed: () => setState(() => _pickedImage = null),
                       child: const Text('Remove Image'),
                     ),
                   ],
@@ -516,15 +514,15 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
         ),
         ElevatedButton(
           onPressed: () async {
-            if (!_formKey.currentState!.validate()) {
-              return;
-            }
+            if (!_formKey.currentState!.validate()) return;
             String? imageUrl;
             if (_pickedImage != null) {
               setState(() => _uploading = true);
               imageUrl = await _uploadImage(_pickedImage!);
+              if (!mounted) return;
               setState(() => _uploading = false);
             }
+            if (!mounted) return;
             Navigator.of(context).pop(
               _CreatePostResult(
                 societyId: _selectedSocietyId,

@@ -23,7 +23,6 @@ class AppState extends ChangeNotifier {
   final bool _skipFirebase;
 
   AppState({bool skipFirebase = false}) : _skipFirebase = skipFirebase {
-    // Remove Firebase.apps.isEmpty check, not needed in this context
     if (!_skipFirebase) {
       _initializeFirebaseListener();
     }
@@ -31,22 +30,26 @@ class AppState extends ChangeNotifier {
 
   /// Initialize the Firebase auth listener (called after construction in production).
   void _initializeFirebaseListener() {
-    FirebaseAuth.instance.authStateChanges().listen((user) {
-      if (user != null) {
-        final normalizedEmail = user.email?.trim().toLowerCase();
-        final isCommitteeAdmin = normalizedEmail == _committeeAdminEmail;
-        login(
-          userId: user.uid,
-          isAdmin: _pendingAdminLogin || isCommitteeAdmin,
-        );
-        _pendingAdminLogin = false;
-      } else {
-        // Only logout if not already in a guest session
-        if (!isGuest) {
-          logout();
+    try {
+      FirebaseAuth.instance.authStateChanges().listen((user) {
+        if (user != null) {
+          final normalizedEmail = user.email?.trim().toLowerCase();
+          final isCommitteeAdmin = normalizedEmail == _committeeAdminEmail;
+          login(
+            userId: user.uid,
+            isAdmin: _pendingAdminLogin || isCommitteeAdmin,
+          );
+          _pendingAdminLogin = false;
+        } else {
+          // Only logout if not already in a guest session
+          if (!isGuest) {
+            logout();
+          }
         }
-      }
-    });
+      });
+    } catch (e) {
+      debugPrint('Firebase not initialized, auth listener skipped: $e');
+    }
   }
 
   /// Initialize Firebase listener for auth state changes.
@@ -75,8 +78,8 @@ class AppState extends ChangeNotifier {
 
   /// Fetches all available societies from the Firestore 'societies' collection and caches them locally.
   /// Calls [notifyListeners] after loading. Only fetches once per session.
-  Future<void> loadSocieties() async {
-    if (_societies.isNotEmpty) return;
+  Future<void> loadSocieties({bool forceReload = false}) async {
+    if (_societies.isNotEmpty && !forceReload) return;
     final querySnapshot = await FirebaseFirestore.instance
         .collection('societies')
         .get();
@@ -93,9 +96,9 @@ class AppState extends ChangeNotifier {
   }
 
   /// Fetches upcoming events from the Firestore 'events' collection with a 100-event limit and caches them locally.
-  /// Calls [notifyListeners] after loading. Only fetches once per session.
-  Future<void> loadEvents() async {
-    if (_events.isNotEmpty) return;
+  /// Calls [notifyListeners] after loading. Only fetches once per session unless [forceReload] is true.
+  Future<void> loadEvents({bool forceReload = false}) async {
+    if (_events.isNotEmpty && !forceReload) return;
     final querySnapshot = await FirebaseFirestore.instance
         .collection('events')
         .where(
@@ -193,30 +196,39 @@ class AppState extends ChangeNotifier {
           .where('userId', isEqualTo: userId)
           .get();
 
-      final List<Society> results = [];
-
+      // Collect all societyIds from memberships
+      final societyIds = <String>[];
       for (final mem in membershipSnapshot.docs) {
         final sid = mem['societyId'] as String?;
-        if (sid == null) continue;
-        try {
-          final doc = await FirebaseFirestore.instance
-              .collection('societies')
-              .doc(sid)
-              .get();
-          if (doc.exists) {
-            final data = doc.data();
-            results.add(
-              Society(
-                id: doc.id,
-                name: data?['name'] ?? 'Unknown Society',
-                category: data?['category'] ?? 'General',
-                description: data?['description'] ?? '',
-              ),
-            );
-          }
-        } catch (e) {
-          debugPrint('fetchMySocieties: failed to load society $sid: $e');
+        if (sid != null) {
+          societyIds.add(sid);
         }
+      }
+
+      // Return early if no societies found
+      if (societyIds.isEmpty) {
+        _mySocieties = [];
+        notifyListeners();
+        return;
+      }
+
+      // Fetch all societies in a single query using whereIn
+      final societiesSnapshot = await FirebaseFirestore.instance
+          .collection('societies')
+          .where(FieldPath.documentId, whereIn: societyIds)
+          .get();
+
+      final List<Society> results = [];
+      for (final doc in societiesSnapshot.docs) {
+        final data = doc.data();
+        results.add(
+          Society(
+            id: doc.id,
+            name: data['name'] ?? 'Unknown Society',
+            category: data['category'] ?? 'General',
+            description: data['description'] ?? '',
+          ),
+        );
       }
 
       _mySocieties = results;
@@ -254,8 +266,11 @@ class AppState extends ChangeNotifier {
     _events.clear();
     _announcements.clear();
 
-    // Reload loadSocieties and loadEvents in parallel, then load announcements
-    await Future.wait<void>([loadSocieties(), loadEvents()]);
+    // Reload loadSocieties and loadEvents in parallel with forceReload: true to fetch fresh data
+    await Future.wait<void>([
+      loadSocieties(forceReload: true),
+      loadEvents(forceReload: true),
+    ]);
 
     // loadAnnouncements is stream-based, just call it
     loadAnnouncements();
@@ -358,11 +373,14 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      FirebaseFirestore.instance.collection('societies').doc(id).set({
-        'name': name,
-        'category': category,
-        'description': description,
-      });
+      FirebaseFirestore.instance
+          .collection('societies')
+          .doc(id)
+          .set({'name': name, 'category': category, 'description': description})
+          .then((_) {
+            // Force reload societies after successful Firestore write to ensure consistency
+            loadSocieties(forceReload: true);
+          });
     } catch (e) {
       debugPrint('createSociety Firestore error: $e');
     }
@@ -379,7 +397,12 @@ class AppState extends ChangeNotifier {
     required String title,
     required String content,
     String? imageUrl,
+    String? venue,
+    String? startTime,
+    String? endTime,
+    DateTime? date,
   }) {
+    final announcementDate = date ?? DateTime.now();
     _announcements.insert(
       0,
       Announcement(
@@ -387,10 +410,10 @@ class AppState extends ChangeNotifier {
         societyId: societyId,
         title: title,
         content: content,
-        date: DateTime.now(),
+        date: announcementDate,
         imageUrl: imageUrl,
-        time: null, // Set if needed
-        venue: '',
+        time: null,
+        venue: venue ?? '',
         description: '',
       ),
     );
@@ -403,6 +426,9 @@ class AppState extends ChangeNotifier {
         'content': content,
         'date': FieldValue.serverTimestamp(),
         if (imageUrl != null) 'imageUrl': imageUrl,
+        if (venue != null) 'venue': venue,
+        if (startTime != null) 'startTime': startTime,
+        if (endTime != null) 'endTime': endTime,
       });
     } catch (e) {
       debugPrint('createAnnouncement Firestore error: $e');
@@ -427,7 +453,7 @@ class AppState extends ChangeNotifier {
     required String endTime,
     required String venue,
   }) {
-    final eventId = 'e-${DateTime.now().millisecondsSinceEpoch}';
+    final eventId = 'e-${DateTime.now().microsecondsSinceEpoch}';
     final societyName = societyNameById(societyId);
 
     _events.insert(

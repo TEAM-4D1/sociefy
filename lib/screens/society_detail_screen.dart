@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/society.dart';
 import '../providers/app_state.dart';
-import '../services/society_service.dart';
 import '../theme/colours.dart';
 import '../theme/text_styles.dart';
 import 'event_detail_screen.dart';
@@ -76,6 +75,7 @@ class SocietyDetailScreen extends StatelessWidget {
                   Consumer<AppState>(
                     builder: (context, appState, _) {
                       return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           OutlinedButton.icon(
                             icon: const Icon(Icons.contact_mail),
@@ -232,6 +232,7 @@ class SocietyDetailScreen extends StatelessWidget {
       bottomNavigationBar: Consumer<AppState>(
         builder: (context, appState, _) {
           final isJoined = appState.isJoined(society.id);
+          final isGuest = appState.isGuest;
 
           return BottomAppBar(
             elevation: 8,
@@ -240,12 +241,16 @@ class SocietyDetailScreen extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 height: 48,
-                  child: ElevatedButton(
+                child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isJoined
+                    backgroundColor: isGuest
+                        ? Colors.grey[400]
+                        : isJoined
                         ? Colors.grey[300]
                         : AppColours.primaryPurple,
-                    foregroundColor: isJoined ? Colors.black87 : Colors.white,
+                    foregroundColor: isGuest || isJoined
+                        ? Colors.black87
+                        : Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24),
                     ),
@@ -253,13 +258,26 @@ class SocietyDetailScreen extends StatelessWidget {
                   onPressed: () async {
                     final messenger = ScaffoldMessenger.of(context);
 
+                    // Guests cannot join
+                    if (isGuest) {
+                      messenger.showSnackBar(
+                        const SnackBar(
+                          content: Text('Please sign in to join societies'),
+                        ),
+                      );
+                      return;
+                    }
+
                     if (isJoined) {
+                      // Leave society — use AppState which handles Firestore
                       try {
                         await appState.leaveSociety(society.id);
+                        if (!context.mounted) return;
                         messenger.showSnackBar(
                           SnackBar(content: Text('Left ${society.name}')),
                         );
                       } catch (e) {
+                        if (!context.mounted) return;
                         messenger.showSnackBar(
                           SnackBar(content: Text('Error leaving society: $e')),
                         );
@@ -267,29 +285,28 @@ class SocietyDetailScreen extends StatelessWidget {
                       return;
                     }
 
-                    // Joining path: call SocietyService.joinSociety and show result
-                    final userId = appState.userId;
-                    if (userId == null || appState.isGuest) {
-                      messenger.showSnackBar(
-                        const SnackBar(content: Text('Please sign in to join')),
-                      );
-                      return;
-                    }
-
+                    // Join society — use AppState.joinSociety (handles both
+                    // local state and Firestore in one call, no double-write)
                     try {
-                      await SocietyService().joinSociety(userId, society.id);
-                      // Refresh local joined list from backend
-                      await appState.loadJoinedSocieties(userId);
+                      await appState.joinSociety(society.id);
+                      if (!context.mounted) return;
                       messenger.showSnackBar(
                         SnackBar(content: Text('Joined ${society.name}')),
                       );
                     } catch (e) {
+                      if (!context.mounted) return;
                       messenger.showSnackBar(
                         SnackBar(content: Text('Error joining society: $e')),
                       );
                     }
                   },
-                  child: Text(isJoined ? 'Leave Society' : 'Join Society'),
+                  child: Text(
+                    isGuest
+                        ? 'Sign in to Join'
+                        : isJoined
+                        ? 'Leave Society'
+                        : 'Join Society',
+                  ),
                 ),
               ),
             ),
@@ -299,6 +316,7 @@ class SocietyDetailScreen extends StatelessWidget {
     );
   }
 
+  /// Shows a modal dialog for admins to create a new event for this society.
   void _showCreateEventDialog(BuildContext context, AppState appState) {
     final formKey = GlobalKey<FormState>();
     final titleController = TextEditingController();
@@ -414,7 +432,7 @@ class SocietyDetailScreen extends StatelessWidget {
                                     if (pickedTime != null) {
                                       setState(() {
                                         startTimeController.text = pickedTime
-                                            .format(context);
+                                            .format(statefulContext);
                                       });
                                     }
                                   },
@@ -446,7 +464,7 @@ class SocietyDetailScreen extends StatelessWidget {
                                     if (pickedTime != null) {
                                       setState(() {
                                         endTimeController.text = pickedTime
-                                            .format(context);
+                                            .format(statefulContext);
                                       });
                                     }
                                   },
@@ -476,12 +494,12 @@ class SocietyDetailScreen extends StatelessWidget {
                         selectedDate != null) {
                       appState.createEvent(
                         societyId: society.id,
-                        title: titleController.text,
-                        description: descriptionController.text,
+                        title: titleController.text.trim(),
+                        description: descriptionController.text.trim(),
                         date: selectedDate!,
                         startTime: startTimeController.text,
                         endTime: endTimeController.text,
-                        venue: venueController.text,
+                        venue: venueController.text.trim(),
                       );
                       Navigator.pop(dialogContext);
                       ScaffoldMessenger.of(context).showSnackBar(

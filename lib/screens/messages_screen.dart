@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sociefy/providers/app_state.dart';
-import 'package:sociefy/screens/society_chat_screen.dart';
+import '../providers/app_state.dart';
+import 'society_chat_screen.dart';
+import 'member_approval_screen.dart';
 
 /// Displays a list of society group chat channels that the user is a member of.
 /// Provides quick access to messages and member approval features for committee admins.
@@ -11,10 +12,10 @@ class MessagesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    return Scaffold(
-      appBar: AppBar(title: const Text('Messages')),
-      body: Consumer<AppState>(
+    return Consumer<AppState>(
+      builder: (context, appState, _) {
+        final joinedSocieties = appState.joinedSocieties;
+        final isCommittee = appState.isAdmin;
 
         return Scaffold(
           appBar: AppBar(title: const Text('Messages')),
@@ -67,7 +68,6 @@ class MessagesPage extends StatelessWidget {
                 ),
         );
       },
->>>>>>> ae3b9827faa895c0f23cdbe649ff49e1e03afdfb
     );
   }
 }

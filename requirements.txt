@@ -1,0 +1,35 @@
+# Sociefy - Flutter/Dart Project Dependencies
+# This is a reference file for developers. For a Flutter project, use pubspec.yaml
+# To install all dependencies, run: flutter pub get
+
+# Core Flutter Framework
+flutter>=3.9.0
+
+# UI & Layout
+cupertino_icons>=1.0.8
+provider>=6.1.2
+
+# File & Media Management
+image_picker>=1.2.1
+file_picker>=10.3.10
+
+# Internationalization
+intl>=0.18.0
+
+# Firebase Backend Services
+firebase_core>=4.7.0
+firebase_auth>=6.4.0
+cloud_firestore>=6.3.0
+firebase_storage>=13.3.0
+firebase_messaging>=16.0.0
+
+# Calendar Integration
+add_2_calendar>=3.0.1
+
+# Testing
+mockito>=5.4.5
+flutter_test>=3.9.0
+integration_test>=3.9.0
+
+# Code Quality
+flutter_lints>=6.0.0

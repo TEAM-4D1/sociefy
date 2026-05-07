@@ -15,13 +15,6 @@ Sociefy is a mobile application designed to simplify the management of universit
 
    architecture
    setup
-<<<<<<< HEAD
-
-Key Features
-------------
-* **Calendar Syncing:** Save events directly to your device.
-* **Society Discovery:** Browse and join university groups.
-=======
    screens
    providers
    services
@@ -43,11 +36,24 @@ Features
 Tech Stack
 ----------
 
-| Component | Technology |
-| --- | --- |
-| Frontend | Flutter |
-| Database | Firebase Firestore |
-| Authentication | Firebase Authentication |
-| Storage | Firebase Storage |
-| Documentation | Sphinx + ReadTheDocs |
->>>>>>> ae3b9827faa895c0f23cdbe649ff49e1e03afdfb
+.. list-table::
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Component
+     - Technology
+   * - Frontend
+     - Flutter
+   * - Database
+     - Firebase Firestore
+   * - Authentication
+     - Firebase Authentication
+   * - Storage
+     - Firebase Storage
+   * - Documentation
+     - Sphinx + ReadTheDocs
+
+Testing
+-------
+
+Test results and coverage data are available in the repository. Test results are available in ``test_report.json`` and coverage data in ``coverage/lcov.info``.
