@@ -26,35 +26,6 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Society App',
         debugShowCheckedModeBanner: false,
-        builder: (context, child) {
-          return Consumer<AppState>(
-            builder: (context, appState, _) {
-              final content = child ?? const SizedBox.shrink();
-              if (!appState.isAuthenticated) {
-                return content;
-              }
-              return Stack(
-                children: [
-                  content,
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: SafeArea(
-                      child: IgnorePointer(
-                        child: Image.asset(
-                          'assets/setap logo for vs code.png',
-                          width: 88,
-                          height: 88,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          );
-        },
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.deepPurple,

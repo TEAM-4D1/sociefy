@@ -13,7 +13,27 @@ class SavedEventsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Events')),
+      appBar: AppBar(
+        title: Row(
+          children: [
+            const Text('Events'),
+            const SizedBox(width: 10),
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Image.asset(
+                'assets/setap logo for vs code.png',
+                width: 32,
+                height: 32,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ],
+        ),
+      ),
       body: Consumer<AppState>(
         builder: (context, appState, _) {
           // Ensure events are loaded — defer to a post-frame callback so
