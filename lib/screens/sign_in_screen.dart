@@ -157,6 +157,13 @@ class _SignInScreenState extends State<SignInScreen>
                           TextFormField(
                             controller: _passwordController,
                             obscureText: _obscurePassword,
+                            textInputAction: TextInputAction.done,
+                            onFieldSubmitted: (_) {
+                              if (!_isLoading &&
+                                  _formKey.currentState!.validate()) {
+                                _signInWithUop(context);
+                              }
+                            },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Enter password';
