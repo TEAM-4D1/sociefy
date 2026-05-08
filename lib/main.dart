@@ -38,13 +38,13 @@ class MyApp extends StatelessWidget {
                   content,
                   Positioned(
                     top: 8,
-                    left: 8,
+                    right: 8,
                     child: SafeArea(
                       child: IgnorePointer(
                         child: Image.asset(
                           'assets/setap logo for vs code.png',
-                          width: 44,
-                          height: 44,
+                          width: 88,
+                          height: 88,
                           fit: BoxFit.contain,
                         ),
                       ),
