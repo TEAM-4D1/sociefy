@@ -5,6 +5,7 @@ import '../services/auth_service.dart';
 import '../providers/app_state.dart';
 import 'sign_in_screen.dart';
 import '../widgets/app_bar_logo_action.dart';
+import '../widgets/app_gradient_background.dart';
 
 /// Displays the current user's profile information including display name, email, and avatar.
 /// Provides a Sign Out button to end the current session and clear all session data.
@@ -46,82 +47,87 @@ class ProfileScreen extends StatelessWidget {
         ),
         actions: const [AppBarLogoAction()],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              child: Text(
-                firstLetter,
-                style: const TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+      body: AppGradientBackground(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 50,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                child: Text(
+                  firstLetter,
+                  style: const TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              displayName,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              subtitle,
-              style: const TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            const SizedBox(height: 32),
-            if (!appState.isGuest)
+              const SizedBox(height: 24),
+              Text(
+                displayName,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                subtitle,
+                style: const TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+              const SizedBox(height: 32),
+              if (!appState.isGuest)
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.lock_reset),
+                  label: const Text('Change Password'),
+                  onPressed: () async {
+                    if (currentUser?.email != null) {
+                      await FirebaseAuth.instance.sendPasswordResetEmail(
+                        email: currentUser!.email!,
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Password reset email sent.'),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('No email found for this user.'),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              const SizedBox(height: 16),
               ElevatedButton.icon(
-                icon: const Icon(Icons.lock_reset),
-                label: const Text('Change Password'),
+                icon: const Icon(Icons.logout),
+                label: const Text('Sign Out'),
                 onPressed: () async {
-                  if (currentUser?.email != null) {
-                    await FirebaseAuth.instance.sendPasswordResetEmail(
-                      email: currentUser!.email!,
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Password reset email sent.'),
-                      ),
+                  final appState = context.read<AppState>();
+                  if (appState.isGuest) {
+                    appState.logout();
+                  } else {
+                    await AuthService().signOut();
+                    appState.logout();
+                  }
+                  // Ensure the user returns to the Sign In screen and clear navigation history
+                  if (Navigator.canPop(context)) {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const SignInScreen()),
+                      (route) => false,
                     );
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('No email found for this user.'),
-                      ),
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (_) => const SignInScreen()),
                     );
                   }
                 },
               ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.logout),
-              label: const Text('Sign Out'),
-              onPressed: () async {
-                final appState = context.read<AppState>();
-                if (appState.isGuest) {
-                  appState.logout();
-                } else {
-                  await AuthService().signOut();
-                  appState.logout();
-                }
-                // Ensure the user returns to the Sign In screen and clear navigation history
-                if (Navigator.canPop(context)) {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (_) => const SignInScreen()),
-                    (route) => false,
-                  );
-                } else {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const SignInScreen()),
-                  );
-                }
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
