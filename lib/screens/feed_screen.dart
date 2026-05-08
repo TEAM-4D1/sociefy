@@ -755,27 +755,35 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
   Future<String?> _uploadImage(XFile image) async {
     try {
       final storageRef = FirebaseStorage.instance.ref();
+      final safeName = image.name.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
       final fileName =
-          'post_images/${DateTime.now().millisecondsSinceEpoch}_${image.name}';
+          'post_images/${DateTime.now().millisecondsSinceEpoch}_$safeName';
       final imageRef = storageRef.child(fileName);
 
-      // Support both web and mobile/desktop
-      if (kIsWeb) {
-        final bytes = await image.readAsBytes();
-        final metadata = SettableMetadata(
-          contentType: 'image/${image.name.split('.').last}',
+      final bytes = await image.readAsBytes();
+      final ext = safeName.contains('.')
+          ? safeName.split('.').last.toLowerCase()
+          : 'jpg';
+      final contentType = ext == 'png'
+          ? 'image/png'
+          : ext == 'gif'
+          ? 'image/gif'
+          : ext == 'webp'
+          ? 'image/webp'
+          : 'image/jpeg';
+
+      TaskSnapshot snapshot;
+      try {
+        snapshot = await imageRef.putData(
+          bytes,
+          SettableMetadata(contentType: contentType),
         );
-        final snapshot = await imageRef
-            .putData(bytes, metadata)
-            .timeout(const Duration(seconds: 30));
-        return await snapshot.ref.getDownloadURL();
-      } else {
-        final uploadTask = imageRef
-            .putFile(File(image.path))
-            .timeout(const Duration(seconds: 30));
-        final snapshot = await uploadTask;
-        return await snapshot.ref.getDownloadURL();
+      } catch (_) {
+        // Retry without metadata for stricter backends.
+        snapshot = await imageRef.putData(bytes);
       }
+
+      return await snapshot.ref.getDownloadURL();
     } catch (e) {
       debugPrint('Image upload error: $e');
       return null;
