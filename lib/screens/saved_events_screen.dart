@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
 import '../utils/society_image_mapper.dart';
 import 'event_detail_screen.dart';
+import '../widgets/app_bar_logo_action.dart';
 
 /// Displays the user's bookmarked/saved events with quick access to event details.
 /// Allows users to remove events from their saved list and navigate to detailed event information.
@@ -14,25 +15,8 @@ class SavedEventsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            const Text('Events'),
-            const SizedBox(width: 10),
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Image.asset(
-                'assets/setap logo for vs code.png',
-                width: 32,
-                height: 32,
-                fit: BoxFit.contain,
-              ),
-            ),
-          ],
-        ),
+        title: const Text('Events'),
+        actions: const [AppBarLogoAction()],
       ),
       body: Consumer<AppState>(
         builder: (context, appState, _) {
