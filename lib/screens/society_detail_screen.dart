@@ -5,6 +5,7 @@ import '../providers/app_state.dart';
 import '../theme/colours.dart';
 import '../theme/text_styles.dart';
 import '../utils/society_image_mapper.dart';
+import '../widgets/app_bar_logo_action.dart';
 import 'event_detail_screen.dart';
 import 'contact_info_screen.dart';
 
@@ -23,6 +24,7 @@ class SocietyDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(society.name),
         backgroundColor: AppColours.primaryPurple,
+        actions: const [AppBarLogoAction()],
       ),
       body: ListView(
         padding: const EdgeInsets.all(24),
