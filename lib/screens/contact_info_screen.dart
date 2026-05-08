@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sociefy/providers/app_state.dart';
+import '../widgets/app_bar_logo_action.dart';
 
 import '../models/society.dart';
 import '../models/committee_member.dart';
@@ -64,7 +65,10 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Contact Info')),
+      appBar: AppBar(
+        title: Text('Contact Info'),
+        actions: const [AppBarLogoAction()],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
