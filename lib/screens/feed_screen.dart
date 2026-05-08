@@ -753,7 +753,7 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
   }
 
   /// Uploads the picked image to Firebase Storage and returns the download URL.
-  /// Returns null if the upload fails or the platform is web (File not supported on web).
+  /// Returns null if the upload fails.
   Future<String?> _uploadImage(XFile image) async {
     try {
       final storageRef = FirebaseStorage.instance.ref();
@@ -767,16 +767,60 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
         final metadata = SettableMetadata(
           contentType: 'image/${image.name.split('.').last}',
         );
-        final snapshot = await imageRef.putData(bytes, metadata);
+        final snapshot = await imageRef
+            .putData(bytes, metadata)
+            .timeout(const Duration(seconds: 30));
         return await snapshot.ref.getDownloadURL();
       } else {
-        final uploadTask = imageRef.putFile(File(image.path));
+        final uploadTask = imageRef
+            .putFile(File(image.path))
+            .timeout(const Duration(seconds: 30));
         final snapshot = await uploadTask;
         return await snapshot.ref.getDownloadURL();
       }
     } catch (e) {
       debugPrint('Image upload error: $e');
       return null;
+    }
+  }
+
+  Future<void> _submitPost() async {
+    if (_uploading) return;
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _uploading = true);
+
+    try {
+      String? imageUrl;
+      if (_pickedImage != null) {
+        imageUrl = await _uploadImage(_pickedImage!);
+
+        if (!mounted) return;
+        if (imageUrl == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Image upload failed or timed out. Please try again.',
+              ),
+            ),
+          );
+          return;
+        }
+      }
+
+      if (!mounted) return;
+      Navigator.of(context).pop(
+        _CreatePostResult(
+          societyId: _selectedSocietyId,
+          title: _titleController.text.trim(),
+          content: _contentController.text.trim(),
+          imageUrl: imageUrl,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _uploading = false);
+      }
     }
   }
 
@@ -862,35 +906,7 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: () async {
-            if (!_formKey.currentState!.validate()) return;
-            String? imageUrl;
-            if (_pickedImage != null) {
-              setState(() => _uploading = true);
-              imageUrl = await _uploadImage(_pickedImage!);
-              if (!mounted) return;
-              setState(() => _uploading = false);
-
-              // If upload failed, notify user and abort posting
-              if (imageUrl == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Image upload failed. Please try again.'),
-                  ),
-                );
-                return;
-              }
-            }
-            if (!mounted) return;
-            Navigator.of(context).pop(
-              _CreatePostResult(
-                societyId: _selectedSocietyId,
-                title: _titleController.text.trim(),
-                content: _contentController.text.trim(),
-                imageUrl: imageUrl,
-              ),
-            );
-          },
+          onPressed: _uploading ? null : _submitPost,
           child: const Text('Post'),
         ),
       ],
