@@ -217,7 +217,8 @@ final List<Event> sampleEvents = [
     societyId: 'sa_3',
     societyName: 'South Asian Society',
     title: 'South Asian Film Screening',
-    description: 'Screening of contemporary South Asian cinema with discussion.',
+    description:
+        'Screening of contemporary South Asian cinema with discussion.',
     date: DateTime(2026, 6, 3),
     startTime: '6:30 PM',
     endTime: '9:00 PM',
