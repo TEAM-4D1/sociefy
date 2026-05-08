@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../models/society.dart';
 import '../providers/app_state.dart';
+import '../widgets/app_bar_logo_action.dart';
 
 /// Provides real-time group chat functionality for society members with message history.
 /// Stores messages in Firestore and updates reactively across all connected users.
@@ -66,7 +67,10 @@ class _SocietyChatScreenState extends State<SocietyChatScreen> {
     final isGuest = appState.isGuest;
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.society.name)),
+      appBar: AppBar(
+        title: Text(widget.society.name),
+        actions: const [AppBarLogoAction()],
+      ),
       body: Column(
         children: [
           Expanded(
