@@ -870,6 +870,16 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
               imageUrl = await _uploadImage(_pickedImage!);
               if (!mounted) return;
               setState(() => _uploading = false);
+
+              // If upload failed, notify user and abort posting
+              if (imageUrl == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Image upload failed. Please try again.'),
+                  ),
+                );
+                return;
+              }
             }
             if (!mounted) return;
             Navigator.of(context).pop(
