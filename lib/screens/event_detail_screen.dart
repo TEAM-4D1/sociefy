@@ -6,6 +6,7 @@ import 'package:add_2_calendar/add_2_calendar.dart' as add2;
 import '../models/event.dart';
 import '../providers/app_state.dart';
 import '../utils/society_image_mapper.dart';
+import '../widgets/app_bar_logo_action.dart';
 
 /// Parses a time string like "14:00" or "2:00 PM" against a base date.
 /// Returns the base date unchanged if parsing fails.
@@ -158,7 +159,10 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     final imageAsset = getSocietyImageAsset(event.societyName);
 
     return Scaffold(
-      appBar: AppBar(title: Text(event.title)),
+      appBar: AppBar(
+        title: Text(event.title),
+        actions: const [AppBarLogoAction()],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
