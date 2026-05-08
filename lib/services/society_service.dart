@@ -7,9 +7,11 @@ class SocietyService {
   /// Constructs a SocietyService. Pass [firestore] in tests to substitute a
   /// `FakeFirebaseFirestore`; production callers can use the no-arg form.
   SocietyService({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+      : _firestoreOverride = firestore;
 
-  final FirebaseFirestore _firestore;
+  final FirebaseFirestore? _firestoreOverride;
+  FirebaseFirestore get _firestore =>
+      _firestoreOverride ?? FirebaseFirestore.instance;
 
   /// Retrieves all societies from the Firestore 'societies' collection.
   ///
