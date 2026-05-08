@@ -22,7 +22,10 @@ class SocietyDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(society.name),
+        title: Text(
+          society.name,
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+        ),
         backgroundColor: AppColours.primaryPurple,
         actions: const [AppBarLogoAction()],
       ),
