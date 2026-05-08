@@ -20,7 +20,10 @@ class MessagesPage extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Messages'),
+            title: const Text(
+              'Messages',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+            ),
             actions: const [AppBarLogoAction()],
           ),
           body: joinedSocieties.isEmpty

@@ -40,7 +40,10 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: const Text(
+          'Profile',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+        ),
         actions: const [AppBarLogoAction()],
       ),
       body: Center(
