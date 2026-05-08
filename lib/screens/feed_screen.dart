@@ -755,16 +755,25 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
   /// Uploads the picked image to Firebase Storage and returns the download URL.
   /// Returns null if the upload fails or the platform is web (File not supported on web).
   Future<String?> _uploadImage(XFile image) async {
-    // File-based upload is not supported on web
-    if (kIsWeb) return null;
     try {
       final storageRef = FirebaseStorage.instance.ref();
       final fileName =
           'post_images/${DateTime.now().millisecondsSinceEpoch}_${image.name}';
       final imageRef = storageRef.child(fileName);
-      final uploadTask = imageRef.putFile(File(image.path));
-      final snapshot = await uploadTask;
-      return await snapshot.ref.getDownloadURL();
+
+      // Support both web and mobile/desktop
+      if (kIsWeb) {
+        final bytes = await image.readAsBytes();
+        final metadata = SettableMetadata(
+          contentType: 'image/${image.name.split('.').last}',
+        );
+        final snapshot = await imageRef.putData(bytes, metadata);
+        return await snapshot.ref.getDownloadURL();
+      } else {
+        final uploadTask = imageRef.putFile(File(image.path));
+        final snapshot = await uploadTask;
+        return await snapshot.ref.getDownloadURL();
+      }
     } catch (e) {
       debugPrint('Image upload error: $e');
       return null;
