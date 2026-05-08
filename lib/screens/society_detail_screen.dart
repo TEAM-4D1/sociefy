@@ -157,13 +157,15 @@ class SocietyDetailScreen extends StatelessWidget {
                                     ),
                                   );
                                 },
-                                child: Card(
-                                  margin: const EdgeInsets.symmetric(
-                                    vertical: 6,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: Card(
+                                    margin: const EdgeInsets.symmetric(
+                                      vertical: 6,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                     children: [
                                       ClipRRect(
                                         borderRadius: const BorderRadius.only(
@@ -204,7 +206,7 @@ class SocietyDetailScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
-                          );
+                          ));
                         },
                       );
                     },

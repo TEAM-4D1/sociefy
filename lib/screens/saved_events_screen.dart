@@ -59,9 +59,11 @@ class SavedEventsScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ClipRRect(
@@ -105,11 +107,11 @@ class SavedEventsScreen extends StatelessWidget {
                             ),
                           ),
                         ],
+                        ),
                       ),
                     ),
-                  ),
                 ),
-              );
+              ));
             },
           );
         },
