@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../providers/app_state.dart';
 import 'sign_in_screen.dart';
+import 'event_detail_screen.dart';
 import '../widgets/app_bar_logo_action.dart';
 import '../widgets/app_gradient_background.dart';
 
@@ -126,6 +127,70 @@ class ProfileScreen extends StatelessWidget {
                   }
                 },
               ),
+              const SizedBox(height: 16),
+              if (appState.isAdmin)
+                SizedBox(
+                  width: 220,
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.event),
+                    label: const Text('View Events'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                    ),
+                    onPressed: () {
+                      final events = appState.events;
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (ctx) => DraggableScrollableSheet(
+                          expand: false,
+                          builder: (context, scrollController) {
+                            if (events.isEmpty) {
+                              return const Center(
+                                child: Text('No events available.'),
+                              );
+                            }
+                            return ListView.builder(
+                              controller: scrollController,
+                              itemCount: events.length,
+                              itemBuilder: (context, index) {
+                                final event = events[index];
+                                return Card(
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  child: ListTile(
+                                    title: Text(event.title),
+                                    subtitle: Text(
+                                      '${event.societyName} • ${event.formattedDate}',
+                                    ),
+                                    trailing: const Icon(Icons.chevron_right),
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => EventDetailScreen(
+                                            event: event,
+                                            userId: appState.userId ?? '',
+                                            isSaved: appState.isEventSaved(
+                                              event.id,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
             ],
           ),
         ),
