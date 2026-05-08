@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
 import '../models/society.dart';
 import 'society_detail_screen.dart';
+import '../widgets/app_bar_logo_action.dart';
 
 /// Allows users to discover and search all available societies with category filtering.
 /// Displays society cards and enables navigation to detailed society information.
@@ -45,7 +46,10 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen>
     final filteredSocieties = _filteredSocieties;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Discover Societies')),
+      appBar: AppBar(
+        title: const Text('Discover Societies'),
+        actions: const [AppBarLogoAction()],
+      ),
       body: Column(
         children: [
           _SearchBar(
