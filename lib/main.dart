@@ -26,6 +26,35 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Society App',
         debugShowCheckedModeBanner: false,
+        builder: (context, child) {
+          return Consumer<AppState>(
+            builder: (context, appState, _) {
+              final content = child ?? const SizedBox.shrink();
+              if (!appState.isAuthenticated) {
+                return content;
+              }
+              return Stack(
+                children: [
+                  content,
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: SafeArea(
+                      child: IgnorePointer(
+                        child: Image.asset(
+                          'assets/setap logo for vs code.png',
+                          width: 44,
+                          height: 44,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        },
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.deepPurple,
@@ -57,9 +86,7 @@ class MyApp extends StatelessWidget {
           inputDecorationTheme: InputDecorationTheme(
             filled: true,
             fillColor: Colors.grey.shade50,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: Colors.grey.shade300),
