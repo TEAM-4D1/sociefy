@@ -407,7 +407,10 @@ class _FeedScreenState extends State<FeedScreen>
     super.build(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Societies Feed'),
+        title: const Text(
+          'My Societies Feed',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+        ),
         actions: const [AppBarLogoAction()],
       ),
       body: Consumer<AppState>(
