@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
 import 'society_chat_screen.dart';
 import 'member_approval_screen.dart';
+import '../widgets/app_bar_logo_action.dart';
 
 /// Displays a list of society group chat channels that the user is a member of.
 /// Provides quick access to messages and member approval features for committee admins.
@@ -18,7 +19,10 @@ class MessagesPage extends StatelessWidget {
         final isCommittee = appState.isAdmin;
 
         return Scaffold(
-          appBar: AppBar(title: const Text('Messages')),
+          appBar: AppBar(
+            title: const Text('Messages'),
+            actions: const [AppBarLogoAction()],
+          ),
           body: joinedSocieties.isEmpty
               ? const Center(
                   child: Text('Join a society to access its message channel.'),
