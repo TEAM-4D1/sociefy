@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../providers/app_state.dart';
 import 'sign_in_screen.dart';
+import '../widgets/app_bar_logo_action.dart';
 
 /// Displays the current user's profile information including display name, email, and avatar.
 /// Provides a Sign Out button to end the current session and clear all session data.
@@ -38,7 +39,10 @@ class ProfileScreen extends StatelessWidget {
         : '?';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(
+        title: const Text('Profile'),
+        actions: const [AppBarLogoAction()],
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
