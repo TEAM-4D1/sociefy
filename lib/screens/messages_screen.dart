@@ -38,42 +38,52 @@ class MessagesPage extends StatelessWidget {
                     itemCount: joinedSocieties.length,
                     itemBuilder: (context, index) {
                       final society = joinedSocieties[index];
-                      return ListTile(
-                        leading: const Icon(Icons.forum),
-                        title: Text(society.name),
-                        subtitle: Text(society.category),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  SocietyChatScreen(society: society),
-                            ),
-                          );
-                        },
-                        trailing: isCommittee
-                            ? IconButton(
-                                icon: const Icon(
-                                  Icons.admin_panel_settings,
-                                  color: Colors.deepPurple,
-                                ),
-                                tooltip: 'Approve Members',
-                                onPressed: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    builder: (ctx) => SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                          0.7,
-                                      child: MemberApprovalScreen(
-                                        societyId: society.id,
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        color: Colors.white,
+                        child: ListTile(
+                          leading: const Icon(Icons.forum),
+                          title: Text(society.name),
+                          subtitle: Text(society.category),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    SocietyChatScreen(society: society),
+                              ),
+                            );
+                          },
+                          trailing: isCommittee
+                              ? IconButton(
+                                  icon: const Icon(
+                                    Icons.admin_panel_settings,
+                                    color: Colors.deepPurple,
+                                  ),
+                                  tooltip: 'Approve Members',
+                                  onPressed: () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      builder: (ctx) => SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                            0.7,
+                                        child: MemberApprovalScreen(
+                                          societyId: society.id,
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                },
-                              )
-                            : null,
+                                    );
+                                  },
+                                )
+                              : null,
+                        ),
                       );
                     },
                   ),
