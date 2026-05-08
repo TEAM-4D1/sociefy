@@ -15,7 +15,10 @@ class SavedEventsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Events'),
+        title: const Text(
+          'Events',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+        ),
         actions: const [AppBarLogoAction()],
       ),
       body: Consumer<AppState>(
