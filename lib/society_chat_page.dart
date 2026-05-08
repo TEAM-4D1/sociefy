@@ -268,6 +268,7 @@ class _ChatMessage {
     required this.text,
     required this.time,
     this.isMe = false,
+    // ignore: unused_element_parameter
     this.edited = false,
   });
 }
