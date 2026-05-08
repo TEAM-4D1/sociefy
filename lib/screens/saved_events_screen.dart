@@ -33,9 +33,9 @@ class SavedEventsScreen extends StatelessWidget {
             });
           }
 
-          final saved = appState.savedEvents;
-          // If user has no saved events, show all available events so the tab is populated
-          final displayEvents = saved.isNotEmpty ? saved : appState.events;
+          // Show all available events for all users (admins and normal users)
+          // This ensures consistent event display across user types
+          final displayEvents = appState.events;
 
           if (displayEvents.isEmpty) {
             return const Center(child: Text('No events available.'));
