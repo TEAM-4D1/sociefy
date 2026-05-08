@@ -82,7 +82,7 @@ class SocietyService {
   /// Returns a list of society IDs, or an empty list if an error occurs.
   Future<List<String>> getJoinedSocietyIds(String userId) async {
     try {
-      final snapshot = await FirebaseFirestore.instance
+      final snapshot = await _firestore
           .collection('memberships')
           .where('userId', isEqualTo: userId)
           .get();

@@ -33,11 +33,25 @@ class AppState extends ChangeNotifier {
   /// Whether to skip Firebase initialization (used for testing).
   final bool _skipFirebase;
 
-  AppState({bool skipFirebase = false}) : _skipFirebase = skipFirebase {
+  /// Firestore instance used for all reads/writes. Defaults to
+  /// `FirebaseFirestore.instance`; override in tests with a
+  /// `FakeFirebaseFirestore`.
+  final FirebaseFirestore _firestore;
+
+  AppState({
+    bool skipFirebase = false,
+    FirebaseFirestore? firestore,
+    SocietyService? societyService,
+  })  : _skipFirebase = skipFirebase,
+        _firestore = firestore ?? FirebaseFirestore.instance,
+        _societyService =
+            societyService ?? SocietyService(firestore: firestore) {
     if (!_skipFirebase) {
       _initializeFirebaseListener();
     }
   }
+
+  final SocietyService _societyService;
 
   /// Initialize the Firebase auth listener (called after construction in production).
   void _initializeFirebaseListener() {
