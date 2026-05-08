@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/services/auth_service.dart';
+import 'package:sociefy/widgets/app_bar_logo_action.dart';
 import '../main_tabs.dart';
 
 /// Provides dedicated authentication for committee members and admins with email/password login.
@@ -99,6 +100,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        actions: const [AppBarLogoAction()],
       ),
       body: Container(
         width: double.infinity,
