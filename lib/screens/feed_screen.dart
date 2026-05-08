@@ -6,6 +6,7 @@ import '../models/society.dart';
 import '../models/announcement.dart';
 import '../providers/app_state.dart';
 import '../widgets/app_bar_logo_action.dart';
+import '../widgets/app_gradient_background.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -413,202 +414,210 @@ class _FeedScreenState extends State<FeedScreen>
         ),
         actions: const [AppBarLogoAction()],
       ),
-      body: Consumer<AppState>(
-        builder: (context, appState, _) {
-          final joinedSocieties = appState.joinedSocieties;
-          final joinedSocietyIds = joinedSocieties.map((s) => s.id).toSet();
-          final isAdmin = appState.isAdmin;
-          final visibleAnnouncements = isAdmin
-              ? appState.announcements
-              : appState.announcements
-                    .where((a) => joinedSocietyIds.contains(a.societyId))
-                    .toList();
+      body: AppGradientBackground(
+        child: Consumer<AppState>(
+          builder: (context, appState, _) {
+            final joinedSocieties = appState.joinedSocieties;
+            final joinedSocietyIds = joinedSocieties.map((s) => s.id).toSet();
+            final isAdmin = appState.isAdmin;
+            final visibleAnnouncements = isAdmin
+                ? appState.announcements
+                : appState.announcements
+                      .where((a) => joinedSocietyIds.contains(a.societyId))
+                      .toList();
 
-          if (!isAdmin && joinedSocieties.isEmpty) {
-            return const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.0),
-              child: Center(
-                child: Text(
-                  "You haven't joined any societies yet. Explore to see updates here!",
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            );
-          }
-
-          return Column(
-            children: [
-              if (isAdmin)
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.add),
-                        label: const Text('Add Post'),
-                        onPressed: () => _showCreatePostDialog(context),
-                      ),
-                      const SizedBox(width: 16),
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.group_add),
-                        label: const Text('Create Society'),
-                        onPressed: () => _showCreateSocietyDialog(context),
-                      ),
-                    ],
+            if (!isAdmin && joinedSocieties.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.0),
+                child: Center(
+                  child: Text(
+                    "You haven't joined any societies yet. Explore to see updates here!",
+                    textAlign: TextAlign.center,
                   ),
                 ),
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () async {
-                    await context.read<AppState>().refreshFeed();
-                  },
-                  child: Builder(
-                    builder: (context) {
-                      final isDataLoaded =
-                          appState.announcements.isNotEmpty ||
-                          appState.societies.isNotEmpty;
+              );
+            }
 
-                      if (!isDataLoaded) {
+            return Column(
+              children: [
+                if (isAdmin)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.add),
+                          label: const Text('Add Post'),
+                          onPressed: () => _showCreatePostDialog(context),
+                        ),
+                        const SizedBox(width: 16),
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.group_add),
+                          label: const Text('Create Society'),
+                          onPressed: () => _showCreateSocietyDialog(context),
+                        ),
+                      ],
+                    ),
+                  ),
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      await context.read<AppState>().refreshFeed();
+                    },
+                    child: Builder(
+                      builder: (context) {
+                        final isDataLoaded =
+                            appState.announcements.isNotEmpty ||
+                            appState.societies.isNotEmpty;
+
+                        if (!isDataLoaded) {
+                          return ListView.builder(
+                            padding: const EdgeInsets.all(24.0),
+                            itemCount: 4,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                height: 80,
+                                margin: const EdgeInsets.symmetric(vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade200,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              );
+                            },
+                          );
+                        }
+
+                        if (visibleAnnouncements.isEmpty) {
+                          return const Center(
+                            child: Text('No announcements yet.'),
+                          );
+                        }
+
                         return ListView.builder(
                           padding: const EdgeInsets.all(24.0),
-                          itemCount: 4,
+                          itemCount: visibleAnnouncements.length,
                           itemBuilder: (context, index) {
-                            return Container(
-                              height: 80,
-                              margin: const EdgeInsets.symmetric(vertical: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(12),
+                            final announcement = visibleAnnouncements[index];
+                            final userId =
+                                FirebaseAuth.instance.currentUser?.uid ?? '';
+                            final displayName =
+                                FirebaseAuth
+                                    .instance
+                                    .currentUser
+                                    ?.displayName ??
+                                'You';
+
+                            return _AnnouncementCard(
+                              societyName: appState.societyNameById(
+                                announcement.societyId,
                               ),
-                            );
-                          },
-                        );
-                      }
-
-                      if (visibleAnnouncements.isEmpty) {
-                        return const Center(
-                          child: Text('No announcements yet.'),
-                        );
-                      }
-
-                      return ListView.builder(
-                        padding: const EdgeInsets.all(24.0),
-                        itemCount: visibleAnnouncements.length,
-                        itemBuilder: (context, index) {
-                          final announcement = visibleAnnouncements[index];
-                          final userId =
-                              FirebaseAuth.instance.currentUser?.uid ?? '';
-                          final displayName =
-                              FirebaseAuth.instance.currentUser?.displayName ??
-                              'You';
-
-                          return _AnnouncementCard(
-                            societyName: appState.societyNameById(
-                              announcement.societyId,
-                            ),
-                            title: announcement.title,
-                            date:
-                                '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
-                            content: announcement.content,
-                            imageUrl: announcement.imageUrl,
-                            likeCount: announcement.likeCount,
-                            isLikedByCurrentUser: announcement.isLikedByUser(
-                              userId,
-                            ),
-                            userId: userId,
-                            onLikeTap: () async {
-                              if (userId.isEmpty) return;
-
-                              final wasLiked = announcement.isLikedByUser(
+                              title: announcement.title,
+                              date:
+                                  '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
+                              content: announcement.content,
+                              imageUrl: announcement.imageUrl,
+                              likeCount: announcement.likeCount,
+                              isLikedByCurrentUser: announcement.isLikedByUser(
                                 userId,
-                              );
-                              setState(() {
-                                announcement.toggleLike(userId);
-                              });
+                              ),
+                              userId: userId,
+                              onLikeTap: () async {
+                                if (userId.isEmpty) return;
 
-                              try {
-                                if (wasLiked) {
-                                  // Remove like from Firestore
-                                  await FirebaseFirestore.instance
-                                      .collection('announcements')
-                                      .doc(announcement.id)
-                                      .collection('likes')
-                                      .doc(userId)
-                                      .delete();
-                                } else {
-                                  // Add like to Firestore
-                                  await FirebaseFirestore.instance
-                                      .collection('announcements')
-                                      .doc(announcement.id)
-                                      .collection('likes')
-                                      .doc(userId)
-                                      .set({
-                                        'userId': userId,
-                                        'createdAt':
-                                            FieldValue.serverTimestamp(),
-                                      });
-                                }
-                              } catch (e) {
-                                debugPrint('Error toggling like: $e');
-                                // Revert local state on error
+                                final wasLiked = announcement.isLikedByUser(
+                                  userId,
+                                );
                                 setState(() {
                                   announcement.toggleLike(userId);
                                 });
-                              }
-                            },
-                            comments: announcement.comments,
-                            onCommentAdded: (commentText) async {
-                              if (userId.isEmpty || commentText.trim().isEmpty)
-                                return;
 
-                              try {
-                                // Add comment to Firestore
-                                final docRef = await FirebaseFirestore.instance
-                                    .collection('announcements')
-                                    .doc(announcement.id)
-                                    .collection('comments')
-                                    .add({
-                                      'author': displayName,
-                                      'content': commentText.trim(),
-                                      'dateTime': FieldValue.serverTimestamp(),
-                                    });
-
-                                // Add to local state
-                                setState(() {
-                                  announcement.comments.add(
-                                    Comment(
-                                      id: docRef.id,
-                                      author: displayName,
-                                      content: commentText.trim(),
-                                      dateTime: DateTime.now(),
-                                    ),
-                                  );
-                                });
-                              } catch (e) {
-                                debugPrint('Error adding comment: $e');
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Failed to add comment'),
-                                    ),
-                                  );
+                                try {
+                                  if (wasLiked) {
+                                    // Remove like from Firestore
+                                    await FirebaseFirestore.instance
+                                        .collection('announcements')
+                                        .doc(announcement.id)
+                                        .collection('likes')
+                                        .doc(userId)
+                                        .delete();
+                                  } else {
+                                    // Add like to Firestore
+                                    await FirebaseFirestore.instance
+                                        .collection('announcements')
+                                        .doc(announcement.id)
+                                        .collection('likes')
+                                        .doc(userId)
+                                        .set({
+                                          'userId': userId,
+                                          'createdAt':
+                                              FieldValue.serverTimestamp(),
+                                        });
+                                  }
+                                } catch (e) {
+                                  debugPrint('Error toggling like: $e');
+                                  // Revert local state on error
+                                  setState(() {
+                                    announcement.toggleLike(userId);
+                                  });
                                 }
-                              }
-                            },
-                          );
-                        },
-                      );
-                    },
+                              },
+                              comments: announcement.comments,
+                              onCommentAdded: (commentText) async {
+                                if (userId.isEmpty ||
+                                    commentText.trim().isEmpty)
+                                  return;
+
+                                try {
+                                  // Add comment to Firestore
+                                  final docRef = await FirebaseFirestore
+                                      .instance
+                                      .collection('announcements')
+                                      .doc(announcement.id)
+                                      .collection('comments')
+                                      .add({
+                                        'author': displayName,
+                                        'content': commentText.trim(),
+                                        'dateTime':
+                                            FieldValue.serverTimestamp(),
+                                      });
+
+                                  // Add to local state
+                                  setState(() {
+                                    announcement.comments.add(
+                                      Comment(
+                                        id: docRef.id,
+                                        author: displayName,
+                                        content: commentText.trim(),
+                                        dateTime: DateTime.now(),
+                                      ),
+                                    );
+                                  });
+                                } catch (e) {
+                                  debugPrint('Error adding comment: $e');
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Failed to add comment'),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }

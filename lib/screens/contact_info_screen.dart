@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sociefy/providers/app_state.dart';
 import '../widgets/app_bar_logo_action.dart';
+import '../widgets/app_gradient_background.dart';
 
 import '../models/society.dart';
 import '../models/committee_member.dart';
@@ -69,76 +70,78 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
         title: Text('Contact Info'),
         actions: const [AppBarLogoAction()],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Committee Members',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _committeeMembers.length,
-                itemBuilder: (context, index) {
-                  final member = _committeeMembers[index];
-                  return Card(
-                    child: ListTile(
-                      leading: const Icon(Icons.person),
-                      title: Text(member.role),
-                      subtitle: Text(member.name),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.email),
-                            onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Email: ${member.email}'),
-                                ),
-                              );
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () => _editMember(index),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () => _removeMember(index),
-                          ),
-                        ],
+      body: AppGradientBackground(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Committee Members',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _committeeMembers.length,
+                  itemBuilder: (context, index) {
+                    final member = _committeeMembers[index];
+                    return Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.person),
+                        title: Text(member.role),
+                        subtitle: Text(member.name),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.email),
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Email: ${member.email}'),
+                                  ),
+                                );
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () => _editMember(index),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () => _removeMember(index),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Center(
-              child: Builder(
-                builder: (context) {
-                  final isCommittee = Provider.of<AppState>(
-                    context,
-                    listen: false,
-                  ).isAdmin;
-                  return Tooltip(
-                    message: isCommittee
-                        ? 'Add a new committee member'
-                        : 'Only committee members can add members',
-                    child: ElevatedButton.icon(
-                      icon: const Icon(Icons.add),
-                      label: const Text('Add Committee Member'),
-                      onPressed: isCommittee ? _addMember : null,
-                    ),
-                  );
-                },
+              const SizedBox(height: 16),
+              Center(
+                child: Builder(
+                  builder: (context) {
+                    final isCommittee = Provider.of<AppState>(
+                      context,
+                      listen: false,
+                    ).isAdmin;
+                    return Tooltip(
+                      message: isCommittee
+                          ? 'Add a new committee member'
+                          : 'Only committee members can add members',
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.add),
+                        label: const Text('Add Committee Member'),
+                        onPressed: isCommittee ? _addMember : null,
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
