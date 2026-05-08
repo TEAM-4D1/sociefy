@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'models/society.dart';
 import 'widgets/app_bar_logo_action.dart';
+import 'widgets/app_gradient_background.dart';
 
 /// Group chat for a joined [Society].
 class SocietyChatPage extends StatefulWidget {
@@ -235,22 +236,27 @@ class _SocietyChatPageState extends State<SocietyChatPage> {
         ),
         actions: const [AppBarLogoAction()],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollCtrl,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              itemCount: _messages.length,
-              itemBuilder: (ctx, i) => _ChatBubble(
-                msg: _messages[i],
-                onEdit: () => _editMessage(i),
-                onDelete: () => _confirmDelete(i),
+      body: AppGradientBackground(
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollCtrl,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
+                itemCount: _messages.length,
+                itemBuilder: (ctx, i) => _ChatBubble(
+                  msg: _messages[i],
+                  onEdit: () => _editMessage(i),
+                  onDelete: () => _confirmDelete(i),
+                ),
               ),
             ),
-          ),
-          _MessageInput(controller: _msgCtrl, onSend: _sendMessage),
-        ],
+            _MessageInput(controller: _msgCtrl, onSend: _sendMessage),
+          ],
+        ),
       ),
     );
   }
