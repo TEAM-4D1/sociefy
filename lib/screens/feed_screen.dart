@@ -117,23 +117,21 @@ class _AnnouncementCardState extends State<_AnnouncementCard> {
               ],
             ),
             const SizedBox(height: 8),
+            if (widget.imageUrl != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: Image.network(
+                  widget.imageUrl!,
+                  width: double.infinity,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const SizedBox.shrink(),
+                ),
+              ),
             Text(
               widget.title,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 6),
-            if (widget.imageUrl != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Image.network(
-                  widget.imageUrl!,
-                  height: 180,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const SizedBox.shrink(),
-                ),
-              ),
             Text(widget.content),
             const SizedBox(height: 12),
             Row(
