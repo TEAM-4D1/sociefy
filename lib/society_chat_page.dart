@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'models/society.dart';
+import 'widgets/app_bar_logo_action.dart';
 
 /// Group chat for a joined [Society].
 class SocietyChatPage extends StatefulWidget {
@@ -232,6 +233,7 @@ class _SocietyChatPageState extends State<SocietyChatPage> {
             ),
           ],
         ),
+        actions: const [AppBarLogoAction()],
       ),
       body: Column(
         children: [
