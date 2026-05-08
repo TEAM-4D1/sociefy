@@ -149,11 +149,17 @@ class AppState extends ChangeNotifier {
         );
       }).toList();
 
-      // If no events from Firestore, use sample events
-      if (_events.isEmpty) {
-        _events = List.from(sampleEvents);
-        debugPrint('Loaded ${_events.length} sample events as fallback');
+      // Append sample events (non-duplicated) so sample data appears
+      // for all users (guest or authenticated). This prevents the
+      // UI showing an empty list for some accounts while still keeping
+      // real Firestore events when present.
+      final existingIds = _events.map((e) => e.id).toSet();
+      for (final se in sampleEvents) {
+        if (!existingIds.contains(se.id)) {
+          _events.add(se);
+        }
       }
+      debugPrint('Loaded ${_events.length} events (including sample events)');
     } catch (e) {
       debugPrint('loadEvents Firestore error: $e, loading sample events');
       // Load sample events as fallback if Firestore fails
