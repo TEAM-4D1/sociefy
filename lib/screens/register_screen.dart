@@ -3,6 +3,7 @@ import '../services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../main_tabs.dart';
 import '../widgets/app_bar_logo_action.dart';
+import '../widgets/auth_logo_header.dart';
 
 /// Allows new students to create an account with display name, email, and password.
 /// Includes form validation and navigation back to SignInScreen.
@@ -147,6 +148,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        const AuthLogoHeader(),
                         const Text(
                           'Create Account',
                           style: TextStyle(

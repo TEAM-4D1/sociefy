@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppBarLogoAction extends StatelessWidget {
-  const AppBarLogoAction({super.key, this.size = 70});
+  const AppBarLogoAction({super.key, this.size = 44});
 
   final double size;
 

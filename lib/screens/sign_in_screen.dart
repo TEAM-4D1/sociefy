@@ -5,6 +5,7 @@ import 'package:sociefy/screens/committee_sign_in_screen.dart';
 import 'package:sociefy/screens/register_screen.dart';
 import 'package:sociefy/services/auth_service.dart';
 import 'package:sociefy/widgets/app_bar_logo_action.dart';
+import 'package:sociefy/widgets/auth_logo_header.dart';
 
 /// The primary authentication entry point for Sociefy.
 /// Provides email/password login for students and a separate button for committee/admin sign in.
@@ -129,6 +130,7 @@ class _SignInScreenState extends State<SignInScreen>
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          const AuthLogoHeader(),
                           const Text(
                             'Sociefy',
                             style: TextStyle(
