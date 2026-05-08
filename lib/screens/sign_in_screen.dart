@@ -4,6 +4,7 @@ import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/screens/committee_sign_in_screen.dart';
 import 'package:sociefy/screens/register_screen.dart';
 import 'package:sociefy/services/auth_service.dart';
+import 'package:sociefy/widgets/app_bar_logo_action.dart';
 
 /// The primary authentication entry point for Sociefy.
 /// Provides email/password login for students and a separate button for committee/admin sign in.
@@ -101,7 +102,10 @@ class _SignInScreenState extends State<SignInScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign in')),
+      appBar: AppBar(
+        title: const Text('Sign in'),
+        actions: const [AppBarLogoAction()],
+      ),
       body: AnimatedBuilder(
         animation: _controller,
         builder: (context, _) {
