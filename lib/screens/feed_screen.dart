@@ -10,6 +10,7 @@ import '../widgets/app_gradient_background.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
 class _CreateSocietyResult {
@@ -389,15 +390,23 @@ class _FeedScreenState extends State<FeedScreen>
     if (!mounted) return;
 
     if (result != null) {
-      appState.createAnnouncement(
-        societyId: result.societyId,
-        title: result.title,
-        content: result.content,
-        imageUrl: result.imageUrl,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Post created successfully.')),
-      );
+      try {
+        await appState.createAnnouncement(
+          societyId: result.societyId,
+          title: result.title,
+          content: result.content,
+          imageUrl: result.imageUrl,
+        );
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Post created successfully.')),
+        );
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Post save failed: $e')));
+      }
     }
   }
 
@@ -721,12 +730,15 @@ class _CreatePostDialog extends StatefulWidget {
 }
 
 class _CreatePostDialogState extends State<_CreatePostDialog> {
+  static const Duration _uploadTimeout = Duration(seconds: 30);
+
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   late String _selectedSocietyId;
   XFile? _pickedImage;
   bool _uploading = false;
+  String? _lastUploadError;
 
   @override
   void initState() {
@@ -753,14 +765,13 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
   /// Uploads the picked image to Firebase Storage and returns the download URL.
   /// Returns null if the upload fails.
   Future<String?> _uploadImage(XFile image) async {
+    _lastUploadError = null;
     try {
-      final storageRef = FirebaseStorage.instance.ref();
       final safeName = image.name.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
       final fileName =
           'post_images/${DateTime.now().millisecondsSinceEpoch}_$safeName';
-      final imageRef = storageRef.child(fileName);
 
-      final bytes = await image.readAsBytes();
+      final bytes = await image.readAsBytes().timeout(_uploadTimeout);
       final ext = safeName.contains('.')
           ? safeName.split('.').last.toLowerCase()
           : 'jpg';
@@ -772,19 +783,42 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
           ? 'image/webp'
           : 'image/jpeg';
 
-      TaskSnapshot snapshot;
-      try {
-        snapshot = await imageRef.putData(
-          bytes,
-          SettableMetadata(contentType: contentType),
-        );
-      } catch (_) {
-        // Retry without metadata for stricter backends.
-        snapshot = await imageRef.putData(bytes);
+      final app = Firebase.app();
+      final projectId = app.options.projectId;
+      final configuredBucket = app.options.storageBucket;
+      final bucketCandidates = <String>{
+        if (configuredBucket != null && configuredBucket.isNotEmpty)
+          configuredBucket,
+        if (projectId.isNotEmpty) '$projectId.appspot.com',
+        if (projectId.isNotEmpty) '$projectId.firebasestorage.app',
+      };
+
+      Object? lastError;
+
+      for (final bucket in bucketCandidates) {
+        final storage = FirebaseStorage.instanceFor(bucket: 'gs://$bucket');
+        final imageRef = storage.ref().child(fileName);
+        try {
+          TaskSnapshot snapshot;
+          try {
+            snapshot = await imageRef
+                .putData(bytes, SettableMetadata(contentType: contentType))
+                .timeout(_uploadTimeout);
+          } catch (_) {
+            // Retry without metadata for stricter backends.
+            snapshot = await imageRef.putData(bytes).timeout(_uploadTimeout);
+          }
+          return await snapshot.ref.getDownloadURL().timeout(_uploadTimeout);
+        } catch (e) {
+          lastError = e;
+        }
       }
 
-      return await snapshot.ref.getDownloadURL();
+      _lastUploadError = lastError.toString();
+      debugPrint('Image upload error (all buckets failed): $_lastUploadError');
+      return null;
     } catch (e) {
+      _lastUploadError = e.toString();
       debugPrint('Image upload error: $e');
       return null;
     }
@@ -803,10 +837,13 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
 
         if (!mounted) return;
         if (imageUrl == null) {
+          final detail = _lastUploadError;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text(
-                'Image upload failed or timed out. Please try again.',
+                detail == null || detail.isEmpty
+                    ? 'Image upload failed or timed out. Please try again.'
+                    : 'Image upload failed: $detail',
               ),
             ),
           );
