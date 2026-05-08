@@ -9,6 +9,7 @@ String getSocietyImageAsset(String societyName) {
     'badminton': 'assets/badmintonsoc.png',
     'badmintonsociety': 'assets/badmintonsoc.png',
     'computerscience': 'assets/compscisoc.png',
+    'computersciencesociety': 'assets/compscisoc.png',
     'compscisociety': 'assets/compscisoc.png',
     'literature': 'assets/literaturesoc.png',
     'literaturesociety': 'assets/literaturesoc.png',
