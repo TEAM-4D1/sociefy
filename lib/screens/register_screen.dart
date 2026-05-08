@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../main_tabs.dart';
+import '../widgets/app_bar_logo_action.dart';
 
 /// Allows new students to create an account with display name, email, and password.
 /// Includes form validation and navigation back to SignInScreen.
@@ -120,6 +121,7 @@ class _RegisterScreenState extends State<RegisterScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: Colors.white,
+        actions: const [AppBarLogoAction()],
       ),
       body: AnimatedBuilder(
         animation: _animController,
