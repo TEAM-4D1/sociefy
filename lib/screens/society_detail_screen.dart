@@ -136,10 +136,10 @@ class SocietyDetailScreen extends StatelessWidget {
                           return Container(
                             width: double.infinity,
                             margin: const EdgeInsets.symmetric(vertical: 6),
-                            child: MouseRegion(
-                              cursor: SystemMouseCursors.click,
-                              child: GestureDetector(
-                                behavior: HitTestBehavior.opaque,
+                            child: Card(
+                              margin: const EdgeInsets.symmetric(vertical: 6),
+                              child: InkWell(
+                                mouseCursor: SystemMouseCursors.click,
                                 onTap: () {
                                   final userId = context
                                       .read<AppState>()
@@ -157,56 +157,48 @@ class SocietyDetailScreen extends StatelessWidget {
                                     ),
                                   );
                                 },
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  child: Card(
-                                    margin: const EdgeInsets.symmetric(
-                                      vertical: 6,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(4),
+                                        topRight: Radius.circular(4),
+                                      ),
+                                      child: Image.asset(
+                                        imageAsset,
+                                        height: 120,
+                                        width: double.infinity,
+                                        fit: BoxFit.contain,
+                                        alignment: Alignment.center,
+                                      ),
                                     ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(4),
-                                          topRight: Radius.circular(4),
-                                        ),
-                                        child: Image.asset(
-                                          imageAsset,
-                                          height: 120,
-                                          width: double.infinity,
-                                          fit: BoxFit.contain,
-                                          alignment: Alignment.center,
-                                        ),
+                                    ListTile(
+                                      title: Text(event.title),
+                                      subtitle: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(event.formattedDate),
+                                          Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.location_on,
+                                                size: 16,
+                                                color: Colors.grey,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(event.venue),
+                                            ],
+                                          ),
+                                        ],
                                       ),
-                                      ListTile(
-                                        title: Text(event.title),
-                                        subtitle: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(event.formattedDate),
-                                            Row(
-                                              children: [
-                                                const Icon(
-                                                  Icons.location_on,
-                                                  size: 16,
-                                                  color: Colors.grey,
-                                                ),
-                                                const SizedBox(width: 4),
-                                                Text(event.venue),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                          ));
+                          );
                         },
                       );
                     },

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'society_model.dart';
+import 'models/society.dart';
 
 /// Group chat for a joined [Society].
 class SocietyChatPage extends StatefulWidget {
@@ -268,6 +268,8 @@ class _ChatMessage {
     required this.text,
     required this.time,
     this.isMe = false,
+    // ignore: unused_element_parameter
+    this.edited = false,
   });
 }
 

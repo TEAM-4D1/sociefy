@@ -87,7 +87,15 @@ class _SignInScreenState extends State<SignInScreen>
       );
       return;
     }
-    // Navigation handled reactively by Consumer<AppState> in main.dart
+
+    // Immediately update AppState so the UI navigates without waiting
+    // for the auth state listener (protects against race conditions).
+    try {
+      final appState = Provider.of<AppState>(context, listen: false);
+      await appState.login(userId: result.user?.uid, isAdmin: false);
+    } catch (e) {
+      debugPrint('Sign in: failed to update AppState: $e');
+    }
   }
 
   @override
@@ -149,6 +157,13 @@ class _SignInScreenState extends State<SignInScreen>
                           TextFormField(
                             controller: _passwordController,
                             obscureText: _obscurePassword,
+                            textInputAction: TextInputAction.done,
+                            onFieldSubmitted: (_) {
+                              if (!_isLoading &&
+                                  _formKey.currentState!.validate()) {
+                                _signInWithUop(context);
+                              }
+                            },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Enter password';

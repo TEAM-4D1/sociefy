@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// A single user comment on an [Announcement]. Immutable; new instances are
+/// constructed when comments are added or refreshed from Firestore.
 class Comment {
   final String id;
   final String author;
@@ -43,6 +45,10 @@ class Comment {
   }
 }
 
+/// A society announcement (post) shown in the home feed. Carries optional
+/// event metadata (date / time / venue) so a single post can also act as an
+/// event invitation. Like / comment counts are loaded eagerly via
+/// [AppState.loadAnnouncements].
 class Announcement {
   final String id;
   final String societyId;
