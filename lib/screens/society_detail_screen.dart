@@ -174,6 +174,7 @@ class SocietyDetailScreen extends StatelessWidget {
                                       ),
                                     ),
                                     ListTile(
+                                      mouseCursor: SystemMouseCursors.click,
                                       title: Text(event.title),
                                       subtitle: Column(
                                         crossAxisAlignment:
