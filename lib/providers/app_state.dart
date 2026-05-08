@@ -480,7 +480,7 @@ class AppState extends ChangeNotifier {
   /// [content] The body content of the announcement.
   /// [imageUrl] An optional image URL for the announcement.
   /// Inserts at beginning of [_announcements], calls [notifyListeners], and writes to Firestore 'announcements' collection with server timestamp.
-  void createAnnouncement({
+  Future<void> createAnnouncement({
     required String societyId,
     required String title,
     required String content,
@@ -489,7 +489,7 @@ class AppState extends ChangeNotifier {
     String? startTime,
     String? endTime,
     DateTime? date,
-  }) {
+  }) async {
     final announcementDate = date ?? DateTime.now();
     _announcements.insert(
       0,
@@ -508,7 +508,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _firestore.collection('announcements').add({
+      await _firestore.collection('announcements').add({
         'societyId': societyId,
         'title': title,
         'content': content,
@@ -520,6 +520,7 @@ class AppState extends ChangeNotifier {
       });
     } catch (e) {
       debugPrint('createAnnouncement Firestore error: $e');
+      rethrow;
     }
   }
 
