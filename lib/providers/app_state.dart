@@ -45,10 +45,10 @@ class AppState extends ChangeNotifier {
     bool skipFirebase = false,
     FirebaseFirestore? firestore,
     SocietyService? societyService,
-  })  : _skipFirebase = skipFirebase,
-        _firestoreOverride = firestore,
-        _societyService =
-            societyService ?? SocietyService(firestore: firestore) {
+  }) : _skipFirebase = skipFirebase,
+       _firestoreOverride = firestore,
+       _societyService =
+           societyService ?? SocietyService(firestore: firestore) {
     if (!_skipFirebase) {
       _initializeFirebaseListener();
     }
@@ -101,9 +101,7 @@ class AppState extends ChangeNotifier {
   /// Calls [notifyListeners] after loading. Only fetches once per session.
   Future<void> loadSocieties({bool forceReload = false}) async {
     if (_societies.isNotEmpty && !forceReload) return;
-    final querySnapshot = await _firestore
-        .collection('societies')
-        .get();
+    final querySnapshot = await _firestore.collection('societies').get();
     _societies = querySnapshot.docs.map((doc) {
       final data = doc.data();
       return Society(
@@ -651,14 +649,11 @@ class AppState extends ChangeNotifier {
   /// Creates a document with userId, eventId, and server timestamp. Throws on error.
   Future<void> persistSaveEvent(String userId, String eventId) async {
     try {
-      await _firestore
-          .collection('savedEvents')
-          .doc('${userId}_$eventId')
-          .set({
-            'eventId': eventId,
-            'userId': userId,
-            'createdAt': FieldValue.serverTimestamp(),
-          });
+      await _firestore.collection('savedEvents').doc('${userId}_$eventId').set({
+        'eventId': eventId,
+        'userId': userId,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
     } catch (e) {
       debugPrint('persistSaveEvent error: $e');
       rethrow;
