@@ -188,8 +188,9 @@ final List<Event> sampleEvents = [
   ),
 
   // South Asian Society (5 events)
+  // South Asian Society (4 events)
   Event(
-    id: 'event_16',
+    id: 'event_13',
     societyId: 'sa_1',
     societyName: 'South Asian Society',
     title: 'Diwali Celebration',
@@ -201,7 +202,7 @@ final List<Event> sampleEvents = [
     isSaved: false,
   ),
   Event(
-    id: 'event_17',
+    id: 'event_14',
     societyId: 'sa_2',
     societyName: 'South Asian Society',
     title: 'Bhangra Night',
@@ -213,7 +214,7 @@ final List<Event> sampleEvents = [
     isSaved: false,
   ),
   Event(
-    id: 'event_18',
+    id: 'event_15',
     societyId: 'sa_3',
     societyName: 'South Asian Society',
     title: 'South Asian Film Screening',
@@ -226,20 +227,8 @@ final List<Event> sampleEvents = [
     isSaved: false,
   ),
   Event(
-    id: 'event_19',
+    id: 'event_16',
     societyId: 'sa_4',
-    societyName: 'South Asian Society',
-    title: 'Cooking Workshop: Regional Dishes',
-    description: 'Hands-on cooking session featuring regional specialties.',
-    date: DateTime(2026, 6, 9),
-    startTime: '3:00 PM',
-    endTime: '6:00 PM',
-    venue: 'Kitchen Lab',
-    isSaved: false,
-  ),
-  Event(
-    id: 'event_20',
-    societyId: 'sa_5',
     societyName: 'South Asian Society',
     title: 'Cultural Night Showcase',
     description: 'An evening of performances across music, dance, and poetry.',
@@ -247,6 +236,58 @@ final List<Event> sampleEvents = [
     startTime: '7:00 PM',
     endTime: '10:00 PM',
     venue: 'Main Hall',
+    isSaved: false,
+  ),
+
+  // MMA Society (2 events)
+  Event(
+    id: 'event_17',
+    societyId: 'mma_1',
+    societyName: 'MMA Society',
+    title: 'MMA Beginner Workshop',
+    description: 'Introductory drills and safety fundamentals for newcomers.',
+    date: DateTime(2026, 6, 8),
+    startTime: '5:00 PM',
+    endTime: '7:00 PM',
+    venue: 'Combat Gym',
+    isSaved: false,
+  ),
+  Event(
+    id: 'event_18',
+    societyId: 'mma_2',
+    societyName: 'MMA Society',
+    title: 'Sparring Night',
+    description: 'Controlled sparring session for intermediate members.',
+    date: DateTime(2026, 6, 20),
+    startTime: '6:00 PM',
+    endTime: '8:00 PM',
+    venue: 'Combat Gym',
+    isSaved: false,
+  ),
+
+  // Literature Society (2 events)
+  Event(
+    id: 'event_19',
+    societyId: 'lit_1',
+    societyName: 'Literature Society',
+    title: 'Poetry Open Mic',
+    description: 'Share your poems or listen to members perform.',
+    date: DateTime(2026, 6, 4),
+    startTime: '6:00 PM',
+    endTime: '8:00 PM',
+    venue: 'Common Room',
+    isSaved: false,
+  ),
+  Event(
+    id: 'event_20',
+    societyId: 'lit_2',
+    societyName: 'Literature Society',
+    title: 'Creative Writing Workshop',
+    description: 'Exercises and feedback to improve your short fiction.',
+    date: DateTime(2026, 6, 11),
+    startTime: '3:00 PM',
+    endTime: '5:00 PM',
+    venue: 'Library Seminar Room',
     isSaved: false,
   ),
 ];
