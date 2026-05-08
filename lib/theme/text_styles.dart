@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'colours.dart';
 
+/// Centralised text style constants used across the app, so headings,
+/// body text and captions stay visually consistent without each screen
+/// hand-rolling its own [TextStyle].
 class AppTextStyles {
   static const TextStyle heading1 = TextStyle(
     fontSize: 26,

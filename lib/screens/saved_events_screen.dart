@@ -16,9 +16,14 @@ class SavedEventsScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Events')),
       body: Consumer<AppState>(
         builder: (context, appState, _) {
-          // Ensure events are loaded (will no-op if already loaded)
+          // Ensure events are loaded — defer to a post-frame callback so
+          // notifyListeners() can't fire during this build phase, which would
+          // crash with a "setState() called during build" assertion when
+          // loadEvents() falls back to sample data synchronously.
           if (appState.events.isEmpty) {
-            appState.loadEvents();
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              appState.loadEvents();
+            });
           }
 
           final saved = appState.savedEvents;

@@ -4,13 +4,22 @@ import 'package:flutter/foundation.dart';
 
 /// A service class for handling society-related operations.
 class SocietyService {
+  /// Constructs a SocietyService. Pass [firestore] in tests to substitute a
+  /// `FakeFirebaseFirestore`; production callers can use the no-arg form.
+  SocietyService({FirebaseFirestore? firestore})
+      : _firestoreOverride = firestore;
+
+  final FirebaseFirestore? _firestoreOverride;
+  FirebaseFirestore get _firestore =>
+      _firestoreOverride ?? FirebaseFirestore.instance;
+
   /// Retrieves all societies from the Firestore 'societies' collection.
   ///
   /// Reads from the Firestore 'societies' collection and returns a list of [Society] objects.
   /// Returns an empty list if an error occurs.
   Future<List<Society>> getAllSocieties() async {
     try {
-      final snapshot = await FirebaseFirestore.instance
+      final snapshot = await _firestore
           .collection('societies')
           .get();
       return snapshot.docs.map((doc) {
@@ -36,7 +45,7 @@ class SocietyService {
   /// Throws an exception if the operation fails.
   Future<void> joinSociety(String userId, String societyId) async {
     try {
-      await FirebaseFirestore.instance
+      await _firestore
           .collection('memberships')
           .doc('${userId}_$societyId')
           .set({
@@ -58,7 +67,7 @@ class SocietyService {
   /// Throws an exception if the operation fails.
   Future<void> leaveSociety(String userId, String societyId) async {
     try {
-      await FirebaseFirestore.instance
+      await _firestore
           .collection('memberships')
           .doc('${userId}_$societyId')
           .delete();
@@ -75,7 +84,7 @@ class SocietyService {
   /// Returns a list of society IDs, or an empty list if an error occurs.
   Future<List<String>> getJoinedSocietyIds(String userId) async {
     try {
-      final snapshot = await FirebaseFirestore.instance
+      final snapshot = await _firestore
           .collection('memberships')
           .where('userId', isEqualTo: userId)
           .get();
