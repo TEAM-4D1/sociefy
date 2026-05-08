@@ -5,6 +5,7 @@ import 'dart:io';
 import '../models/society.dart';
 import '../models/announcement.dart';
 import '../providers/app_state.dart';
+import '../widgets/app_bar_logo_action.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -405,7 +406,10 @@ class _FeedScreenState extends State<FeedScreen>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('My Societies Feed')),
+      appBar: AppBar(
+        title: const Text('My Societies Feed'),
+        actions: const [AppBarLogoAction()],
+      ),
       body: Consumer<AppState>(
         builder: (context, appState, _) {
           final joinedSocieties = appState.joinedSocieties;
