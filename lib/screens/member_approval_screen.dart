@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../widgets/app_bar_logo_action.dart';
 
 /// Admin-only interface for approving or rejecting pending society membership requests.
 /// Displays pending members with buttons to accept or deny applications.
@@ -18,7 +19,10 @@ class _MemberApprovalScreenState extends State<MemberApprovalScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Approve New Members')),
+      appBar: AppBar(
+        title: const Text('Approve New Members'),
+        actions: const [AppBarLogoAction()],
+      ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('pending_memberships')
