@@ -6,21 +6,24 @@ import 'package:sociefy/screens/committee_sign_in_screen.dart';
 
 void main() {
   group('CommitteeSignInScreen Widget Tests', () {
-    /// Helper function to build CommitteeSignInScreen wrapped in MaterialApp
-    /// with ChangeNotifierProvider<AppState> for context.
-    Widget buildTestWidget() {
-      return MaterialApp(
-        home: ChangeNotifierProvider(
-          create: (context) => AppState(skipFirebase: true),
-          child: const CommitteeSignInScreen(),
+    /// Pumps CommitteeSignInScreen with a taller viewport (800×900) so the
+    /// sign-in button is always visible without scrolling.
+    Future<void> buildAndPump(WidgetTester tester) async {
+      tester.view.physicalSize = const Size(800, 900);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ChangeNotifierProvider(
+            create: (context) => AppState(skipFirebase: true),
+            child: const CommitteeSignInScreen(),
+          ),
         ),
       );
     }
 
-    /// Scrolls to the sign-in button (which may be below the 800×600 test
-    /// viewport) and taps it.
+    /// Taps the sign-in button.
     Future<void> tapSignInButton(WidgetTester tester) async {
-      await tester.ensureVisible(find.byIcon(Icons.login));
       await tester.tap(find.byIcon(Icons.login));
     }
 
@@ -28,7 +31,7 @@ void main() {
     testWidgets('Renders email field, password field, and sign in button', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(buildTestWidget());
+      await buildAndPump(tester);
 
       // Verify form fields exist
       expect(find.byType(TextFormField), findsWidgets);
@@ -41,7 +44,7 @@ void main() {
     testWidgets('Shows validation errors when submitting with empty fields', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(buildTestWidget());
+      await buildAndPump(tester);
 
       // Tap the sign in button
       await tapSignInButton(tester);
@@ -59,7 +62,7 @@ void main() {
     testWidgets('Shows validation error for empty email field', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(buildTestWidget());
+      await buildAndPump(tester);
 
       // Fill password only
       await tester.enterText(find.byType(TextFormField).last, 'testpass');
@@ -73,7 +76,7 @@ void main() {
     testWidgets('Shows validation error for empty password field', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(buildTestWidget());
+      await buildAndPump(tester);
 
       // Fill email only
       await tester.enterText(
@@ -91,7 +94,7 @@ void main() {
 
     /// Test 5: MyPort email rejection
     testWidgets('Shows snackbar for myport email', (WidgetTester tester) async {
-      await tester.pumpWidget(buildTestWidget());
+      await buildAndPump(tester);
 
       // Fill both fields
       final emailField = find.byType(TextFormField).first;
@@ -111,7 +114,7 @@ void main() {
 
     /// Test 6: Rejects uppercase MYPORT
     testWidgets('Rejects uppercase MYPORT email', (WidgetTester tester) async {
-      await tester.pumpWidget(buildTestWidget());
+      await buildAndPump(tester);
 
       final emailField = find.byType(TextFormField).first;
       final passwordField = find.byType(TextFormField).last;
@@ -129,7 +132,7 @@ void main() {
 
     /// Test 7: Rejects mixed case MyPort
     testWidgets('Rejects mixed case MyPort email', (WidgetTester tester) async {
-      await tester.pumpWidget(buildTestWidget());
+      await buildAndPump(tester);
 
       final emailField = find.byType(TextFormField).first;
       final passwordField = find.byType(TextFormField).last;
@@ -149,7 +152,7 @@ void main() {
     testWidgets('Shows snackbar for wrong credentials', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(buildTestWidget());
+      await buildAndPump(tester);
 
       final emailField = find.byType(TextFormField).first;
       final passwordField = find.byType(TextFormField).last;
@@ -169,7 +172,7 @@ void main() {
     testWidgets(
       'Shows authorization error with correct email but wrong password',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildTestWidget());
+        await buildAndPump(tester);
 
         final emailField = find.byType(TextFormField).first;
         final passwordField = find.byType(TextFormField).last;
@@ -190,7 +193,7 @@ void main() {
     testWidgets(
       'Shows authorization error with wrong email but correct password',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildTestWidget());
+        await buildAndPump(tester);
 
         final emailField = find.byType(TextFormField).first;
         final passwordField = find.byType(TextFormField).last;
@@ -211,7 +214,7 @@ void main() {
     testWidgets(
       'Shows validation error for empty email before authorization check',
       (WidgetTester tester) async {
-        await tester.pumpWidget(buildTestWidget());
+        await buildAndPump(tester);
 
         final passwordField = find.byType(TextFormField).last;
 
@@ -231,7 +234,7 @@ void main() {
     testWidgets('Rejects myport email regardless of case (lowercase)', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(buildTestWidget());
+      await buildAndPump(tester);
 
       final emailField = find.byType(TextFormField).first;
       final passwordField = find.byType(TextFormField).last;
@@ -251,7 +254,7 @@ void main() {
     testWidgets('Email field can be filled and cleared', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(buildTestWidget());
+      await buildAndPump(tester);
 
       final emailField = find.byType(TextFormField).first;
       final passwordField = find.byType(TextFormField).last;
@@ -277,7 +280,7 @@ void main() {
     testWidgets('Only shows one snackbar when tapping button', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(buildTestWidget());
+      await buildAndPump(tester);
 
       final emailField = find.byType(TextFormField).first;
       final passwordField = find.byType(TextFormField).last;
@@ -294,7 +297,7 @@ void main() {
     testWidgets('Shows validation error for empty email before myport check', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(buildTestWidget());
+      await buildAndPump(tester);
 
       final passwordField = find.byType(TextFormField).last;
 
@@ -315,7 +318,7 @@ void main() {
     ) async {
       // This test verifies the button can show loading state
       // The button shows loading when _isLoading is true
-      await tester.pumpWidget(buildTestWidget());
+      await buildAndPump(tester);
 
       expect(find.byIcon(Icons.login), findsOneWidget);
       expect(find.text('Sign in as Committee/Admin'), findsOneWidget);
@@ -325,7 +328,7 @@ void main() {
     testWidgets('Email field accepts various valid formats', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(buildTestWidget());
+      await buildAndPump(tester);
 
       final emailField = find.byType(TextFormField).first;
       final passwordField = find.byType(TextFormField).last;
@@ -342,7 +345,7 @@ void main() {
     testWidgets('Email whitespace is trimmed before validation', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(buildTestWidget());
+      await buildAndPump(tester);
 
       final emailField = find.byType(TextFormField).first;
       final passwordField = find.byType(TextFormField).last;
@@ -360,7 +363,7 @@ void main() {
 
     /// Test 19: Form fields maintain values
     testWidgets('Form fields maintain values', (WidgetTester tester) async {
-      await tester.pumpWidget(buildTestWidget());
+      await buildAndPump(tester);
 
       final emailField = find.byType(TextFormField).first;
       final passwordField = find.byType(TextFormField).last;
