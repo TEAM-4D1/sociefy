@@ -507,7 +507,7 @@ class AppState extends ChangeNotifier {
     );
     notifyListeners();
 
-    if (!_skipFirebase) {
+    if (!_skipFirebase || _firestoreOverride != null) {
       try {
         await _firestore.collection('announcements').add({
           'societyId': societyId,
