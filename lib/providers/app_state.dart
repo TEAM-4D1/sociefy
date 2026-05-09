@@ -419,19 +419,21 @@ class AppState extends ChangeNotifier {
     );
     notifyListeners();
 
-    try {
-      FirebaseFirestore.instance.collection('announcements').add({
-        'societyId': societyId,
-        'title': title,
-        'content': content,
-        'date': FieldValue.serverTimestamp(),
-        if (imageUrl != null) 'imageUrl': imageUrl,
-        if (venue != null) 'venue': venue,
-        if (startTime != null) 'startTime': startTime,
-        if (endTime != null) 'endTime': endTime,
-      });
-    } catch (e) {
-      debugPrint('createAnnouncement Firestore error: $e');
+    if (!_skipFirebase) {
+      try {
+        FirebaseFirestore.instance.collection('announcements').add({
+          'societyId': societyId,
+          'title': title,
+          'content': content,
+          'date': FieldValue.serverTimestamp(),
+          if (imageUrl != null) 'imageUrl': imageUrl,
+          if (venue != null) 'venue': venue,
+          if (startTime != null) 'startTime': startTime,
+          if (endTime != null) 'endTime': endTime,
+        });
+      } catch (e) {
+        debugPrint('createAnnouncement Firestore error: $e');
+      }
     }
   }
 

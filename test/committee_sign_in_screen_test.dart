@@ -17,6 +17,13 @@ void main() {
       );
     }
 
+    /// Scrolls to the sign-in button (which may be below the 800×600 test
+    /// viewport) and taps it.
+    Future<void> tapSignInButton(WidgetTester tester) async {
+      await tester.ensureVisible(find.byIcon(Icons.login));
+      await tester.tap(find.byIcon(Icons.login));
+    }
+
     /// Test 1: Verify UI elements render
     testWidgets('Renders email field, password field, and sign in button', (
       WidgetTester tester,
@@ -37,7 +44,7 @@ void main() {
       await tester.pumpWidget(buildTestWidget());
 
       // Tap the sign in button
-      await tester.tap(find.byIcon(Icons.login));
+      await tapSignInButton(tester);
       await tester.pumpAndSettle();
 
       // Validation errors should appear
@@ -56,7 +63,7 @@ void main() {
 
       // Fill password only
       await tester.enterText(find.byType(TextFormField).last, 'testpass');
-      await tester.tap(find.byIcon(Icons.login));
+      await tapSignInButton(tester);
       await tester.pumpAndSettle();
 
       expect(find.text('Please enter committee/admin email'), findsOneWidget);
@@ -73,7 +80,7 @@ void main() {
         find.byType(TextFormField).first,
         'test@example.com',
       );
-      await tester.tap(find.byIcon(Icons.login));
+      await tapSignInButton(tester);
       await tester.pumpAndSettle();
 
       expect(
@@ -92,7 +99,7 @@ void main() {
 
       await tester.enterText(emailField, 'test@myport.ac.uk');
       await tester.enterText(passwordField, 'password');
-      await tester.tap(find.byIcon(Icons.login));
+      await tapSignInButton(tester);
       await tester.pumpAndSettle();
 
       expect(find.byType(SnackBar), findsOneWidget);
@@ -111,7 +118,7 @@ void main() {
 
       await tester.enterText(emailField, 'test@MYPORT.ac.uk');
       await tester.enterText(passwordField, 'password');
-      await tester.tap(find.byIcon(Icons.login));
+      await tapSignInButton(tester);
       await tester.pumpAndSettle();
 
       expect(
@@ -129,7 +136,7 @@ void main() {
 
       await tester.enterText(emailField, 'test@MyPort.ac.uk');
       await tester.enterText(passwordField, 'password');
-      await tester.tap(find.byIcon(Icons.login));
+      await tapSignInButton(tester);
       await tester.pumpAndSettle();
 
       expect(
@@ -149,7 +156,7 @@ void main() {
 
       await tester.enterText(emailField, 'wrong@example.com');
       await tester.enterText(passwordField, 'wrongpassword');
-      await tester.tap(find.byIcon(Icons.login));
+      await tapSignInButton(tester);
       await tester.pumpAndSettle();
 
       expect(
@@ -169,7 +176,7 @@ void main() {
 
         await tester.enterText(emailField, 'jburfoot12@gmail.com');
         await tester.enterText(passwordField, 'wrongpassword');
-        await tester.tap(find.byIcon(Icons.login));
+        await tapSignInButton(tester);
         await tester.pumpAndSettle();
 
         expect(
@@ -190,7 +197,7 @@ void main() {
 
         await tester.enterText(emailField, 'wrong@gmail.com');
         await tester.enterText(passwordField, '111444');
-        await tester.tap(find.byIcon(Icons.login));
+        await tapSignInButton(tester);
         await tester.pumpAndSettle();
 
         expect(
@@ -209,7 +216,7 @@ void main() {
         final passwordField = find.byType(TextFormField).last;
 
         await tester.enterText(passwordField, '111444');
-        await tester.tap(find.byIcon(Icons.login));
+        await tapSignInButton(tester);
         await tester.pumpAndSettle();
 
         expect(find.text('Please enter committee/admin email'), findsOneWidget);
@@ -231,7 +238,7 @@ void main() {
 
       await tester.enterText(emailField, 'admin@myport.ac.uk');
       await tester.enterText(passwordField, '111444');
-      await tester.tap(find.byIcon(Icons.login));
+      await tapSignInButton(tester);
       await tester.pumpAndSettle();
 
       expect(
@@ -257,7 +264,7 @@ void main() {
       // Clear and refill
       await tester.enterText(emailField, 'new@example.com');
       await tester.enterText(passwordField, 'password');
-      await tester.tap(find.byIcon(Icons.login));
+      await tapSignInButton(tester);
       await tester.pumpAndSettle();
 
       expect(
@@ -277,7 +284,7 @@ void main() {
 
       await tester.enterText(emailField, 'test@example.com');
       await tester.enterText(passwordField, 'password');
-      await tester.tap(find.byIcon(Icons.login));
+      await tapSignInButton(tester);
       await tester.pumpAndSettle();
 
       expect(find.byType(SnackBar), findsOneWidget);
@@ -292,7 +299,7 @@ void main() {
       final passwordField = find.byType(TextFormField).last;
 
       await tester.enterText(passwordField, 'password');
-      await tester.tap(find.byIcon(Icons.login));
+      await tapSignInButton(tester);
       await tester.pumpAndSettle();
 
       expect(find.text('Please enter committee/admin email'), findsOneWidget);
@@ -342,7 +349,7 @@ void main() {
 
       await tester.enterText(emailField, '  test@example.com  ');
       await tester.enterText(passwordField, 'password');
-      await tester.tap(find.byIcon(Icons.login));
+      await tapSignInButton(tester);
       await tester.pumpAndSettle();
 
       expect(
