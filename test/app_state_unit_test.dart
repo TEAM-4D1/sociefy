@@ -354,9 +354,9 @@ void main() {
     //  createAnnouncement()
     // ------------------------------------------------------------------ //
 
-    test('createAnnouncement() adds to announcements list', () {
+    test('createAnnouncement() adds to announcements list', () async {
       final appState = AppState(skipFirebase: true);
-      appState.createAnnouncement(
+      await appState.createAnnouncement(
         societyId: 'soc-1',
         title: 'Event Tonight',
         content: 'Come at 7pm',
@@ -369,9 +369,9 @@ void main() {
       expect(appState.announcements.first.title, equals('Event Tonight'));
     });
 
-    test('createAnnouncement() inserts at the beginning of the list', () {
+    test('createAnnouncement() inserts at the beginning of the list', () async {
       final appState = AppState(skipFirebase: true);
-      appState.createAnnouncement(
+      await appState.createAnnouncement(
         societyId: 'soc-1',
         title: 'First',
         content: 'Content',
@@ -380,7 +380,7 @@ void main() {
         endTime: '11:00',
         date: DateTime(2026, 6, 1),
       );
-      appState.createAnnouncement(
+      await appState.createAnnouncement(
         societyId: 'soc-1',
         title: 'Second',
         content: 'Content',
