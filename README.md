@@ -1,4 +1,3 @@
-
 # Sociefy
 
 Sociefy is a Flutter app for university students to discover, join, and interact with student societies.
@@ -39,11 +38,34 @@ Sociefy is a Flutter app for university students to discover, join, and interact
 
 ---
 
-## Getting Started
-
-1. Run `flutter pub get` to install dependencies.
-2. Run `flutter run` to launch the app.
+## Future Improvements
+- Push notifications
+- Real-time chat
+- Calendar API integration
+- Enhanced accessibility
+- Better moderation tools
+- Advanced user profiles
 
 ---
 
-This project is built with Flutter and uses Provider for state management.
+# Contributors
+
+Developed as part of the SETaP (Software Engineering Theory and Practice) coursework project.
+
+## Team 4D(1)
+
+| GitHub Username | Role |
+|---|---|
+| Trips424 | Developer |
+| chikbunting | Developer |
+| wdszn | Developer |
+| justinb14 | Developer |
+| rakh1mov | Developer |
+
+---
+
+# License
+
+This project is intended for educational and coursework purposes.
+
+---

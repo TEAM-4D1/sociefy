@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+/// App-wide named colour constants. Screens reference these instead of
+/// inlining hex literals so re-skinning is a single-file change.
 class AppColours {
   static const Color primaryPurple = Color(0xFF4A148C);
   static const Color accentAmber = Color(0xFFFFC107);

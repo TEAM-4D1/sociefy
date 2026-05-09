@@ -3,6 +3,7 @@ import '../models/society.dart';
 import '../models/event.dart';
 import '../models/announcement.dart';
 import '../services/society_service.dart';
+import '../data/sample_events.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 
+/// Centralised application state shared across the widget tree via
+/// [provider].
+///
+/// Holds the authenticated user, joined societies, saved events, cached
+/// society/event/announcement lists, and exposes mutation methods that
+/// update local state synchronously and persist to Firestore in the
+/// background.
+///
+/// Construct with `AppState(skipFirebase: true)` in tests so the auth
+/// listener is not registered.
 class AppState extends ChangeNotifier {
   static const String _committeeAdminEmail = 'jburfoot12@gmail.com';
 
@@ -22,11 +33,28 @@ class AppState extends ChangeNotifier {
   /// Whether to skip Firebase initialization (used for testing).
   final bool _skipFirebase;
 
-  AppState({bool skipFirebase = false}) : _skipFirebase = skipFirebase {
+  /// Firestore instance used for all reads/writes. Resolved lazily so
+  /// constructing an `AppState(skipFirebase: true)` in unit tests does not
+  /// touch `FirebaseFirestore.instance`. Inject a `FakeFirebaseFirestore`
+  /// via the constructor to override.
+  final FirebaseFirestore? _firestoreOverride;
+  FirebaseFirestore get _firestore =>
+      _firestoreOverride ?? FirebaseFirestore.instance;
+
+  AppState({
+    bool skipFirebase = false,
+    FirebaseFirestore? firestore,
+    SocietyService? societyService,
+  }) : _skipFirebase = skipFirebase,
+       _firestoreOverride = firestore,
+       _societyService =
+           societyService ?? SocietyService(firestore: firestore) {
     if (!_skipFirebase) {
       _initializeFirebaseListener();
     }
   }
+
+  final SocietyService _societyService;
 
   /// Initialize the Firebase auth listener (called after construction in production).
   void _initializeFirebaseListener() {
@@ -52,13 +80,6 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  /// Initialize Firebase listener for auth state changes.
-  void initializeFirebaseListener() {
-    if (!_skipFirebase) {
-      _initializeFirebaseListener();
-    }
-  }
-
   /// Sets the pending admin login flag for committee/admin authentication.
   /// [value] The admin pending flag value.
   void setAdminPending(bool value) {
@@ -80,9 +101,7 @@ class AppState extends ChangeNotifier {
   /// Calls [notifyListeners] after loading. Only fetches once per session.
   Future<void> loadSocieties({bool forceReload = false}) async {
     if (_societies.isNotEmpty && !forceReload) return;
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('societies')
-        .get();
+    final querySnapshot = await _firestore.collection('societies').get();
     _societies = querySnapshot.docs.map((doc) {
       final data = doc.data();
       return Society(
@@ -99,50 +118,68 @@ class AppState extends ChangeNotifier {
   /// Calls [notifyListeners] after loading. Only fetches once per session unless [forceReload] is true.
   Future<void> loadEvents({bool forceReload = false}) async {
     if (_events.isNotEmpty && !forceReload) return;
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('events')
-        .where(
-          'date',
-          isGreaterThanOrEqualTo: Timestamp.fromDate(
-            DateTime.now().subtract(Duration(days: 1)),
-          ),
-        )
-        .limit(100)
-        .get();
-    _events = querySnapshot.docs.map((doc) {
-      final data = doc.data();
-      return Event(
-        id: doc.id,
-        societyId: data['societyId'] ?? '',
-        societyName: data['societyName'] ?? 'Unknown Society',
-        title: data['title'] ?? 'Untitled Event',
-        description: data['description'] ?? '',
-        date: data['date'] != null
-            ? (data['date'] as Timestamp).toDate()
-            : DateTime.now(),
-        startTime: data['startTime'] ?? '',
-        endTime: data['endTime'] ?? '',
-        venue: data['venue'] ?? '',
-        isSaved: false,
-      );
-    }).toList();
+    try {
+      final querySnapshot = await _firestore
+          .collection('events')
+          .where(
+            'date',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(
+              DateTime.now().subtract(Duration(days: 1)),
+            ),
+          )
+          .limit(100)
+          .get();
+      _events = querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        return Event(
+          id: doc.id,
+          societyId: data['societyId'] ?? '',
+          societyName: data['societyName'] ?? 'Unknown Society',
+          title: data['title'] ?? 'Untitled Event',
+          description: data['description'] ?? '',
+          date: data['date'] != null
+              ? (data['date'] as Timestamp).toDate()
+              : DateTime.now(),
+          startTime: data['startTime'] ?? '',
+          endTime: data['endTime'] ?? '',
+          venue: data['venue'] ?? '',
+          isSaved: false,
+        );
+      }).toList();
+
+      // Append sample events (non-duplicated) so sample data appears
+      // for all users (guest or authenticated). This prevents the
+      // UI showing an empty list for some accounts while still keeping
+      // real Firestore events when present.
+      final existingIds = _events.map((e) => e.id).toSet();
+      for (final se in sampleEvents) {
+        if (!existingIds.contains(se.id)) {
+          _events.add(se);
+        }
+      }
+      debugPrint('Loaded ${_events.length} events (including sample events)');
+    } catch (e) {
+      debugPrint('loadEvents Firestore error: $e, loading sample events');
+      // Load sample events as fallback if Firestore fails
+      _events = List.from(sampleEvents);
+    }
     notifyListeners();
   }
 
   /// Sets up a real-time stream listener for announcements from the Firestore 'announcements' collection.
-  /// Automatically updates the announcements list when new announcements are added. Calls [notifyListeners] on updates.
+  /// Also fetches likes and comments for each announcement. Calls [notifyListeners] on updates.
   void loadAnnouncements() {
     // Cancel any existing subscription to prevent duplicates
     _announcementsSubscription?.cancel();
     _announcementsSubscription = null;
 
     // Set up new snapshots listener
-    _announcementsSubscription = FirebaseFirestore.instance
+    _announcementsSubscription = _firestore
         .collection('announcements')
         .orderBy('date', descending: true)
         .limit(50)
         .snapshots()
-        .listen((querySnapshot) {
+        .listen((querySnapshot) async {
           _announcements = querySnapshot.docs.map((doc) {
             final data = doc.data();
             return Announcement(
@@ -159,8 +196,58 @@ class AppState extends ChangeNotifier {
               description: data['description'],
             );
           }).toList();
+
+          // Fetch likes and comments for each announcement
+          for (final announcement in _announcements) {
+            await _loadLikesForAnnouncement(announcement);
+            await _loadCommentsForAnnouncement(announcement);
+          }
+
           notifyListeners();
         });
+  }
+
+  /// Loads all likes for a specific announcement from Firestore.
+  Future<void> _loadLikesForAnnouncement(Announcement announcement) async {
+    try {
+      final likesSnapshot = await _firestore
+          .collection('announcements')
+          .doc(announcement.id)
+          .collection('likes')
+          .get();
+
+      announcement.likedBy.clear();
+      for (final doc in likesSnapshot.docs) {
+        final userId = doc['userId'] as String?;
+        if (userId != null) {
+          announcement.likedBy.add(userId);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading likes for announcement ${announcement.id}: $e');
+    }
+  }
+
+  /// Loads all comments for a specific announcement from Firestore.
+  Future<void> _loadCommentsForAnnouncement(Announcement announcement) async {
+    try {
+      final commentsSnapshot = await _firestore
+          .collection('announcements')
+          .doc(announcement.id)
+          .collection('comments')
+          .orderBy('dateTime', descending: false)
+          .get();
+
+      announcement.comments.clear();
+      for (final doc in commentsSnapshot.docs) {
+        final comment = Comment.fromFirestore(doc.data(), doc.id);
+        announcement.comments.add(comment);
+      }
+    } catch (e) {
+      debugPrint(
+        'Error loading comments for announcement ${announcement.id}: $e',
+      );
+    }
   }
 
   /// Returns true if a user is currently logged in (userId is not null and not empty).
@@ -177,7 +264,7 @@ class AppState extends ChangeNotifier {
   /// Calls [notifyListeners] after loading.
   Future<void> loadJoinedSocieties(String userId) async {
     try {
-      final ids = await SocietyService().getJoinedSocietyIds(userId);
+      final ids = await _societyService.getJoinedSocietyIds(userId);
       _joinedSocietyIds.clear();
       _joinedSocietyIds.addAll(ids);
       notifyListeners();
@@ -191,7 +278,7 @@ class AppState extends ChangeNotifier {
   /// Populates [_mySocieties] with complete society data and calls [notifyListeners] after loading.
   Future<void> fetchMySocieties(String userId) async {
     try {
-      final membershipSnapshot = await FirebaseFirestore.instance
+      final membershipSnapshot = await _firestore
           .collection('memberships')
           .where('userId', isEqualTo: userId)
           .get();
@@ -213,7 +300,7 @@ class AppState extends ChangeNotifier {
       }
 
       // Fetch all societies in a single query using whereIn
-      final societiesSnapshot = await FirebaseFirestore.instance
+      final societiesSnapshot = await _firestore
           .collection('societies')
           .where(FieldPath.documentId, whereIn: societyIds)
           .get();
@@ -281,6 +368,7 @@ class AppState extends ChangeNotifier {
   void logout() {
     userId = null;
     isAdmin = false;
+    _pendingAdminLogin = false;
     _joinedSocietyIds.clear();
     _savedEventIds.clear();
 
@@ -333,7 +421,7 @@ class AppState extends ChangeNotifier {
     }
     if (!isGuest) {
       try {
-        await SocietyService().joinSociety(userId!, id);
+        await _societyService.joinSociety(userId!, id);
       } catch (e) {
         debugPrint('joinSociety Firestore error: $e');
       }
@@ -348,7 +436,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
     if (!isGuest) {
       try {
-        await SocietyService().leaveSociety(userId!, id);
+        await _societyService.leaveSociety(userId!, id);
       } catch (e) {
         debugPrint('leaveSociety Firestore error: $e');
       }
@@ -373,7 +461,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      FirebaseFirestore.instance
+      _firestore
           .collection('societies')
           .doc(id)
           .set({'name': name, 'category': category, 'description': description})
@@ -392,7 +480,7 @@ class AppState extends ChangeNotifier {
   /// [content] The body content of the announcement.
   /// [imageUrl] An optional image URL for the announcement.
   /// Inserts at beginning of [_announcements], calls [notifyListeners], and writes to Firestore 'announcements' collection with server timestamp.
-  void createAnnouncement({
+  Future<void> createAnnouncement({
     required String societyId,
     required String title,
     required String content,
@@ -401,7 +489,7 @@ class AppState extends ChangeNotifier {
     String? startTime,
     String? endTime,
     DateTime? date,
-  }) {
+  }) async {
     final announcementDate = date ?? DateTime.now();
     _announcements.insert(
       0,
@@ -421,7 +509,7 @@ class AppState extends ChangeNotifier {
 
     if (!_skipFirebase) {
       try {
-        FirebaseFirestore.instance.collection('announcements').add({
+        await _firestore.collection('announcements').add({
           'societyId': societyId,
           'title': title,
           'content': content,
@@ -433,6 +521,7 @@ class AppState extends ChangeNotifier {
         });
       } catch (e) {
         debugPrint('createAnnouncement Firestore error: $e');
+        rethrow;
       }
     }
   }
@@ -476,7 +565,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      FirebaseFirestore.instance.collection('events').doc(eventId).set({
+      _firestore.collection('events').doc(eventId).set({
         'societyId': societyId,
         'societyName': societyName,
         'title': title,
@@ -515,7 +604,15 @@ class AppState extends ChangeNotifier {
   /// Returns a filtered list of events for a specific society.
   /// [societyId] The ID of the society to filter events for.
   List<Event> eventsForSociety(String societyId) =>
-      _events.where((e) => e.societyId == societyId).toList();
+      // Some sample events may use a placeholder societyId (e.g., 'soc_1').
+      // Match by `societyId` first, and also fall back to matching by
+      // society name to ensure sample events appear for the correct
+      // society details screen when Firestore IDs don't line up.
+      _events.where((e) {
+        if (e.societyId == societyId) return true;
+        final expectedName = societyNameById(societyId).toLowerCase();
+        return e.societyName.toLowerCase() == expectedName;
+      }).toList();
 
   /// Adds an event to the user's saved events list and persists to Firestore.
   /// [id] The ID of the event to save.
@@ -555,14 +652,11 @@ class AppState extends ChangeNotifier {
   /// Creates a document with userId, eventId, and server timestamp. Throws on error.
   Future<void> persistSaveEvent(String userId, String eventId) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('savedEvents')
-          .doc('${userId}_$eventId')
-          .set({
-            'eventId': eventId,
-            'userId': userId,
-            'createdAt': FieldValue.serverTimestamp(),
-          });
+      await _firestore.collection('savedEvents').doc('${userId}_$eventId').set({
+        'eventId': eventId,
+        'userId': userId,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
     } catch (e) {
       debugPrint('persistSaveEvent error: $e');
       rethrow;
@@ -575,7 +669,7 @@ class AppState extends ChangeNotifier {
   /// Deletes the document from 'savedEvents' collection. Throws on error.
   Future<void> persistUnsaveEvent(String userId, String eventId) async {
     try {
-      await FirebaseFirestore.instance
+      await _firestore
           .collection('savedEvents')
           .doc('${userId}_$eventId')
           .delete();
@@ -590,7 +684,7 @@ class AppState extends ChangeNotifier {
   /// Populates [_savedEventIds] list and calls [notifyListeners].
   Future<void> loadSavedEvents(String userId) async {
     try {
-      final snapshot = await FirebaseFirestore.instance
+      final snapshot = await _firestore
           .collection('savedEvents')
           .where('userId', isEqualTo: userId)
           .get();

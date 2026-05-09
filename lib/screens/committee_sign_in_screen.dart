@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/services/auth_service.dart';
+import 'package:sociefy/widgets/app_bar_logo_action.dart';
+import 'package:sociefy/widgets/auth_logo_header.dart';
+import '../main_tabs.dart';
 
 /// Provides dedicated authentication for committee members and admins with email/password login.
 /// Checks against the committee admin email to grant administrative privileges.
@@ -31,7 +34,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
   }
 
   /// Validates committee/admin credentials and signs in via Firebase Authentication.
-  /// Navigation to MainTabs is handled reactively by Consumer<AppState> in main.dart.
+  /// Immediately navigates to MainTabs after successful sign-in.
   Future<void> _signInAsCommitteeOrAdmin(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -78,8 +81,14 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
       ).showSnackBar(const SnackBar(content: Text('Invalid credentials')));
       return;
     }
-    // Navigation to MainTabs handled reactively by Consumer<AppState> in main.dart
-    // when isAuthenticated becomes true. No manual push needed here.
+
+    // Sign-in successful — navigate immediately to MainTabs
+    if (mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const MainTabs()),
+        (route) => false,
+      );
+    }
   }
 
   @override
@@ -92,6 +101,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        actions: const [AppBarLogoAction()],
       ),
       body: Container(
         width: double.infinity,
@@ -114,6 +124,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      const AuthLogoHeader(),
                       const SizedBox(height: 40),
                       const Icon(
                         Icons.admin_panel_settings,

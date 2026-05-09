@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../main_tabs.dart';
+import '../widgets/app_bar_logo_action.dart';
+import '../widgets/auth_logo_header.dart';
 
 /// Allows new students to create an account with display name, email, and password.
 /// Includes form validation and navigation back to SignInScreen.
@@ -63,21 +67,45 @@ class _RegisterScreenState extends State<RegisterScreen>
     final password = _passwordController.text.trim();
     final displayName = _displayNameController.text.trim();
 
-    final result = await authService.register(email, password);
+    UserCredential? result;
+    try {
+      result = await authService.register(email, password);
+    } catch (e) {
+      result = null;
+    }
 
     if (!mounted) return;
     setState(() => _isLoading = false);
 
-    if (result == null) {
+    // If SDK reported failure but a user is present in the AuthService, treat as success
+    final current = authService.currentUser;
+    if (result == null && current == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Registration failed. Please try again.')),
       );
       return;
     }
 
-    await result.user?.updateDisplayName(displayName);
-    await result.user?.reload();
-    // Navigation handled by authStateChanges in AppState
+    try {
+      // Prefer explicit user from result, fallback to current user
+      final user = result?.user ?? current;
+      await user?.updateDisplayName(displayName);
+      await user?.reload();
+    } catch (e) {
+      debugPrint('updateDisplayName error: $e');
+    }
+
+    // Show success and navigate to main tabs
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Registration successful')));
+      // Let AppState auth listener run, but proactively navigate to MainTabs
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const MainTabs()),
+        (route) => false,
+      );
+    }
   }
 
   @override
@@ -94,6 +122,7 @@ class _RegisterScreenState extends State<RegisterScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: Colors.white,
+        actions: const [AppBarLogoAction()],
       ),
       body: AnimatedBuilder(
         animation: _animController,
@@ -119,6 +148,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        const AuthLogoHeader(),
                         const Text(
                           'Create Account',
                           style: TextStyle(

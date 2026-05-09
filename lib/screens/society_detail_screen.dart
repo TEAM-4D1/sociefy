@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../models/society.dart';
 import '../providers/app_state.dart';
 import '../theme/colours.dart';
 import '../theme/text_styles.dart';
-import 'event_detail_screen.dart';
+import '../widgets/app_bar_logo_action.dart';
+import '../widgets/app_gradient_background.dart';
 import 'contact_info_screen.dart';
+import 'event_detail_screen.dart';
 
 /// Displays comprehensive information about a selected society including description, member count, events, and announcements.
 /// Students can join/leave societies; admins see additional management options.
@@ -20,215 +23,224 @@ class SocietyDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(society.name),
+        title: Text(
+          society.name,
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+        ),
         backgroundColor: AppColours.primaryPurple,
+        actions: const [AppBarLogoAction()],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(24),
-        children: [
-          Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: 4,
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 32,
-                        backgroundColor: AppColours.primaryPurple.withValues(
-                          alpha: 0.1,
-                        ),
-                        child: Icon(
-                          Icons.groups,
-                          size: 36,
-                          color: AppColours.primaryPurple,
-                        ),
-                      ),
-                      const SizedBox(width: 24),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(society.name, style: AppTextStyles.heading1),
-                            const SizedBox(height: 8),
-                            Text(
-                              society.category,
-                              style: AppTextStyles.heading2,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  Text(society.description, style: AppTextStyles.bodyRegular),
-
-                  const SizedBox(height: 16),
-
-                  Consumer<AppState>(
-                    builder: (context, appState, _) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          OutlinedButton.icon(
-                            icon: const Icon(Icons.contact_mail),
-                            label: const Text('View Contact Info'),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      ContactInfoScreen(society: society),
-                                ),
-                              );
-                            },
+      body: AppGradientBackground(
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 32,
+                          backgroundColor: AppColours.primaryPurple.withValues(
+                            alpha: 0.1,
                           ),
-                          if (appState.isAdmin) ...[
-                            const SizedBox(height: 12),
-                            ElevatedButton.icon(
-                              icon: const Icon(Icons.event),
-                              label: const Text('Create Event'),
-                              onPressed: () {
-                                _showCreateEventDialog(context, appState);
-                              },
-                            ),
-                          ],
-                        ],
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  const Text(
-                    'Upcoming Events',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  Consumer<AppState>(
-                    builder: (context, appState, _) {
-                      final events = appState.eventsForSociety(society.id);
-
-                      if (events.isEmpty) {
-                        return const Text('No upcoming events');
-                      }
-
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: events.length,
-                        itemBuilder: (context, index) {
-                          final event = events[index];
-
-                          return Card(
-                            margin: const EdgeInsets.symmetric(vertical: 6),
-                            child: ListTile(
-                              title: Text(event.title),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(event.formattedDate),
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.location_on,
-                                        size: 16,
-                                        color: Colors.grey,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(event.venue),
-                                    ],
-                                  ),
-                                ],
+                          child: Icon(
+                            Icons.groups,
+                            size: 36,
+                            color: AppColours.primaryPurple,
+                          ),
+                        ),
+                        const SizedBox(width: 24),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(society.name, style: AppTextStyles.heading1),
+                              const SizedBox(height: 8),
+                              Text(
+                                society.category,
+                                style: AppTextStyles.heading2,
                               ),
-                              onTap: () {
-                                final userId = context.read<AppState>().userId;
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Text(society.description, style: AppTextStyles.bodyRegular),
+                    const SizedBox(height: 16),
+                    Consumer<AppState>(
+                      builder: (context, appState, _) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            OutlinedButton.icon(
+                              icon: const Icon(Icons.contact_mail),
+                              label: const Text('View Contact Info'),
+                              onPressed: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => EventDetailScreen(
-                                      event: event,
-                                      userId: userId ?? '',
-                                      isSaved: appState.isEventSaved(event.id),
-                                    ),
+                                    builder: (_) =>
+                                        ContactInfoScreen(society: society),
                                   ),
                                 );
                               },
                             ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Posts History Button
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.history),
-                    label: const Text('Posts'),
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        builder: (context) {
-                          final posts = context
-                              .read<AppState>()
-                              .announcements
-                              .where((a) => a.societyId == society.id)
-                              .toList();
-                          return DraggableScrollableSheet(
-                            expand: false,
-                            builder: (context, scrollController) {
-                              if (posts.isEmpty) {
-                                return const Center(
-                                  child: Text('No posts yet.'),
-                                );
-                              }
-                              return ListView.builder(
-                                controller: scrollController,
-                                itemCount: posts.length,
-                                itemBuilder: (context, index) {
-                                  final post = posts[index];
-                                  return Card(
-                                    margin: const EdgeInsets.all(12),
-                                    child: ListTile(
-                                      title: Text(post.title),
-                                      subtitle: Text(post.content),
-                                      trailing: post.imageUrl != null
-                                          ? Image.network(
-                                              post.imageUrl!,
-                                              width: 60,
-                                              height: 60,
-                                              fit: BoxFit.cover,
-                                            )
-                                          : null,
+                            if (appState.isAdmin) ...[
+                              const SizedBox(height: 12),
+                              ElevatedButton.icon(
+                                icon: const Icon(Icons.event),
+                                label: const Text('Create Event'),
+                                onPressed: () {
+                                  _showCreateEventDialog(context, appState);
+                                },
+                              ),
+                            ],
+                          ],
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 32),
+                    const Text(
+                      'Upcoming Events',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Consumer<AppState>(
+                      builder: (context, appState, _) {
+                        final events = appState.eventsForSociety(society.id);
+                        if (events.isEmpty) {
+                          return const Text('No upcoming events.');
+                        }
+                        return Column(
+                          children: events.map((event) {
+                            return Card(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              child: ListTile(
+                                title: Text(event.title),
+                                subtitle: Text(event.formattedDate),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => EventDetailScreen(
+                                        event: event,
+                                        userId: appState.userId ?? '',
+                                        isSaved: false,
+                                      ),
                                     ),
                                   );
                                 },
-                              );
-                            },
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ],
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 32),
+                    const Text(
+                      'Announcements',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Consumer<AppState>(
+                      builder: (context, appState, _) {
+                        final announcements = appState.announcements
+                            .where(
+                              (announcement) =>
+                                  announcement.societyId == society.id,
+                            )
+                            .toList();
+                        if (announcements.isEmpty) {
+                          return const Text('No announcements yet.');
+                        }
+                        return Column(
+                          children: announcements.map((announcement) {
+                            return Card(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              child: ListTile(
+                                title: Text(announcement.title),
+                                subtitle: Text(
+                                  announcement.content,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 32),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.history),
+              label: const Text('Posts'),
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (context) {
+                    final posts = context
+                        .read<AppState>()
+                        .announcements
+                        .where((a) => a.societyId == society.id)
+                        .toList();
+                    return DraggableScrollableSheet(
+                      expand: false,
+                      builder: (context, scrollController) {
+                        if (posts.isEmpty) {
+                          return const Center(child: Text('No posts yet.'));
+                        }
+                        return ListView.builder(
+                          controller: scrollController,
+                          itemCount: posts.length,
+                          itemBuilder: (context, index) {
+                            final post = posts[index];
+                            return Card(
+                              margin: const EdgeInsets.all(12),
+                              child: ListTile(
+                                title: Text(post.title),
+                                subtitle: Text(post.content),
+                                trailing: post.imageUrl != null
+                                    ? Image.network(
+                                        post.imageUrl!,
+                                        width: 60,
+                                        height: 60,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : null,
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        ),
       ),
-
       bottomNavigationBar: Consumer<AppState>(
         builder: (context, appState, _) {
           final isJoined = appState.isJoined(society.id);
@@ -258,7 +270,6 @@ class SocietyDetailScreen extends StatelessWidget {
                   onPressed: () async {
                     final messenger = ScaffoldMessenger.of(context);
 
-                    // Guests cannot join
                     if (isGuest) {
                       messenger.showSnackBar(
                         const SnackBar(
@@ -269,7 +280,6 @@ class SocietyDetailScreen extends StatelessWidget {
                     }
 
                     if (isJoined) {
-                      // Leave society — use AppState which handles Firestore
                       try {
                         await appState.leaveSociety(society.id);
                         if (!context.mounted) return;
@@ -285,8 +295,6 @@ class SocietyDetailScreen extends StatelessWidget {
                       return;
                     }
 
-                    // Join society — use AppState.joinSociety (handles both
-                    // local state and Firestore in one call, no double-write)
                     try {
                       await appState.joinSociety(society.id);
                       if (!context.mounted) return;
@@ -316,7 +324,6 @@ class SocietyDetailScreen extends StatelessWidget {
     );
   }
 
-  /// Shows a modal dialog for admins to create a new event for this society.
   void _showCreateEventDialog(BuildContext context, AppState appState) {
     final formKey = GlobalKey<FormState>();
     final titleController = TextEditingController();

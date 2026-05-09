@@ -1,5 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// A single user comment on an [Announcement]. Immutable; new instances are
+/// constructed when comments are added or refreshed from Firestore.
+class Comment {
+  final String id;
+  final String author;
+  final String content;
+  final DateTime dateTime;
+
+  const Comment({
+    required this.id,
+    required this.author,
+    required this.content,
+    required this.dateTime,
+  });
+
+  /// Create a Comment from Firestore data
+  factory Comment.fromFirestore(Map<String, dynamic> data, String docId) {
+    DateTime parsedDateTime;
+
+    if (data['dateTime'] is Timestamp) {
+      // Handle Firestore Timestamp
+      parsedDateTime = (data['dateTime'] as Timestamp).toDate();
+    } else if (data['dateTime'] is DateTime) {
+      // Handle DateTime object
+      parsedDateTime = data['dateTime'] as DateTime;
+    } else if (data['dateTime'] is int) {
+      // Handle milliseconds since epoch
+      parsedDateTime = DateTime.fromMillisecondsSinceEpoch(
+        data['dateTime'] as int,
+      );
+    } else {
+      // Default to now if no valid dateTime
+      parsedDateTime = DateTime.now();
+    }
+
+    return Comment(
+      id: docId,
+      author: data['author'] ?? 'Unknown',
+      content: data['content'] ?? '',
+      dateTime: parsedDateTime,
+    );
+  }
+}
+
+/// A society announcement (post) shown in the home feed. Carries optional
+/// event metadata (date / time / venue) so a single post can also act as an
+/// event invitation. Like / comment counts are loaded eagerly via
+/// [AppState.loadAnnouncements].
 class Announcement {
   final String id;
   final String societyId;
@@ -10,6 +59,22 @@ class Announcement {
   final TimeOfDay? time;
   final String? venue;
   final String? description;
+
+  /// Set of user IDs who have liked this announcement.
+  final Set<String> likedBy = {};
+
+  final List<Comment> comments = [];
+
+  /// Number of likes on this announcement.
+  int get likeCount => likedBy.length;
+
+  /// Check if the current user has liked this announcement (requires actual userId).
+  bool isLikedByUser(String? userId) =>
+      userId != null && likedBy.contains(userId);
+
+  /// Check if 'You' (deprecated) has liked this announcement.
+  @deprecated
+  bool get isLikedByCurrentUser => likedBy.contains('You');
 
   Announcement({
     required this.id,
@@ -22,6 +87,26 @@ class Announcement {
     this.venue,
     this.description,
   });
+
+  /// Toggle like status for the given user.
+  void toggleLike(String userId) {
+    if (likedBy.contains(userId)) {
+      likedBy.remove(userId);
+    } else {
+      likedBy.add(userId);
+    }
+  }
+
+  /// Add a comment to this announcement.
+  void addComment(String author, String content) {
+    final comment = Comment(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      author: author,
+      content: content,
+      dateTime: DateTime.now(),
+    );
+    comments.add(comment);
+  }
 
   String? get dateTimeVenueString {
     if (time == null || venue == null) return null;

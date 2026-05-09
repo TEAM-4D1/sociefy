@@ -4,6 +4,8 @@ import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/screens/committee_sign_in_screen.dart';
 import 'package:sociefy/screens/register_screen.dart';
 import 'package:sociefy/services/auth_service.dart';
+import 'package:sociefy/widgets/app_bar_logo_action.dart';
+import 'package:sociefy/widgets/auth_logo_header.dart';
 
 /// The primary authentication entry point for Sociefy.
 /// Provides email/password login for students and a separate button for committee/admin sign in.
@@ -87,13 +89,24 @@ class _SignInScreenState extends State<SignInScreen>
       );
       return;
     }
-    // Navigation handled reactively by Consumer<AppState> in main.dart
+
+    // Immediately update AppState so the UI navigates without waiting
+    // for the auth state listener (protects against race conditions).
+    try {
+      final appState = Provider.of<AppState>(context, listen: false);
+      await appState.login(userId: result.user?.uid, isAdmin: false);
+    } catch (e) {
+      debugPrint('Sign in: failed to update AppState: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign in')),
+      appBar: AppBar(
+        title: const Text('Sign in'),
+        actions: const [AppBarLogoAction()],
+      ),
       body: AnimatedBuilder(
         animation: _controller,
         builder: (context, _) {
@@ -117,6 +130,7 @@ class _SignInScreenState extends State<SignInScreen>
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          const AuthLogoHeader(),
                           const Text(
                             'Sociefy',
                             style: TextStyle(
@@ -149,6 +163,13 @@ class _SignInScreenState extends State<SignInScreen>
                           TextFormField(
                             controller: _passwordController,
                             obscureText: _obscurePassword,
+                            textInputAction: TextInputAction.done,
+                            onFieldSubmitted: (_) {
+                              if (!_isLoading &&
+                                  _formKey.currentState!.validate()) {
+                                _signInWithUop(context);
+                              }
+                            },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Enter password';

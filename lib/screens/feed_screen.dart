@@ -3,8 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../models/society.dart';
+import '../models/announcement.dart';
 import '../providers/app_state.dart';
+import '../widgets/app_bar_logo_action.dart';
+import '../widgets/app_gradient_background.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
 class _CreateSocietyResult {
@@ -34,12 +40,18 @@ class _CreatePostResult {
 }
 
 // Announcement card for feed
-class _AnnouncementCard extends StatelessWidget {
+class _AnnouncementCard extends StatefulWidget {
   final String societyName;
   final String title;
   final String date;
   final String content;
   final String? imageUrl;
+  final int likeCount;
+  final bool isLikedByCurrentUser;
+  final String? userId;
+  final VoidCallback onLikeTap;
+  final List<Comment> comments;
+  final Function(String) onCommentAdded;
 
   const _AnnouncementCard({
     Key? key,
@@ -48,10 +60,40 @@ class _AnnouncementCard extends StatelessWidget {
     required this.date,
     required this.content,
     this.imageUrl,
+    required this.likeCount,
+    required this.isLikedByCurrentUser,
+    this.userId,
+    required this.onLikeTap,
+    required this.comments,
+    required this.onCommentAdded,
   }) : super(key: key);
 
   @override
+  State<_AnnouncementCard> createState() => _AnnouncementCardState();
+}
+
+class _AnnouncementCardState extends State<_AnnouncementCard> {
+  final TextEditingController _commentController = TextEditingController();
+  bool _showCommentInput = false;
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  void _addComment() {
+    final text = _commentController.text.trim();
+    if (text.isEmpty) return;
+    widget.onCommentAdded(text);
+    _commentController.clear();
+    setState(() => _showCommentInput = false);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
       child: Padding(
@@ -64,36 +106,229 @@ class _AnnouncementCard extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    societyName,
+                    widget.societyName,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Text(
-                  date,
+                  widget.date,
                   style: const TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 6),
-            if (imageUrl != null)
+            if (widget.imageUrl != null)
               Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
+                padding: const EdgeInsets.only(bottom: 12.0),
                 child: Image.network(
-                  imageUrl!,
-                  height: 180,
+                  widget.imageUrl!,
                   width: double.infinity,
-                  fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) =>
                       const SizedBox.shrink(),
                 ),
               ),
-            Text(content),
+            Text(
+              widget.title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            const SizedBox(height: 6),
+            Text(widget.content),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: widget.onLikeTap,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          widget.isLikedByCurrentUser
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          size: 18,
+                          color: widget.isLikedByCurrentUser
+                              ? Colors.red
+                              : Colors.grey.shade500,
+                        ),
+                        if (widget.likeCount > 0) ...[
+                          const SizedBox(width: 6),
+                          Text(
+                            widget.likeCount.toString(),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                if (!_showCommentInput)
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () => setState(() => _showCommentInput = true),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: cs.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.chat_bubble_outline,
+                              size: 16,
+                              color: cs.onSurface,
+                            ),
+                            if (widget.comments.isNotEmpty) ...[
+                              const SizedBox(width: 6),
+                              Text(
+                                '${widget.comments.length}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: cs.onSurface,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () => setState(() => _showCommentInput = false),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: cs.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Icon(
+                          Icons.arrow_upward,
+                          size: 16,
+                          color: cs.onSurface,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Divider(color: Colors.grey.shade300),
+            const SizedBox(height: 12),
+
+            // Expanded comments view
+            if (_showCommentInput)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Show all comments when expanded
+                  if (widget.comments.isNotEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ...widget.comments.map(
+                          (comment) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      comment.author,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${comment.dateTime.hour.toString().padLeft(2, '0')}:${comment.dateTime.minute.toString().padLeft(2, '0')}',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.grey.shade500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  comment.content,
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Divider(color: Colors.grey.shade300),
+                        const SizedBox(height: 12),
+                      ],
+                    ),
+                  // Comment input
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _commentController,
+                          decoration: InputDecoration(
+                            hintText: 'Add a comment...',
+                            filled: true,
+                            fillColor: cs.surfaceContainerHighest,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          style: const TextStyle(fontSize: 12),
+                          maxLines: null,
+                          minLines: 1,
+                          autofocus: true,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: _addComment,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: cs.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.send,
+                            size: 16,
+                            color: cs.onPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
           ],
         ),
       ),
@@ -155,15 +390,23 @@ class _FeedScreenState extends State<FeedScreen>
     if (!mounted) return;
 
     if (result != null) {
-      appState.createAnnouncement(
-        societyId: result.societyId,
-        title: result.title,
-        content: result.content,
-        imageUrl: result.imageUrl,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Post created successfully.')),
-      );
+      try {
+        await appState.createAnnouncement(
+          societyId: result.societyId,
+          title: result.title,
+          content: result.content,
+          imageUrl: result.imageUrl,
+        );
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Post created successfully.')),
+        );
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Post save failed: $e')));
+      }
     }
   }
 
@@ -171,113 +414,217 @@ class _FeedScreenState extends State<FeedScreen>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('My Societies Feed')),
-      body: Consumer<AppState>(
-        builder: (context, appState, _) {
-          final joinedSocieties = appState.joinedSocieties;
-          final joinedSocietyIds = joinedSocieties.map((s) => s.id).toSet();
-          final isAdmin = appState.isAdmin;
-          final visibleAnnouncements = isAdmin
-              ? appState.announcements
-              : appState.announcements
-                    .where((a) => joinedSocietyIds.contains(a.societyId))
-                    .toList();
+      appBar: AppBar(
+        title: const Text(
+          'My Societies Feed',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+        ),
+        actions: const [AppBarLogoAction()],
+      ),
+      body: AppGradientBackground(
+        child: Consumer<AppState>(
+          builder: (context, appState, _) {
+            final joinedSocieties = appState.joinedSocieties;
+            final joinedSocietyIds = joinedSocieties.map((s) => s.id).toSet();
+            final isAdmin = appState.isAdmin;
+            final visibleAnnouncements = isAdmin
+                ? appState.announcements
+                : appState.announcements
+                      .where((a) => joinedSocietyIds.contains(a.societyId))
+                      .toList();
 
-          if (!isAdmin && joinedSocieties.isEmpty) {
-            return const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.0),
-              child: Center(
-                child: Text(
-                  "You haven't joined any societies yet. Explore to see updates here!",
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            );
-          }
-
-          return Column(
-            children: [
-              if (isAdmin)
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.add),
-                        label: const Text('Add Post'),
-                        onPressed: () => _showCreatePostDialog(context),
-                      ),
-                      const SizedBox(width: 16),
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.group_add),
-                        label: const Text('Create Society'),
-                        onPressed: () => _showCreateSocietyDialog(context),
-                      ),
-                    ],
+            if (!isAdmin && joinedSocieties.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.0),
+                child: Center(
+                  child: Text(
+                    "You haven't joined any societies yet. Explore to see updates here!",
+                    textAlign: TextAlign.center,
                   ),
                 ),
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () async {
-                    await context.read<AppState>().refreshFeed();
-                  },
-                  child: Builder(
-                    builder: (context) {
-                      final isDataLoaded =
-                          appState.announcements.isNotEmpty ||
-                          appState.societies.isNotEmpty;
+              );
+            }
 
-                      if (!isDataLoaded) {
+            return Column(
+              children: [
+                if (isAdmin)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.add),
+                          label: const Text('Add Post'),
+                          onPressed: () => _showCreatePostDialog(context),
+                        ),
+                        const SizedBox(width: 16),
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.group_add),
+                          label: const Text('Create Society'),
+                          onPressed: () => _showCreateSocietyDialog(context),
+                        ),
+                      ],
+                    ),
+                  ),
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      await context.read<AppState>().refreshFeed();
+                    },
+                    child: Builder(
+                      builder: (context) {
+                        final isDataLoaded =
+                            appState.announcements.isNotEmpty ||
+                            appState.societies.isNotEmpty;
+
+                        if (!isDataLoaded) {
+                          return ListView.builder(
+                            padding: const EdgeInsets.all(24.0),
+                            itemCount: 4,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                height: 80,
+                                margin: const EdgeInsets.symmetric(vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade200,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              );
+                            },
+                          );
+                        }
+
+                        if (visibleAnnouncements.isEmpty) {
+                          return const Center(
+                            child: Text('No announcements yet.'),
+                          );
+                        }
+
                         return ListView.builder(
                           padding: const EdgeInsets.all(24.0),
-                          itemCount: 4,
+                          itemCount: visibleAnnouncements.length,
                           itemBuilder: (context, index) {
-                            return Container(
-                              height: 80,
-                              margin: const EdgeInsets.symmetric(vertical: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(12),
+                            final announcement = visibleAnnouncements[index];
+                            final userId =
+                                FirebaseAuth.instance.currentUser?.uid ?? '';
+                            final displayName =
+                                FirebaseAuth
+                                    .instance
+                                    .currentUser
+                                    ?.displayName ??
+                                'You';
+
+                            return _AnnouncementCard(
+                              societyName: appState.societyNameById(
+                                announcement.societyId,
                               ),
+                              title: announcement.title,
+                              date:
+                                  '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
+                              content: announcement.content,
+                              imageUrl: announcement.imageUrl,
+                              likeCount: announcement.likeCount,
+                              isLikedByCurrentUser: announcement.isLikedByUser(
+                                userId,
+                              ),
+                              userId: userId,
+                              onLikeTap: () async {
+                                if (userId.isEmpty) return;
+
+                                final wasLiked = announcement.isLikedByUser(
+                                  userId,
+                                );
+                                setState(() {
+                                  announcement.toggleLike(userId);
+                                });
+
+                                try {
+                                  if (wasLiked) {
+                                    // Remove like from Firestore
+                                    await FirebaseFirestore.instance
+                                        .collection('announcements')
+                                        .doc(announcement.id)
+                                        .collection('likes')
+                                        .doc(userId)
+                                        .delete();
+                                  } else {
+                                    // Add like to Firestore
+                                    await FirebaseFirestore.instance
+                                        .collection('announcements')
+                                        .doc(announcement.id)
+                                        .collection('likes')
+                                        .doc(userId)
+                                        .set({
+                                          'userId': userId,
+                                          'createdAt':
+                                              FieldValue.serverTimestamp(),
+                                        });
+                                  }
+                                } catch (e) {
+                                  debugPrint('Error toggling like: $e');
+                                  // Revert local state on error
+                                  setState(() {
+                                    announcement.toggleLike(userId);
+                                  });
+                                }
+                              },
+                              comments: announcement.comments,
+                              onCommentAdded: (commentText) async {
+                                if (userId.isEmpty ||
+                                    commentText.trim().isEmpty)
+                                  return;
+
+                                try {
+                                  // Add comment to Firestore
+                                  final docRef = await FirebaseFirestore
+                                      .instance
+                                      .collection('announcements')
+                                      .doc(announcement.id)
+                                      .collection('comments')
+                                      .add({
+                                        'author': displayName,
+                                        'content': commentText.trim(),
+                                        'dateTime':
+                                            FieldValue.serverTimestamp(),
+                                      });
+
+                                  // Add to local state
+                                  setState(() {
+                                    announcement.comments.add(
+                                      Comment(
+                                        id: docRef.id,
+                                        author: displayName,
+                                        content: commentText.trim(),
+                                        dateTime: DateTime.now(),
+                                      ),
+                                    );
+                                  });
+                                } catch (e) {
+                                  debugPrint('Error adding comment: $e');
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Failed to add comment'),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
                             );
                           },
                         );
-                      }
-
-                      if (visibleAnnouncements.isEmpty) {
-                        return const Center(
-                          child: Text('No announcements yet.'),
-                        );
-                      }
-
-                      return ListView.builder(
-                        padding: const EdgeInsets.all(24.0),
-                        itemCount: visibleAnnouncements.length,
-                        itemBuilder: (context, index) {
-                          final announcement = visibleAnnouncements[index];
-                          return _AnnouncementCard(
-                            societyName: appState.societyNameById(
-                              announcement.societyId,
-                            ),
-                            title: announcement.title,
-                            date:
-                                '${announcement.date.day.toString().padLeft(2, '0')}/${announcement.date.month.toString().padLeft(2, '0')}/${announcement.date.year}',
-                            content: announcement.content,
-                            imageUrl: announcement.imageUrl,
-                          );
-                        },
-                      );
-                    },
+                      },
+                    ),
                   ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -383,12 +730,15 @@ class _CreatePostDialog extends StatefulWidget {
 }
 
 class _CreatePostDialogState extends State<_CreatePostDialog> {
+  static const Duration _uploadTimeout = Duration(seconds: 30);
+
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   late String _selectedSocietyId;
   XFile? _pickedImage;
   bool _uploading = false;
+  String? _lastUploadError;
 
   @override
   void initState() {
@@ -413,21 +763,107 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
   }
 
   /// Uploads the picked image to Firebase Storage and returns the download URL.
-  /// Returns null if the upload fails or the platform is web (File not supported on web).
+  /// Returns null if the upload fails.
   Future<String?> _uploadImage(XFile image) async {
-    // File-based upload is not supported on web
-    if (kIsWeb) return null;
+    _lastUploadError = null;
     try {
-      final storageRef = FirebaseStorage.instance.ref();
+      final safeName = image.name.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
       final fileName =
-          'post_images/${DateTime.now().millisecondsSinceEpoch}_${image.name}';
-      final imageRef = storageRef.child(fileName);
-      final uploadTask = imageRef.putFile(File(image.path));
-      final snapshot = await uploadTask;
-      return await snapshot.ref.getDownloadURL();
+          'post_images/${DateTime.now().millisecondsSinceEpoch}_$safeName';
+
+      final bytes = await image.readAsBytes().timeout(_uploadTimeout);
+      final ext = safeName.contains('.')
+          ? safeName.split('.').last.toLowerCase()
+          : 'jpg';
+      final contentType = ext == 'png'
+          ? 'image/png'
+          : ext == 'gif'
+          ? 'image/gif'
+          : ext == 'webp'
+          ? 'image/webp'
+          : 'image/jpeg';
+
+      final app = Firebase.app();
+      final projectId = app.options.projectId;
+      final configuredBucket = app.options.storageBucket;
+      final bucketCandidates = <String>{
+        if (configuredBucket != null && configuredBucket.isNotEmpty)
+          configuredBucket,
+        if (projectId.isNotEmpty) '$projectId.appspot.com',
+        if (projectId.isNotEmpty) '$projectId.firebasestorage.app',
+      };
+
+      Object? lastError;
+
+      for (final bucket in bucketCandidates) {
+        final storage = FirebaseStorage.instanceFor(bucket: 'gs://$bucket');
+        final imageRef = storage.ref().child(fileName);
+        try {
+          TaskSnapshot snapshot;
+          try {
+            snapshot = await imageRef
+                .putData(bytes, SettableMetadata(contentType: contentType))
+                .timeout(_uploadTimeout);
+          } catch (_) {
+            // Retry without metadata for stricter backends.
+            snapshot = await imageRef.putData(bytes).timeout(_uploadTimeout);
+          }
+          return await snapshot.ref.getDownloadURL().timeout(_uploadTimeout);
+        } catch (e) {
+          lastError = e;
+        }
+      }
+
+      _lastUploadError = lastError.toString();
+      debugPrint('Image upload error (all buckets failed): $_lastUploadError');
+      return null;
     } catch (e) {
+      _lastUploadError = e.toString();
       debugPrint('Image upload error: $e');
       return null;
+    }
+  }
+
+  Future<void> _submitPost() async {
+    if (_uploading) return;
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _uploading = true);
+
+    try {
+      String? imageUrl;
+      if (_pickedImage != null) {
+        imageUrl = await _uploadImage(_pickedImage!);
+
+        if (!mounted) return;
+        if (imageUrl == null) {
+          final detail = _lastUploadError;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                detail == null || detail.isEmpty
+                    ? 'Image upload failed or timed out. Please try again.'
+                    : 'Image upload failed: $detail',
+              ),
+            ),
+          );
+          return;
+        }
+      }
+
+      if (!mounted) return;
+      Navigator.of(context).pop(
+        _CreatePostResult(
+          societyId: _selectedSocietyId,
+          title: _titleController.text.trim(),
+          content: _contentController.text.trim(),
+          imageUrl: imageUrl,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _uploading = false);
+      }
     }
   }
 
@@ -513,25 +949,7 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: () async {
-            if (!_formKey.currentState!.validate()) return;
-            String? imageUrl;
-            if (_pickedImage != null) {
-              setState(() => _uploading = true);
-              imageUrl = await _uploadImage(_pickedImage!);
-              if (!mounted) return;
-              setState(() => _uploading = false);
-            }
-            if (!mounted) return;
-            Navigator.of(context).pop(
-              _CreatePostResult(
-                societyId: _selectedSocietyId,
-                title: _titleController.text.trim(),
-                content: _contentController.text.trim(),
-                imageUrl: imageUrl,
-              ),
-            );
-          },
+          onPressed: _uploading ? null : _submitPost,
           child: const Text('Post'),
         ),
       ],

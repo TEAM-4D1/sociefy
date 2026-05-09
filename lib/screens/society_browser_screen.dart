@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
 import '../models/society.dart';
 import 'society_detail_screen.dart';
+import '../widgets/app_bar_logo_action.dart';
+import '../widgets/app_gradient_background.dart';
 
 /// Allows users to discover and search all available societies with category filtering.
 /// Displays society cards and enables navigation to detailed society information.
@@ -17,21 +19,24 @@ class SocietyBrowserScreen extends StatefulWidget {
 class _SocietyBrowserScreenState extends State<SocietyBrowserScreen>
     with AutomaticKeepAliveClientMixin {
   String _searchQuery = '';
+  // ignore: unused_field
   String? _selectedCategory;
+  String? _selectedCategoryKey;
 
   @override
   bool get wantKeepAlive => true;
 
   /// Filters societies by search query and selected category.
   List<Society> get _filteredSocieties {
-    final appState = context.read<AppState>();
+    final appState = context.watch<AppState>();
     return appState.societies.where((society) {
       final query = _searchQuery.toLowerCase();
       final matchesSearch =
           society.name.toLowerCase().contains(query) ||
           society.category.toLowerCase().contains(query);
       final matchesCategory =
-          _selectedCategory == null || society.category == _selectedCategory;
+          _selectedCategoryKey == null ||
+          society.category.trim().toLowerCase() == _selectedCategoryKey;
       return matchesSearch && matchesCategory;
     }).toList();
   }
@@ -42,115 +47,126 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen>
     final filteredSocieties = _filteredSocieties;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Discover Societies')),
-      body: Column(
-        children: [
-          _SearchBar(
-            searchQuery: _searchQuery,
-            onSearchChanged: (value) {
-              setState(() => _searchQuery = value);
-            },
-          ),
-          Consumer<AppState>(
-            builder: (context, appState, _) {
-              final categories = appState.societies
-                  .map((s) => s.category)
-                  .toSet()
-                  .toList();
+      appBar: AppBar(
+        title: const Text('Discover Societies'),
+        actions: const [AppBarLogoAction()],
+      ),
+      body: AppGradientBackground(
+        child: Column(
+          children: [
+            _SearchBar(
+              searchQuery: _searchQuery,
+              onSearchChanged: (value) {
+                setState(() => _searchQuery = value);
+              },
+            ),
+            Consumer<AppState>(
+              builder: (context, appState, _) {
+                // Normalize and deduplicate categories (case-insensitive, trimmed)
+                final Map<String, String> normalized = {};
+                for (final s in appState.societies) {
+                  final raw = s.category;
+                  final key = raw.trim().toLowerCase();
+                  if (key.isEmpty) continue;
+                  // Preserve the first-seen display value for casing
+                  normalized.putIfAbsent(key, () => raw.trim());
+                }
+                final categories = normalized.entries.toList();
 
-              return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Wrap(
-                    spacing: 8,
-                    children: [
-                      FilterChip(
-                        label: const Text('All'),
-                        selected: _selectedCategory == null,
-                        onSelected: (_) {
-                          setState(() => _selectedCategory = null);
-                        },
-                      ),
-                      ...categories.map(
-                        (category) => FilterChip(
-                          label: Text(category),
-                          selected: _selectedCategory == category,
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Wrap(
+                      spacing: 8,
+                      children: [
+                        FilterChip(
+                          label: const Text('All'),
+                          selected: _selectedCategoryKey == null,
                           onSelected: (_) {
-                            setState(() => _selectedCategory = category);
+                            setState(() => _selectedCategoryKey = null);
                           },
                         ),
-                      ),
-                    ],
+                        ...categories.map(
+                          (entry) => FilterChip(
+                            label: Text(entry.value),
+                            selected: _selectedCategoryKey == entry.key,
+                            onSelected: (_) {
+                              setState(() => _selectedCategoryKey = entry.key);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: () async {
-                await context.read<AppState>().refreshFeed();
+                );
               },
-              child: Consumer<AppState>(
-                builder: (context, appState, _) {
-                  // Show shimmer placeholders while societies are loading
-                  if (appState.societies.isEmpty) {
+            ),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await context.read<AppState>().refreshFeed();
+                },
+                child: Consumer<AppState>(
+                  builder: (context, appState, _) {
+                    // Show shimmer placeholders while societies are loading
+                    if (appState.societies.isEmpty) {
+                      return ListView.builder(
+                        itemCount: 5,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            height: 72,
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          );
+                        },
+                      );
+                    }
+
+                    final societies = filteredSocieties;
+
+                    if (societies.isEmpty) {
+                      return const Center(child: Text('No societies found.'));
+                    }
+
                     return ListView.builder(
-                      itemCount: 5,
+                      itemCount: societies.length,
                       itemBuilder: (context, index) {
-                        return Container(
-                          height: 72,
+                        final society = societies[index];
+                        return Card(
                           margin: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 8,
                           ),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(12),
+                          child: ListTile(
+                            title: Text(society.name),
+                            subtitle: Text(society.category),
+                            trailing: const Icon(Icons.chevron_right),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      SocietyDetailScreen(society: society),
+                                ),
+                              );
+                            },
                           ),
                         );
                       },
                     );
-                  }
-
-                  final societies = filteredSocieties;
-
-                  if (societies.isEmpty) {
-                    return const Center(child: Text('No societies found.'));
-                  }
-
-                  return ListView.builder(
-                    itemCount: societies.length,
-                    itemBuilder: (context, index) {
-                      final society = societies[index];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: ListTile(
-                          title: Text(society.name),
-                          subtitle: Text(society.category),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    SocietyDetailScreen(society: society),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  );
-                },
+                  },
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

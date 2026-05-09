@@ -5,6 +5,9 @@ import 'package:provider/provider.dart';
 import 'package:add_2_calendar/add_2_calendar.dart' as add2;
 import '../models/event.dart';
 import '../providers/app_state.dart';
+import '../utils/society_image_mapper.dart';
+import '../widgets/app_bar_logo_action.dart';
+import '../widgets/app_gradient_background.dart';
 
 /// Parses a time string like "14:00" or "2:00 PM" against a base date.
 /// Returns the base date unchanged if parsing fails.
@@ -55,12 +58,10 @@ class EventDetailScreen extends StatefulWidget {
 
 class _EventDetailScreenState extends State<EventDetailScreen> {
   bool _hasRsvp = false;
-  bool _isSaved = false;
 
   @override
   void initState() {
     super.initState();
-    _isSaved = widget.isSaved;
     _checkRsvpStatus();
   }
 
@@ -112,50 +113,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   }
 
   /// Toggles the saved state of the event, persisting via AppState.
-  Future<void> _toggleSave(BuildContext context, Event event) async {
-    final newSaved = !_isSaved;
-    setState(() => _isSaved = newSaved);
-
-    final appState = context.read<AppState>();
-    try {
-      if (newSaved) {
-        appState.saveEvent(event.id);
-        final startDateTime = _parseEventTime(event.startTime, event.date);
-        final endDateTime = _parseEventTime(event.endTime, event.date);
-        final calEvent = add2.Event(
-          title: event.title,
-          description: event.description,
-          location: event.venue,
-          startDate: startDateTime,
-          endDate: endDateTime,
-        );
-        await add2.Add2Calendar.addEvent2Cal(calEvent);
-      } else {
-        appState.unsaveEvent(event.id);
-      }
-    } catch (e) {
-      // Revert local state on failure
-      if (mounted) setState(() => _isSaved = !newSaved);
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error saving event: $e')));
-      }
-      return;
-    }
-
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            newSaved
-                ? 'Event saved to calendar!'
-                : 'Event removed from calendar!',
-          ),
-        ),
-      );
-    }
-  }
+  // Save-to-calendar functionality removed: UI now uses only 'Add to Calendar'.
 
   /// Toggles RSVP status and persists to Firestore 'rsvps' collection.
   Future<void> _toggleRsvp(BuildContext context, Event event) async {
@@ -199,111 +157,97 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     final event = widget.event;
     final appState = context.watch<AppState>();
     final isGuest = appState.isGuest;
+    final imageAsset = getSocietyImageAsset(event.societyName);
 
     return Scaffold(
-      appBar: AppBar(title: Text(event.title)),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              event.title,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            Text(event.description, style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 16),
-            Text(
-              'Date: ${DateFormat.yMMMMd().format(event.date)}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            Text(
-              'Time: ${event.startTime} - ${event.endTime}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                const Icon(Icons.location_on, size: 20, color: Colors.grey),
-                const SizedBox(width: 4),
-                Text(event.venue, style: const TextStyle(fontSize: 16)),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Container(
-              height: 150,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
+      appBar: AppBar(
+        title: Text(event.title),
+        actions: const [AppBarLogoAction()],
+      ),
+      body: AppGradientBackground(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                event.title,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ClipRRect(
                 borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  imageAsset,
+                  height: 200,
+                  width: double.infinity,
+                  fit: BoxFit.contain,
+                  alignment: Alignment.center,
+                ),
               ),
-              child: const Center(
-                child: Icon(Icons.map, size: 48, color: Colors.grey),
+              const SizedBox(height: 16),
+              Text(event.description, style: const TextStyle(fontSize: 16)),
+              const SizedBox(height: 16),
+              Text(
+                'Date: ${DateFormat.yMMMMd().format(event.date)}',
+                style: const TextStyle(fontSize: 16),
               ),
-            ),
-            const SizedBox(height: 32),
+              Text(
+                'Time: ${event.startTime} - ${event.endTime}',
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  const Icon(Icons.location_on, size: 20, color: Colors.grey),
+                  const SizedBox(width: 4),
+                  Text(event.venue, style: const TextStyle(fontSize: 16)),
+                ],
+              ),
+              const SizedBox(height: 24),
 
-            // Add to Calendar
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.calendar_today),
-                label: const Text('Add to Calendar'),
-                onPressed: isGuest
-                    ? () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Sign in to add events to your calendar',
+              // Add to Calendar
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.calendar_today),
+                  label: const Text('Add to Calendar'),
+                  onPressed: isGuest
+                      ? () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Sign in to add events to your calendar',
+                              ),
                             ),
-                          ),
-                        );
-                      }
-                    : () => _addToCalendar(context, event),
+                          );
+                        }
+                      : () => _addToCalendar(context, event),
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-            // RSVP
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.how_to_reg),
-                label: Text(
-                  isGuest
-                      ? 'Sign in to RSVP'
-                      : (_hasRsvp ? 'Cancel RSVP' : 'RSVP'),
+              // RSVP
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.how_to_reg),
+                  label: Text(
+                    isGuest
+                        ? 'Sign in to RSVP'
+                        : (_hasRsvp ? 'Cancel RSVP' : 'RSVP'),
+                  ),
+                  onPressed: isGuest ? null : () => _toggleRsvp(context, event),
                 ),
-                onPressed: isGuest ? null : () => _toggleRsvp(context, event),
               ),
-            ),
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-            // Save to Calendar
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                icon: Icon(
-                  _isSaved
-                      ? Icons.event_available
-                      : Icons.bookmark_add_outlined,
-                ),
-                label: Text(
-                  _isSaved ? 'Saved to Calendar' : 'Save to Calendar',
-                ),
-                onPressed: isGuest
-                    ? () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Sign in to save events'),
-                          ),
-                        );
-                      }
-                    : () => _toggleSave(context, event),
-              ),
-            ),
-          ],
+              // 'Save to Calendar' button removed — use 'Add to Calendar' instead.
+            ],
+          ),
         ),
       ),
     );
