@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:add_2_calendar/add_2_calendar.dart' as add2;
+import 'package:url_launcher/url_launcher.dart';
 import '../models/event.dart';
 import '../providers/app_state.dart';
 import '../utils/society_image_mapper.dart';
@@ -82,32 +84,55 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     }
   }
 
-  /// Adds the event to the device calendar using the add_2_calendar package.
+  /// Adds the event to the calendar.
+  /// On web: opens Google Calendar in a new tab.
+  /// On mobile: uses the add_2_calendar native plugin.
   Future<void> _addToCalendar(BuildContext context, Event event) async {
+    final startDateTime = _parseEventTime(event.startTime, event.date);
+    final endDateTime = _parseEventTime(event.endTime, event.date);
+
     try {
-      final startDateTime = _parseEventTime(event.startTime, event.date);
-      final endDateTime = _parseEventTime(event.endTime, event.date);
+      if (kIsWeb) {
+        String _fmt(DateTime dt) =>
+            '${dt.year.toString().padLeft(4, '0')}'
+            '${dt.month.toString().padLeft(2, '0')}'
+            '${dt.day.toString().padLeft(2, '0')}'
+            'T${dt.hour.toString().padLeft(2, '0')}'
+            '${dt.minute.toString().padLeft(2, '0')}'
+            '00';
 
-      final calEvent = add2.Event(
-        title: event.title,
-        description: event.description,
-        location: event.venue,
-        startDate: startDateTime,
-        endDate: endDateTime,
-      );
+        final uri = Uri.https('calendar.google.com', '/calendar/render', {
+          'action': 'TEMPLATE',
+          'text': event.title,
+          'dates': '${_fmt(startDateTime)}/${_fmt(endDateTime)}',
+          'details': event.description,
+          'location': event.venue,
+        });
 
-      await add2.Add2Calendar.addEvent2Cal(calEvent);
+        if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+          throw Exception('Could not open Google Calendar');
+        }
+      } else {
+        final calEvent = add2.Event(
+          title: event.title,
+          description: event.description,
+          location: event.venue,
+          startDate: startDateTime,
+          endDate: endDateTime,
+        );
+        await add2.Add2Calendar.addEvent2Cal(calEvent);
+      }
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Event added to calendar!')),
+          const SnackBar(content: Text('Opening calendar...')),
         );
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error adding to calendar: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not add to calendar: $e')),
+        );
       }
     }
   }
