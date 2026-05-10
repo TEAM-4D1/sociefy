@@ -60,10 +60,12 @@ class EventDetailScreen extends StatefulWidget {
 
 class _EventDetailScreenState extends State<EventDetailScreen> {
   bool _hasRsvp = false;
+  late bool _isSaved;
 
   @override
   void initState() {
     super.initState();
+    _isSaved = widget.isSaved;
     _checkRsvpStatus();
   }
 
@@ -137,8 +139,15 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     }
   }
 
-  /// Toggles the saved state of the event, persisting via AppState.
-  // Save-to-calendar functionality removed: UI now uses only 'Add to Calendar'.
+  void _toggleSave(BuildContext context) {
+    final appState = context.read<AppState>();
+    if (_isSaved) {
+      appState.unsaveEvent(widget.event.id);
+    } else {
+      appState.saveEvent(widget.event.id);
+    }
+    setState(() => _isSaved = !_isSaved);
+  }
 
   /// Toggles RSVP status and persists to Firestore 'rsvps' collection.
   Future<void> _toggleRsvp(BuildContext context, Event event) async {
@@ -251,6 +260,20 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                           );
                         }
                       : () => _addToCalendar(context, event),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Save / Unsave
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: Icon(
+                    _isSaved ? Icons.bookmark : Icons.bookmark_border,
+                  ),
+                  label: Text(_isSaved ? 'Unsave Event' : 'Save Event'),
+                  onPressed:
+                      isGuest ? null : () => _toggleSave(context),
                 ),
               ),
               const SizedBox(height: 12),
