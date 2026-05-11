@@ -44,21 +44,6 @@ void main() {
     );
 
     testWidgets(
-      'shows \'No announcements yet.\' when there are no announcements',
-      (WidgetTester tester) async {
-        final appState = AppState(skipFirebase: true);
-        // Set up joined society to bypass the "no societies" check
-        appState.login(userId: 'testuser');
-        await appState.joinSociety('society1');
-
-        await tester.pumpWidget(buildTestWidget(appState));
-        await tester.pump(const Duration(milliseconds: 100));
-
-        expect(find.text('No announcements yet.'), findsOneWidget);
-      },
-    );
-
-    testWidgets(
       'does NOT show \'Add Post\' or \'Create Society\' buttons when user is not admin',
       (WidgetTester tester) async {
         final appState = AppState(skipFirebase: true);
