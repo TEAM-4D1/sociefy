@@ -89,6 +89,8 @@ class AppState extends ChangeNotifier {
   final List<String> _joinedSocietyIds = [];
   final List<String> _savedEventIds = [];
 
+  int _eventIdCounter = 0; // Counter to ensure unique event IDs
+
   List<Society> _societies = [];
 
   List<Society> _mySocieties = [];
@@ -563,7 +565,7 @@ class AppState extends ChangeNotifier {
     required String endTime,
     required String venue,
   }) {
-    final eventId = 'e-${DateTime.now().microsecondsSinceEpoch}';
+    final eventId = 'e-${DateTime.now().microsecondsSinceEpoch}-${_eventIdCounter++}';
     final societyName = societyNameById(societyId);
 
     _events.insert(
