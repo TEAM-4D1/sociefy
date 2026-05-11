@@ -29,23 +29,6 @@ void main() {
       expect(find.byType(AppBar), findsOneWidget);
     });
 
-    testWidgets(
-      'shows \'No events available.\' when appState.events is empty and appState.savedEvents is empty',
-      (WidgetTester tester) async {
-        final appState = AppState(skipFirebase: true);
-        await tester.pumpWidget(buildTestWidget(appState));
-        await tester.pump(const Duration(milliseconds: 100));
-        await tester.pump(const Duration(milliseconds: 100));
-        await tester.pump(const Duration(milliseconds: 100));
-
-        // Check if empty state text is shown OR verify app state is truly empty
-        expect(
-          find.text('No events available.'),
-          anyOf([findsOneWidget, findsNothing]),
-        );
-      },
-    );
-
     testWidgets('renders a ListView when appState has events loaded', (
       WidgetTester tester,
     ) async {
