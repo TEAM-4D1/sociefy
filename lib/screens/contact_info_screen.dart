@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sociefy/providers/app_state.dart';
 import '../widgets/app_bar_logo_action.dart';
 import '../widgets/app_gradient_background.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/society.dart';
 import '../models/committee_member.dart';
@@ -40,6 +41,23 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
       setState(() {
         _committeeMembers[index] = result;
       });
+      // Save updated committee members to Firestore
+      try {
+        await FirebaseFirestore.instance
+            .collection('societies')
+            .doc(widget.society.id)
+            .update({
+              'committeeMembers': _committeeMembers.map((member) {
+                return {
+                  'name': member.name,
+                  'role': member.role,
+                  'email': member.email,
+                };
+              }).toList(),
+            });
+      } catch (e) {
+        debugPrint('Error saving committee members to Firestore: $e');
+      }
     }
   }
 
@@ -53,6 +71,23 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
       setState(() {
         _committeeMembers.add(result);
       });
+      // Save updated committee members to Firestore
+      try {
+        await FirebaseFirestore.instance
+            .collection('societies')
+            .doc(widget.society.id)
+            .update({
+              'committeeMembers': _committeeMembers.map((member) {
+                return {
+                  'name': member.name,
+                  'role': member.role,
+                  'email': member.email,
+                };
+              }).toList(),
+            });
+      } catch (e) {
+        debugPrint('Error saving committee members to Firestore: $e');
+      }
     }
   }
 
@@ -61,6 +96,23 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
     setState(() {
       _committeeMembers.removeAt(index);
     });
+    // Save updated committee members to Firestore
+    try {
+      FirebaseFirestore.instance
+          .collection('societies')
+          .doc(widget.society.id)
+          .update({
+            'committeeMembers': _committeeMembers.map((member) {
+              return {
+                'name': member.name,
+                'role': member.role,
+                'email': member.email,
+              };
+            }).toList(),
+          });
+    } catch (e) {
+      debugPrint('Error saving committee members to Firestore: $e');
+    }
   }
 
   @override
