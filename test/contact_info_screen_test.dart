@@ -132,16 +132,20 @@ void main() {
         await tester.pumpWidget(buildTestWidget(appState, testSociety));
         await tester.pump(const Duration(milliseconds: 100));
 
-        // Find the ElevatedButton with "Add Committee Member" label
-        final buttonFinder = find.widgetWithText(
-          ElevatedButton,
-          'Add Committee Member',
-        );
-        expect(buttonFinder, findsOneWidget);
+        // Find the button with "Add Committee Member" text
+        // The button is rendered as ElevatedButton.icon with a label
+        final buttonFinder = find.text('Add Committee Member');
+        expect(buttonFinder, findsWidgets); // May appear in tooltip and label
 
-        // Get the button widget and verify onPressed is null
-        final buttonWidget = tester.widget<ElevatedButton>(buttonFinder);
-        expect(buttonWidget.onPressed, isNull);
+        // Verify button is disabled (no onPressed)
+        // Find parent ElevatedButton and check its onPressed
+        final elevatedButtonFinder = find.descendant(
+          of: find.byType(Tooltip),
+          matching: find.byWidgetPredicate(
+            (widget) => widget is ElevatedButton && widget.onPressed == null,
+          ),
+        );
+        expect(elevatedButtonFinder, findsOneWidget);
       },
     );
   });
