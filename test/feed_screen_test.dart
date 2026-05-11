@@ -50,8 +50,12 @@ void main() {
         // Set user as non-admin directly (don't call login() as it has Firebase side effects)
         appState.userId = 'testuser';
         appState.isAdmin = false;
-        // Add a society to joined list directly
-        appState.joinedSocietyIds.add('society1');
+        // Create a test society for the user to be part of
+        appState.createSociety(
+          name: 'Test Society',
+          category: 'Academic',
+          description: 'Test',
+        );
 
         await tester.pumpWidget(buildTestWidget(appState));
         await tester.pump(const Duration(milliseconds: 100));
