@@ -47,9 +47,11 @@ void main() {
       'does NOT show \'Add Post\' or \'Create Society\' buttons when user is not admin',
       (WidgetTester tester) async {
         final appState = AppState(skipFirebase: true);
-        // Set up a non-admin user
-        appState.login(userId: 'testuser', isAdmin: false);
-        await appState.joinSociety('society1');
+        // Set user as non-admin directly (don't call login() as it has Firebase side effects)
+        appState.userId = 'testuser';
+        appState.isAdmin = false;
+        // Add a society to joined list directly
+        appState.joinedSocietyIds.add('society1');
 
         await tester.pumpWidget(buildTestWidget(appState));
         await tester.pump(const Duration(milliseconds: 100));

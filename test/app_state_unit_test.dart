@@ -304,6 +304,8 @@ void main() {
     test('savedEvents returns only saved events', () {
       final appState = AppState(skipFirebase: true);
       appState.userId = 'guest';
+      // Clear any sample events that might have been loaded
+      appState.events.clear();
       appState.createSociety(name: 'T', category: 'T', description: 'T');
       appState.createEvent(
         societyId: appState.societies.first.id,

@@ -125,8 +125,9 @@ void main() {
           committeeMembers: [testMember],
         );
         final appState = AppState(skipFirebase: true);
-        // Ensure user is not admin
-        appState.login(userId: 'test-user', isAdmin: false);
+        // Set user as non-admin directly (don't call login() as it has Firebase side effects)
+        appState.userId = 'test-user';
+        appState.isAdmin = false;
 
         await tester.pumpWidget(buildTestWidget(appState, testSociety));
         await tester.pump(const Duration(milliseconds: 100));
