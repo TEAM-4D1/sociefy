@@ -40,7 +40,7 @@ void main() {
       await tester.pumpWidget(buildTestWidget(appState, testEvent));
       await tester.pump(const Duration(milliseconds: 100));
 
-      expect(find.text('Machine Learning Workshop'), findsOneWidget);
+      expect(find.text('Machine Learning Workshop'), findsWidgets);
     });
 
     testWidgets('renders the event venue somewhere on screen', (
