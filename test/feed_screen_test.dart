@@ -128,85 +128,82 @@ void main() {
       },
     );
 
-    testWidgets(
-      'shows loading placeholders when data is not yet loaded',
-      (WidgetTester tester) async {
-        final appState = AppState(skipFirebase: true);
-        appState.userId = 'test-user';
-        appState.isAdmin = false;
+    testWidgets('shows loading placeholders when data is not yet loaded', (
+      WidgetTester tester,
+    ) async {
+      final appState = AppState(skipFirebase: true);
+      appState.userId = 'test-user';
+      appState.isAdmin = false;
 
-        final society = Society(
-          id: 'society-1',
-          name: 'Test Society',
-          category: 'Academic',
-          description: 'A test society',
-        );
-        appState.societies.add(society);
-        appState.joinedSocieties.add(society);
-        // No announcements loaded yet
-        appState.notifyListeners();
+      final society = Society(
+        id: 'society-1',
+        name: 'Test Society',
+        category: 'Academic',
+        description: 'A test society',
+      );
+      appState.societies.add(society);
+      appState.joinedSocieties.add(society);
+      // No announcements loaded yet
+      appState.notifyListeners();
 
-        await tester.pumpWidget(buildTestWidget(appState));
-        await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpWidget(buildTestWidget(appState));
+      await tester.pump(const Duration(milliseconds: 100));
 
-        // Loading placeholders should be visible (gray containers)
-        expect(find.byType(ListView), findsOneWidget);
-      },
-    );
+      // Loading placeholders should be visible (gray containers)
+      expect(find.byType(ListView), findsOneWidget);
+    });
 
-    testWidgets(
-      'firebase auth call during build does not crash (integration)',
-      (WidgetTester tester) async {
-        // This test verifies that FirebaseAuth calls in build don't crash the widget
-        // even when Firebase is not initialized (they return empty string fallback)
-        final appState = AppState(skipFirebase: true);
-        appState.userId = 'test-user';
-        appState.isAdmin = false;
+    testWidgets('firebase auth call during build does not crash (integration)', (
+      WidgetTester tester,
+    ) async {
+      // This test verifies that FirebaseAuth calls in build don't crash the widget
+      // even when Firebase is not initialized (they return empty string fallback)
+      final appState = AppState(skipFirebase: true);
+      appState.userId = 'test-user';
+      appState.isAdmin = false;
 
-        final society = Society(
-          id: 'society-1',
-          name: 'Test Society',
-          category: 'Academic',
-          description: 'A test society',
-        );
-        appState.societies.add(society);
-        appState.joinedSocieties.add(society);
-        appState.notifyListeners();
+      final society = Society(
+        id: 'society-1',
+        name: 'Test Society',
+        category: 'Academic',
+        description: 'A test society',
+      );
+      appState.societies.add(society);
+      appState.joinedSocieties.add(society);
+      appState.notifyListeners();
 
-        // Widget should build without crashing even without Firebase
-        // (though announcements won't render)
-        await tester.pumpWidget(buildTestWidget(appState));
-        await tester.pump(const Duration(milliseconds: 100));
+      // Widget should build without crashing even without Firebase
+      // (though announcements won't render)
+      await tester.pumpWidget(buildTestWidget(appState));
+      await tester.pump(const Duration(milliseconds: 100));
 
-        expect(find.byType(FeedScreen), findsOneWidget);
-      },
-    );
+      expect(find.byType(FeedScreen), findsOneWidget);
+    });
 
-    testWidgets(
-      'user interface structure is correct for announcements feed',
-      (WidgetTester tester) async {
-        final appState = AppState(skipFirebase: true);
-        appState.userId = 'test-user';
-        appState.isAdmin = false;
+    testWidgets('user interface structure is correct for announcements feed', (
+      WidgetTester tester,
+    ) async {
+      final appState = AppState(skipFirebase: true);
+      appState.userId = 'test-user';
+      appState.isAdmin = false;
 
-        final society = Society(
-          id: 'society-1',
-          name: 'Test Society',
-          category: 'Academic',
-          description: 'A test society',
-        );
-        appState.societies.add(society);
-        appState.joinedSocieties.add(society);
-        appState.notifyListeners();
+      final society = Society(
+        id: 'society-1',
+        name: 'Test Society',
+        category: 'Academic',
+        description: 'A test society',
+      );
+      appState.societies.add(society);
+      appState.joinedSocieties.add(society);
+      appState.notifyListeners();
 
-        await tester.pumpWidget(buildTestWidget(appState));
-        await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpWidget(buildTestWidget(appState));
+      await tester.pump(const Duration(milliseconds: 100));
 
-        // Should have RefreshIndicator for pull-to-refresh
-        expect(find.byType(RefreshIndicator), findsOneWidget);
-        // Should have Column for layout
-        expect(find.byType(Column), findsWidgets);
-      },
-    );
+      // Should have RefreshIndicator for pull-to-refresh
+      expect(find.byType(RefreshIndicator), findsOneWidget);
+      // Should have Column for layout
+      expect(find.byType(Column), findsWidgets);
+    });
   });
 }
