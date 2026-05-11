@@ -8,11 +8,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 /// Firestore and subscribes the device to the society's FCM topic so push
 /// notifications can be received.
 class MessageService {
-  MessageService({
-    FirebaseFirestore? firestore,
-    FirebaseMessaging? messaging,
-  })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _messaging = messaging ?? FirebaseMessaging.instance;
+  MessageService({FirebaseFirestore? firestore, FirebaseMessaging? messaging})
+    : _firestore = firestore ?? FirebaseFirestore.instance,
+      _messaging = messaging ?? FirebaseMessaging.instance;
 
   MessageService._privateConstructor() : this();
   static final MessageService instance = MessageService._privateConstructor();
@@ -52,14 +50,11 @@ class MessageService {
   //  - add membership to Firestore and subscribe to FCM topic
   Future<void> joinSociety(String userId, String societyId) async {
     // Add membership to Firestore
-    await _firestore
-        .collection('memberships')
-        .doc('${userId}_$societyId')
-        .set({
-          'userId': userId,
-          'societyId': societyId,
-          'joinedAt': FieldValue.serverTimestamp(),
-        });
+    await _firestore.collection('memberships').doc('${userId}_$societyId').set({
+      'userId': userId,
+      'societyId': societyId,
+      'joinedAt': FieldValue.serverTimestamp(),
+    });
 
     // Subscribe to FCM topic for this society
     await _messaging.subscribeToTopic('society_$societyId');
@@ -73,8 +68,22 @@ class MessageService {
     }
   }
 
-  // Optionally implement leaveSociety similarly
+  // Call this when a user leaves a society. This will:
+  //  - delete membership from Firestore
+  //  - unsubscribe from FCM topic
+  //  - update local state
+  //  - push update to stream
   Future<void> leaveSociety(String userId, String societyId) async {
+    // Delete membership from Firestore
+    await _firestore
+        .collection('memberships')
+        .doc('${userId}_$societyId')
+        .delete();
+
+    // Unsubscribe from FCM topic for this society
+    await _messaging.unsubscribeFromTopic('society_$societyId');
+
+    // Update local state and notify listeners
     final set = _userChannels[userId];
     if (set != null && set.remove(societyId)) {
       final controller = _ensureController(userId);
