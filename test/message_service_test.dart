@@ -38,42 +38,57 @@ class RecordingCollectionReference extends Mock
 class RecordingDocumentReference extends Mock
     implements DocumentReference<Map<String, dynamic>> {
   Map<String, dynamic>? lastSetData;
+  bool deleteWasCalled = false;
 
   @override
   Future<void> set(Map<String, dynamic> data, [SetOptions? options]) async {
     lastSetData = data;
   }
+
+  @override
+  Future<void> delete() async {
+    deleteWasCalled = true;
+  }
 }
 
 class RecordingFirebaseMessaging extends Mock implements FirebaseMessaging {
   String? lastTopic;
+  String? lastUnsubscribedTopic;
 
   @override
   Future<void> subscribeToTopic(String topic) async {
     lastTopic = topic;
   }
+
+  @override
+  Future<void> unsubscribeFromTopic(String topic) async {
+    lastUnsubscribedTopic = topic;
+  }
 }
 
 void main() {
-  test('sendMessage via joinSociety adds a Firestore membership document', () async {
-    final document = RecordingDocumentReference();
-    final collection = RecordingCollectionReference(document);
-    final firestore = RecordingFirebaseFirestore(collection);
-    final messaging = RecordingFirebaseMessaging();
+  test(
+    'sendMessage via joinSociety adds a Firestore membership document',
+    () async {
+      final document = RecordingDocumentReference();
+      final collection = RecordingCollectionReference(document);
+      final firestore = RecordingFirebaseFirestore(collection);
+      final messaging = RecordingFirebaseMessaging();
 
-    final service = MessageService(
-      firestore: firestore,
-      messaging: messaging,
-    );
+      final service = MessageService(
+        firestore: firestore,
+        messaging: messaging,
+      );
 
-    await service.joinSociety('user1', 'societyA');
+      await service.joinSociety('user1', 'societyA');
 
-    expect(firestore.lastCollectionPath, 'memberships');
-    expect(collection.lastDocPath, 'user1_societyA');
-    expect(document.lastSetData, isNotNull);
-    expect(document.lastSetData!['userId'], 'user1');
-    expect(document.lastSetData!['societyId'], 'societyA');
-    expect(document.lastSetData!.containsKey('joinedAt'), isTrue);
-    expect(messaging.lastTopic, 'society_societyA');
-  });
+      expect(firestore.lastCollectionPath, 'memberships');
+      expect(collection.lastDocPath, 'user1_societyA');
+      expect(document.lastSetData, isNotNull);
+      expect(document.lastSetData!['userId'], 'user1');
+      expect(document.lastSetData!['societyId'], 'societyA');
+      expect(document.lastSetData!.containsKey('joinedAt'), isTrue);
+      expect(messaging.lastTopic, 'society_societyA');
+    },
+  );
 }
