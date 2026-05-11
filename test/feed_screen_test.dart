@@ -101,47 +101,45 @@ void main() {
       },
     );
 
-    testWidgets('displays announcements in a list when announcements exist', (
-      WidgetTester tester,
-    ) async {
-      final appState = AppState(skipFirebase: true);
-      appState.userId = 'test-user';
-      appState.isAdmin = false;
+    testWidgets(
+      'displays announcements in a list when announcements exist',
+      (WidgetTester tester) async {
+        final appState = AppState(skipFirebase: true);
+        appState.userId = 'test-user';
+        appState.isAdmin = false;
 
-      // Create a society
-      final society = Society(
-        id: 'society-1',
-        name: 'Test Society',
-        category: 'Academic',
-        description: 'A test society',
-      );
-      appState.societies.add(society);
+        // Create a society
+        final society = Society(
+          id: 'society-1',
+          name: 'Test Society',
+          category: 'Academic',
+          description: 'A test society',
+        );
+        appState.societies.add(society);
 
-      // Join the society
-      appState.joinedSocieties.add(society);
+        // Join the society
+        appState.joinedSocieties.add(society);
 
-      // Create an announcement
-      final announcement = Announcement(
-        id: 'announcement-1',
-        societyId: 'society-1',
-        title: 'Test Announcement',
-        content: 'This is a test announcement',
-        date: DateTime.now(),
-        likeCount: 0,
-        likedByUsers: const [],
-        comments: const [],
-      );
-      appState.announcements.add(announcement);
-      appState.notifyListeners();
+        // Create an announcement
+        final announcement = Announcement(
+          id: 'announcement-1',
+          societyId: 'society-1',
+          title: 'Test Announcement',
+          content: 'This is a test announcement',
+          date: DateTime.now(),
+        );
+        appState.announcements.add(announcement);
+        appState.notifyListeners();
 
-      await tester.pumpWidget(buildTestWidget(appState));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(buildTestWidget(appState));
+        await tester.pumpAndSettle();
 
-      // Announcement should be visible
-      expect(find.text('Test Announcement'), findsOneWidget);
-      expect(find.text('This is a test announcement'), findsOneWidget);
-      expect(find.text('Test Society'), findsOneWidget);
-    });
+        // Announcement should be visible
+        expect(find.text('Test Announcement'), findsOneWidget);
+        expect(find.text('This is a test announcement'), findsOneWidget);
+        expect(find.text('Test Society'), findsOneWidget);
+      },
+    );
 
     testWidgets(
       'non-admin user only sees announcements from joined societies',
@@ -175,9 +173,6 @@ void main() {
           title: 'Joined Society Announcement',
           content: 'From joined society',
           date: DateTime.now(),
-          likeCount: 0,
-          likedByUsers: const [],
-          comments: const [],
         );
         final otherAnnouncement = Announcement(
           id: 'announcement-2',
@@ -185,9 +180,6 @@ void main() {
           title: 'Other Society Announcement',
           content: 'From other society',
           date: DateTime.now(),
-          likeCount: 0,
-          likedByUsers: const [],
-          comments: const [],
         );
         appState.announcements.addAll([joinedAnnouncement, otherAnnouncement]);
         appState.notifyListeners();
@@ -224,10 +216,8 @@ void main() {
           title: 'Test Announcement',
           content: 'Test content',
           date: DateTime.now(),
-          likeCount: 1,
-          likedByUsers: const ['test-user'],
-          comments: const [],
         );
+        announcement.likedBy.add('test-user');
         appState.announcements.add(announcement);
         appState.notifyListeners();
 
@@ -261,9 +251,6 @@ void main() {
           title: 'Test Announcement',
           content: 'Test content',
           date: DateTime.now(),
-          likeCount: 0,
-          likedByUsers: const [],
-          comments: const [],
         );
         appState.announcements.add(announcement);
         appState.notifyListeners();
@@ -298,10 +285,8 @@ void main() {
         title: 'Test Announcement',
         content: 'Test content',
         date: DateTime.now(),
-        likeCount: 5,
-        likedByUsers: const ['user-1', 'user-2', 'user-3', 'user-4', 'user-5'],
-        comments: const [],
       );
+      announcement.likedBy.addAll(['user-1', 'user-2', 'user-3', 'user-4', 'user-5']);
       appState.announcements.add(announcement);
       appState.notifyListeners();
 
@@ -328,7 +313,14 @@ void main() {
       appState.societies.add(society);
       appState.joinedSocieties.add(society);
 
-      final comments = [
+      final announcement = Announcement(
+        id: 'announcement-1',
+        societyId: 'society-1',
+        title: 'Test Announcement',
+        content: 'Test content',
+        date: DateTime.now(),
+      );
+      announcement.comments.addAll([
         Comment(
           id: 'comment-1',
           author: 'User 1',
@@ -341,18 +333,7 @@ void main() {
           content: 'Thanks for sharing!',
           dateTime: DateTime.now(),
         ),
-      ];
-
-      final announcement = Announcement(
-        id: 'announcement-1',
-        societyId: 'society-1',
-        title: 'Test Announcement',
-        content: 'Test content',
-        date: DateTime.now(),
-        likeCount: 0,
-        likedByUsers: const [],
-        comments: comments,
-      );
+      ]);
       appState.announcements.add(announcement);
       appState.notifyListeners();
 
@@ -385,9 +366,6 @@ void main() {
         title: 'Test Announcement',
         content: 'Test content',
         date: DateTime.now(),
-        likeCount: 0,
-        likedByUsers: const [],
-        comments: const [],
       );
       appState.announcements.add(announcement);
       appState.notifyListeners();
@@ -406,100 +384,97 @@ void main() {
       expect(find.byType(TextField), findsOneWidget);
     });
 
-    testWidgets('pull to refresh completes without error', (
-      WidgetTester tester,
-    ) async {
-      final appState = AppState(skipFirebase: true);
-      appState.userId = 'test-user';
-      appState.isAdmin = false;
+    testWidgets(
+      'pull to refresh completes without error',
+      (WidgetTester tester) async {
+        final appState = AppState(skipFirebase: true);
+        appState.userId = 'test-user';
+        appState.isAdmin = false;
 
-      await tester.pumpWidget(buildTestWidget(appState));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(buildTestWidget(appState));
+        await tester.pumpAndSettle();
 
-      // Perform pull to refresh
-      await tester.fling(
-        find.byType(RefreshIndicator),
-        const Offset(0, 300),
-        1000,
-      );
-      await tester.pumpAndSettle();
+        // Perform pull to refresh
+        await tester.fling(
+          find.byType(RefreshIndicator),
+          const Offset(0, 300),
+          1000,
+        );
+        await tester.pumpAndSettle();
 
-      // Should complete without error
-      expect(find.byType(FeedScreen), findsOneWidget);
-    });
+        // Should complete without error
+        expect(find.byType(FeedScreen), findsOneWidget);
+      },
+    );
 
-    testWidgets('displays announcement image when imageUrl is provided', (
-      WidgetTester tester,
-    ) async {
-      final appState = AppState(skipFirebase: true);
-      appState.userId = 'test-user';
-      appState.isAdmin = false;
+    testWidgets(
+      'displays announcement image when imageUrl is provided',
+      (WidgetTester tester) async {
+        final appState = AppState(skipFirebase: true);
+        appState.userId = 'test-user';
+        appState.isAdmin = false;
 
-      final society = Society(
-        id: 'society-1',
-        name: 'Test Society',
-        category: 'Academic',
-        description: 'A test society',
-      );
-      appState.societies.add(society);
-      appState.joinedSocieties.add(society);
+        final society = Society(
+          id: 'society-1',
+          name: 'Test Society',
+          category: 'Academic',
+          description: 'A test society',
+        );
+        appState.societies.add(society);
+        appState.joinedSocieties.add(society);
 
-      final announcement = Announcement(
-        id: 'announcement-1',
-        societyId: 'society-1',
-        title: 'Test Announcement',
-        content: 'Test content',
-        date: DateTime.now(),
-        imageUrl: 'https://example.com/image.jpg',
-        likeCount: 0,
-        likedByUsers: const [],
-        comments: const [],
-      );
-      appState.announcements.add(announcement);
-      appState.notifyListeners();
+        final announcement = Announcement(
+          id: 'announcement-1',
+          societyId: 'society-1',
+          title: 'Test Announcement',
+          content: 'Test content',
+          date: DateTime.now(),
+          imageUrl: 'https://example.com/image.jpg',
+        );
+        appState.announcements.add(announcement);
+        appState.notifyListeners();
 
-      await tester.pumpWidget(buildTestWidget(appState));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(buildTestWidget(appState));
+        await tester.pumpAndSettle();
 
-      // Image widget should be present
-      expect(find.byType(Image), findsOneWidget);
-    });
+        // Image widget should be present
+        expect(find.byType(Image), findsOneWidget);
+      },
+    );
 
-    testWidgets('announcement date is formatted correctly as DD/MM/YYYY', (
-      WidgetTester tester,
-    ) async {
-      final appState = AppState(skipFirebase: true);
-      appState.userId = 'test-user';
-      appState.isAdmin = false;
+    testWidgets(
+      'announcement date is formatted correctly as DD/MM/YYYY',
+      (WidgetTester tester) async {
+        final appState = AppState(skipFirebase: true);
+        appState.userId = 'test-user';
+        appState.isAdmin = false;
 
-      final society = Society(
-        id: 'society-1',
-        name: 'Test Society',
-        category: 'Academic',
-        description: 'A test society',
-      );
-      appState.societies.add(society);
-      appState.joinedSocieties.add(society);
+        final society = Society(
+          id: 'society-1',
+          name: 'Test Society',
+          category: 'Academic',
+          description: 'A test society',
+        );
+        appState.societies.add(society);
+        appState.joinedSocieties.add(society);
 
-      final announcement = Announcement(
-        id: 'announcement-1',
-        societyId: 'society-1',
-        title: 'Test Announcement',
-        content: 'Test content',
-        date: DateTime(2024, 3, 15),
-        likeCount: 0,
-        likedByUsers: const [],
-        comments: const [],
-      );
-      appState.announcements.add(announcement);
-      appState.notifyListeners();
+        final announcement = Announcement(
+          id: 'announcement-1',
+          societyId: 'society-1',
+          title: 'Test Announcement',
+          content: 'Test content',
+          date: DateTime(2024, 3, 15),
+        );
+        appState.announcements.add(announcement);
+        appState.notifyListeners();
 
-      await tester.pumpWidget(buildTestWidget(appState));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(buildTestWidget(appState));
+        await tester.pumpAndSettle();
 
-      // Date should be formatted as DD/MM/YYYY
-      expect(find.text('15/03/2024'), findsOneWidget);
-    });
+        // Date should be formatted as DD/MM/YYYY
+        expect(find.text('15/03/2024'), findsOneWidget);
+      },
+    );
 
     testWidgets(
       'shows "No announcements yet" when announcements list is empty but data is loaded',
@@ -550,9 +525,6 @@ void main() {
           title: 'Admin Viewable Announcement',
           content: 'Visible to admin',
           date: DateTime.now(),
-          likeCount: 0,
-          likedByUsers: const [],
-          comments: const [],
         );
         appState.announcements.add(announcement);
         appState.notifyListeners();
