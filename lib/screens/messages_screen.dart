@@ -1,10 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../providers/app_state.dart';
 import 'society_chat_screen.dart';
 import 'member_approval_screen.dart';
 import '../widgets/app_bar_logo_action.dart';
 import '../widgets/app_gradient_background.dart';
+
+/// Fetches the last message for a given society's group chat.
+Future<Map<String, dynamic>?> _getLastMessage(String societyId) async {
+  try {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('groupChats')
+        .doc(societyId)
+        .collection('messages')
+        .orderBy('createdAt', descending: true)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      return null;
+    }
+
+    final doc = querySnapshot.docs.first;
+    return {
+      'text': doc['text'] as String? ?? '',
+      'createdAt': doc['createdAt'] as Timestamp?,
+    };
+  } catch (e) {
+    debugPrint('Error fetching last message for society $societyId: $e');
+    return null;
+  }
+}
+
+/// Formats a timestamp as "X mins ago", "X hours ago", or a date string.
+String _formatTimestamp(Timestamp? timestamp) {
+  if (timestamp == null) return '';
+
+  final messageDate = timestamp.toDate();
+  final now = DateTime.now();
+  final difference = now.difference(messageDate);
+
+  if (difference.inMinutes < 1) {
+    return 'just now';
+  } else if (difference.inMinutes < 60) {
+    final mins = difference.inMinutes;
+    return '$mins min${mins != 1 ? 's' : ''} ago';
+  } else if (difference.inHours < 24) {
+    final hours = difference.inHours;
+    return '$hours hour${hours != 1 ? 's' : ''} ago';
+  } else {
+    return '${messageDate.month}/${messageDate.day}/${messageDate.year}';
+  }
+}
 
 /// Displays a list of society group chat channels that the user is a member of.
 /// Provides quick access to messages and member approval features for committee admins.
@@ -50,7 +98,47 @@ class MessagesPage extends StatelessWidget {
                         child: ListTile(
                           leading: const Icon(Icons.forum),
                           title: Text(society.name),
-                          subtitle: Text(society.category),
+                          subtitle: FutureBuilder<Map<String, dynamic>?>(
+                            future: _getLastMessage(society.id),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Text('Loading...');
+                              }
+
+                              if (snapshot.hasError) {
+                                return const Text('Error loading message');
+                              }
+
+                              final messageData = snapshot.data;
+                              if (messageData == null) {
+                                return const Text('No messages yet');
+                              }
+
+                              final text = messageData['text'] as String;
+                              final timestamp =
+                                  messageData['createdAt'] as Timestamp?;
+                              final timeAgo = _formatTimestamp(timestamp);
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    text.length > 50
+                                        ? '${text.substring(0, 50)}...'
+                                        : text,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    timeAgo,
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(color: Colors.grey),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
                           onTap: () {
                             Navigator.push(
                               context,
