@@ -185,7 +185,7 @@ class AppState extends ChangeNotifier {
   }
 
   /// Sets up a real-time stream listener for announcements from the Firestore 'announcements' collection.
-  /// Also fetches likes and comments for each announcement. Calls [notifyListeners] on updates.
+  /// Also fetches likes and comments for each announcement in parallel without blocking. Calls [notifyListeners] on stream update.
   void loadAnnouncements() {
     // Cancel any existing subscription to prevent duplicates
     _announcementsSubscription?.cancel();
@@ -197,7 +197,7 @@ class AppState extends ChangeNotifier {
         .orderBy('date', descending: true)
         .limit(50)
         .snapshots()
-        .listen((querySnapshot) async {
+        .listen((querySnapshot) {
           _announcements = querySnapshot.docs.map((doc) {
             final data = doc.data();
             return Announcement(
@@ -215,16 +215,15 @@ class AppState extends ChangeNotifier {
             );
           }).toList();
 
-          // Fetch likes and comments for each announcement in parallel
-          await Future.wait([
-            for (final announcement in _announcements)
-              Future.wait([
-                _loadLikesForAnnouncement(announcement),
-                _loadCommentsForAnnouncement(announcement),
-              ]),
-          ]);
-
           notifyListeners();
+
+          // Fire off all likes and comments loads in parallel without awaiting.
+          // This avoids blocking the stream and N+1 sequential reads.
+          // Data updates trigger notifyListeners again as they complete.
+          for (final announcement in _announcements) {
+            _loadLikesForAnnouncement(announcement);
+            _loadCommentsForAnnouncement(announcement);
+          }
         });
   }
 
@@ -244,6 +243,7 @@ class AppState extends ChangeNotifier {
           announcement.likedBy.add(userId);
         }
       }
+      notifyListeners();
     } catch (e) {
       debugPrint('Error loading likes for announcement ${announcement.id}: $e');
     }
@@ -264,6 +264,7 @@ class AppState extends ChangeNotifier {
         final comment = Comment.fromFirestore(doc.data(), doc.id);
         announcement.comments.add(comment);
       }
+      notifyListeners();
     } catch (e) {
       debugPrint(
         'Error loading comments for announcement ${announcement.id}: $e',
