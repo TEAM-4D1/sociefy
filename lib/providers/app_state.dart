@@ -1,5 +1,5 @@
 import '../models/society.dart';
-
+import '../models/committee_member.dart';
 import '../models/event.dart';
 import '../models/announcement.dart';
 import '../services/society_service.dart';
@@ -104,11 +104,27 @@ class AppState extends ChangeNotifier {
     final querySnapshot = await _firestore.collection('societies').get();
     _societies = querySnapshot.docs.map((doc) {
       final data = doc.data();
+
+      // Parse committeeMembers from Firestore data
+      List<CommitteeMember> committeeMembers = [];
+      final membersData = data['committeeMembers'] as List<dynamic>?;
+      if (membersData != null) {
+        committeeMembers = membersData.map((memberMap) {
+          final map = memberMap as Map<String, dynamic>;
+          return CommitteeMember(
+            name: map['name'] ?? '',
+            role: map['role'] ?? '',
+            email: map['email'] ?? '',
+          );
+        }).toList();
+      }
+
       return Society(
         id: doc.id,
         name: data['name'] ?? 'Unknown Society',
         category: data['category'] ?? 'General',
         description: data['description'] ?? '',
+        committeeMembers: committeeMembers,
       );
     }).toList();
     notifyListeners();
