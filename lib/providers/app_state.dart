@@ -565,7 +565,8 @@ class AppState extends ChangeNotifier {
     required String endTime,
     required String venue,
   }) {
-    final eventId = 'e-${DateTime.now().microsecondsSinceEpoch}-${_eventIdCounter++}';
+    final eventId =
+        'e-${DateTime.now().microsecondsSinceEpoch}-${_eventIdCounter++}';
     final societyName = societyNameById(societyId);
 
     _events.insert(

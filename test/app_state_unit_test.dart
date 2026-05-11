@@ -306,7 +306,6 @@ void main() {
       appState.userId = 'guest';
       // Clear any sample events that might have been loaded
       appState.events.clear();
-      print('After clear: events=${appState.events.length}');
       appState.createSociety(name: 'T', category: 'T', description: 'T');
       appState.createEvent(
         societyId: appState.societies.first.id,
@@ -317,7 +316,6 @@ void main() {
         endTime: '10:00',
         venue: 'Hall',
       );
-      print('After creating Event A: events=${appState.events.length}');
       appState.createEvent(
         societyId: appState.societies.first.id,
         title: 'Event B',
@@ -327,14 +325,9 @@ void main() {
         endTime: '12:00',
         venue: 'Lab',
       );
-      print('After creating Event B: events=${appState.events.length}');
       // find by title to avoid millisecond-collision IDs
       final idA = appState.events.firstWhere((e) => e.title == 'Event A').id;
-      print('Event A ID: $idA');
       appState.saveEvent(idA);
-      print(
-        'After saving Event A: savedEvents.length=${appState.savedEvents.length}, savedEventIds=${appState.savedEvents.map((e) => e.id).toList()}',
-      );
       expect(appState.savedEvents.length, equals(1));
       expect(appState.savedEvents.first.title, equals('Event A'));
     });
