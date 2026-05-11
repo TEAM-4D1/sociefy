@@ -486,5 +486,90 @@ void main() {
 
       expect(appState.announcements, isEmpty);
     });
+
+    test('loadAnnouncements loads likes and comments in parallel', () async {
+      final now = DateTime.now();
+      final announcementDate = Timestamp.fromDate(now);
+
+      // Create two announcements
+      await firestore.collection('announcements').doc('ann1').set({
+        'societyId': 's1',
+        'title': 'Announcement 1',
+        'content': 'Content 1',
+        'date': announcementDate,
+        'imageUrl': null,
+        'venue': 'Venue 1',
+        'description': 'Description 1',
+      });
+
+      await firestore.collection('announcements').doc('ann2').set({
+        'societyId': 's2',
+        'title': 'Announcement 2',
+        'content': 'Content 2',
+        'date': announcementDate,
+        'imageUrl': null,
+        'venue': 'Venue 2',
+        'description': 'Description 2',
+      });
+
+      // Add one like to announcement 1
+      await firestore
+          .collection('announcements')
+          .doc('ann1')
+          .collection('likes')
+          .doc('like1')
+          .set({'userId': 'user1'});
+
+      // Add one comment to announcement 1
+      await firestore
+          .collection('announcements')
+          .doc('ann1')
+          .collection('comments')
+          .doc('comment1')
+          .set({
+            'author': 'user1',
+            'content': 'Comment 1',
+            'dateTime': Timestamp.now(),
+          });
+
+      // Add one like to announcement 2
+      await firestore
+          .collection('announcements')
+          .doc('ann2')
+          .collection('likes')
+          .doc('like2')
+          .set({'userId': 'user2'});
+
+      // Add one comment to announcement 2
+      await firestore
+          .collection('announcements')
+          .doc('ann2')
+          .collection('comments')
+          .doc('comment2')
+          .set({
+            'author': 'user2',
+            'content': 'Comment 2',
+            'dateTime': Timestamp.now(),
+          });
+
+      // Call loadAnnouncements - it sets up a stream listener
+      appState.loadAnnouncements();
+
+      // Wait for the stream to process announcements and fetch likes/comments
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Assert announcements are loaded
+      expect(appState.announcements, hasLength(2));
+
+      // Assert each announcement has 1 like
+      for (final announcement in appState.announcements) {
+        expect(announcement.likeCount, equals(1));
+      }
+
+      // Assert each announcement has 1 comment
+      for (final announcement in appState.announcements) {
+        expect(announcement.comments, hasLength(1));
+      }
+    });
   });
 }
