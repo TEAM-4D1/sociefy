@@ -80,15 +80,16 @@ void main() {
       // Look for ElevatedButton
       expect(find.byType(ElevatedButton), findsOneWidget);
       // Look for text containing 'Join' or 'Leave'
+      final joinText = find.text('Join Society');
+      final leaveText = find.text('Leave Society');
+      final signInText = find.text('Sign in to Join');
+
+      // One of these three texts should exist
       expect(
-        find.byWidgetPredicate(
-          (widget) =>
-              widget is Text &&
-              (widget.data?.contains('Join') ??
-                  false || widget.data?.contains('Leave') ??
-                  false),
-        ),
-        findsOneWidget,
+        joinText.evaluate().isNotEmpty ||
+            leaveText.evaluate().isNotEmpty ||
+            signInText.evaluate().isNotEmpty,
+        isTrue,
       );
     });
   });
