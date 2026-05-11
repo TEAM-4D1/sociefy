@@ -82,17 +82,8 @@ void main() {
       await tester.pumpWidget(buildTestWidget(appState, testEvent));
       await tester.pump(const Duration(milliseconds: 100));
 
-      // Look for an ElevatedButton with bookmark icon
-      expect(
-        find.byWidgetPredicate(
-          (widget) =>
-              widget is ElevatedButton.icon ||
-              (widget is Icon &&
-                  (widget.icon == Icons.bookmark ||
-                      widget.icon == Icons.bookmark_border)),
-        ),
-        findsWidgets,
-      );
+      // Look for bookmark_border icon (unsaved state)
+      expect(find.byIcon(Icons.bookmark_border), findsWidgets);
       // Look for "Save Event" text
       expect(find.text('Save Event'), findsOneWidget);
     });
