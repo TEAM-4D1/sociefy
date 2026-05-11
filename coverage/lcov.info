@@ -625,7 +625,7 @@ LF:128
 LH:36
 end_of_record
 SF:lib\main_tabs.dart
-DA:11,3
+DA:11,1
 DA:13,1
 DA:14,1
 DA:28,1
@@ -768,7 +768,7 @@ DA:317,0
 DA:318,0
 DA:321,0
 DA:324,0
-DA:343,6
+DA:343,2
 DA:345,2
 DA:346,2
 DA:351,2
@@ -896,7 +896,7 @@ DA:602,0
 DA:607,0
 DA:608,0
 DA:609,0
-DA:634,3
+DA:634,1
 DA:636,0
 DA:637,0
 DA:646,0
@@ -1042,7 +1042,7 @@ LF:392
 LH:19
 end_of_record
 SF:lib\screens\society_browser_screen.dart
-DA:13,3
+DA:13,1
 DA:15,2
 DA:16,2
 DA:26,2
@@ -1154,7 +1154,7 @@ DA:49,0
 DA:50,0
 DA:51,0
 DA:53,0
-DA:61,3
+DA:61,1
 DA:63,2
 DA:65,2
 DA:66,2
@@ -1207,7 +1207,7 @@ LF:75
 LH:10
 end_of_record
 SF:lib\screens\saved_events_screen.dart
-DA:13,6
+DA:13,2
 DA:15,2
 DA:17,2
 DA:18,2
@@ -1252,7 +1252,7 @@ LF:41
 LH:35
 end_of_record
 SF:lib\screens\profile_screen.dart
-DA:14,6
+DA:14,2
 DA:16,1
 DA:18,1
 DA:21,1
@@ -1298,7 +1298,7 @@ LF:42
 LH:22
 end_of_record
 SF:lib\screens\committee_sign_in_screen.dart
-DA:13,3
+DA:13,1
 DA:15,1
 DA:16,1
 DA:29,1
@@ -1380,7 +1380,7 @@ LF:78
 LH:61
 end_of_record
 SF:lib\widgets\app_bar_logo_action.dart
-DA:4,3
+DA:4,1
 DA:8,14
 DA:10,14
 DA:12,14
@@ -1392,7 +1392,7 @@ LF:8
 LH:8
 end_of_record
 SF:lib\widgets\auth_logo_header.dart
-DA:4,3
+DA:4,1
 DA:9,6
 DA:11,6
 DA:12,12
@@ -1704,7 +1704,7 @@ LF:108
 LH:0
 end_of_record
 SF:lib\screens\sign_in_screen.dart
-DA:14,6
+DA:14,2
 DA:16,4
 DA:17,4
 DA:36,4
@@ -1811,7 +1811,7 @@ LF:103
 LH:60
 end_of_record
 SF:lib\screens\register_screen.dart
-DA:12,6
+DA:12,2
 DA:14,1
 DA:15,1
 DA:31,1
