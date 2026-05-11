@@ -14,6 +14,7 @@ Sociefy is a mobile application designed to simplify the management of universit
    :caption: Contents:
 
    architecture
+   models
    setup
    screens
    providers
