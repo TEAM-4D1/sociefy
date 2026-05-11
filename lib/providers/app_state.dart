@@ -197,11 +197,14 @@ class AppState extends ChangeNotifier {
             );
           }).toList();
 
-          // Fetch likes and comments for each announcement
-          for (final announcement in _announcements) {
-            await _loadLikesForAnnouncement(announcement);
-            await _loadCommentsForAnnouncement(announcement);
-          }
+          // Fetch likes and comments for each announcement in parallel
+          await Future.wait([
+            for (final announcement in _announcements)
+              Future.wait([
+                _loadLikesForAnnouncement(announcement),
+                _loadCommentsForAnnouncement(announcement),
+              ]),
+          ]);
 
           notifyListeners();
         });
