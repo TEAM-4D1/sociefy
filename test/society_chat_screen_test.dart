@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 
-import '../lib/firebase_options.dart';
 import '../lib/models/society.dart';
 import '../lib/providers/app_state.dart';
 import '../lib/screens/society_chat_screen.dart';
 
-void main() async {
-  // Initialize Firebase before running tests
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+void main() {
   group('SocietyChatScreen Tests', () {
     final testSociety = Society(
       id: 'test-society-id',
