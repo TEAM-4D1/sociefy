@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sociefy/config/admin_config.dart';
 import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/screens/committee_sign_in_screen.dart';
 import 'package:sociefy/screens/register_screen.dart';
