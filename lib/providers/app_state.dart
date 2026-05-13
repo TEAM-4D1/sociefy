@@ -212,7 +212,17 @@ class AppState extends ChangeNotifier {
           _announcements = querySnapshot.docs.map((doc) {
             final data = doc.data();
             final newAnnouncement = Announcement(
-              // ...
+              id: doc.id,
+              societyId: data['societyId'] ?? 'Unknown',
+              title: data['title'] ?? 'Untitled',
+              content: data['content'] ?? '',
+              date: data['date'] != null
+                  ? (data['date'] as Timestamp).toDate()
+                  : DateTime.now(),
+              imageUrl: data['imageUrl'],
+              time: null,
+              venue: data['venue'],
+              description: data['description'],
             );
 
             // Preserve likes and comments from existing announcement if it exists
