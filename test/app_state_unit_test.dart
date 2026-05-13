@@ -301,7 +301,7 @@ void main() {
       expect(appState.isEventSaved(eventId), isFalse);
     });
 
-    test('savedEvents returns only saved events', () {
+    test('savedEvents returns only saved events', () async {
       final appState = AppState(skipFirebase: true);
       appState.userId = 'guest';
       // Clear any sample events that might have been loaded
@@ -327,7 +327,7 @@ void main() {
       );
       // find by title to avoid millisecond-collision IDs
       final idA = appState.events.firstWhere((e) => e.title == 'Event A').id;
-      appState.saveEvent(idA);
+      await appState.saveEvent(idA);
       expect(appState.savedEvents.length, equals(1));
       expect(appState.savedEvents.first.title, equals('Event A'));
     });
