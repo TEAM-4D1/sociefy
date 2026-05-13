@@ -25,9 +25,18 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          
-      - name: Install dependencies
+            - name: Install dependencies
         run: flutter pub get
+        
+      - name: Create admin config
+        run: |
+          mkdir -p lib/config
+          cat > lib/config/admin_config.dart << 'EOF'
+          class AdminConfig {
+            static const String adminEmail = String.fromEnvironment('ADMIN_EMAIL', defaultValue: '');
+            static const String adminPassword = String.fromEnvironment('ADMIN_PASSWORD', defaultValue: '');
+          }
+          EOF
         
       - name: Run analyzer
         run: flutter analyze
