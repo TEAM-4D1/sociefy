@@ -123,9 +123,9 @@ void main() {
     //  createSociety()
     // ------------------------------------------------------------------ //
 
-    test('createSociety() adds one society to list', () {
+    test('createSociety() adds one society to list', () async {
       final appState = AppState(skipFirebase: true);
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Chess Club',
         category: 'Academic',
         description: 'Play chess',
@@ -133,9 +133,9 @@ void main() {
       expect(appState.societies.length, equals(1));
     });
 
-    test('createSociety() stores correct name', () {
+    test('createSociety() stores correct name', () async {
       final appState = AppState(skipFirebase: true);
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Chess Club',
         category: 'Academic',
         description: 'Play chess',
