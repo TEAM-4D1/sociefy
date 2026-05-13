@@ -47,7 +47,8 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
         ),
       );
       return;
-    }    if (enteredEmail.toLowerCase() != AdminConfig.adminEmail ||
+    }
+    if (enteredEmail.toLowerCase() != AdminConfig.adminEmail ||
         enteredPassword != AdminConfig.adminPassword) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -80,6 +81,8 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
 
     // Sign-in successful — navigate immediately to MainTabs
     if (mounted) {
+      await appState.login(userId: result.user?.uid, isAdmin: true);
+      if (!mounted) return;
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const MainTabs()),
         (route) => false,
