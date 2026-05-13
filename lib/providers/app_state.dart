@@ -655,14 +655,14 @@ class AppState extends ChangeNotifier {
   /// Adds an event to the user's saved events list and persists to Firestore.
   /// [id] The ID of the event to save.
   /// Calls [notifyListeners]. For authenticated users, writes to the Firestore 'savedEvents' collection via [persistSaveEvent].
-  void saveEvent(String id) {
+  Future<void> saveEvent(String id) async {
     if (!_savedEventIds.contains(id)) {
       _savedEventIds.add(id);
       notifyListeners();
     }
     if (!isGuest) {
       try {
-        persistSaveEvent(userId!, id);
+        await persistSaveEvent(userId!, id);
       } catch (e) {
         debugPrint('saveEvent Firestore error: $e');
       }
@@ -672,12 +672,12 @@ class AppState extends ChangeNotifier {
   /// Removes an event from the user's saved events list and updates Firestore.
   /// [id] The ID of the event to unsave.
   /// Calls [notifyListeners]. For authenticated users, deletes from the Firestore 'savedEvents' collection via [persistUnsaveEvent].
-  void unsaveEvent(String id) {
+  Future<void> unsaveEvent(String id) async {
     _savedEventIds.remove(id);
     notifyListeners();
     if (!isGuest) {
       try {
-        persistUnsaveEvent(userId!, id);
+        await persistUnsaveEvent(userId!, id);
       } catch (e) {
         debugPrint('unsaveEvent Firestore error: $e');
       }
