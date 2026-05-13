@@ -81,13 +81,23 @@ class MessageService {
         .delete();
 
     // Unsubscribe from FCM topic for this society
-    await _messaging.unsubscribeFromTopic('society_$societyId');
-
-    // Update local state and notify listeners
+    await _messaging.unsubscribeFromTopic(
+      'society_$societyId',
+    ); // Update local state and notify listeners
     final set = _userChannels[userId];
     if (set != null && set.remove(societyId)) {
       final controller = _ensureController(userId);
       controller.add(List.unmodifiable(set));
     }
+  }
+
+  /// Cleans up all stream controllers to prevent memory leaks.
+  /// Call this when the application is shutting down.
+  void dispose() {
+    for (final controller in _controllers.values) {
+      controller.close();
+    }
+    _controllers.clear();
+    _userChannels.clear();
   }
 }
