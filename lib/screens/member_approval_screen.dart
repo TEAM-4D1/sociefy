@@ -59,29 +59,40 @@ class _MemberApprovalScreenState extends State<MemberApprovalScreen> {
                     subtitle: Text('Request ID: ${req.id}'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // APPROVE
+                      children: [                        // APPROVE
                         IconButton(
                           icon: const Icon(Icons.check, color: Colors.green),
                           onPressed: () async {
-                            await FirebaseFirestore.instance
-                                .collection('memberships')
-                                .doc('${userId}_${widget.societyId}')
-                                .set({
-                                  'userId': userId,
-                                  'societyId': widget.societyId,
-                                  'joinedAt': FieldValue.serverTimestamp(),
-                                });
+                            final messenger = ScaffoldMessenger.of(context);
+                            try {
+                              await FirebaseFirestore.instance
+                                  .collection('memberships')
+                                  .doc('${userId}_${widget.societyId}')
+                                  .set({
+                                    'userId': userId,
+                                    'societyId': widget.societyId,
+                                    'joinedAt': FieldValue.serverTimestamp(),
+                                  });
 
-                            await req.reference.delete();
+                              await req.reference.delete();
+                            } catch (e) {
+                              messenger.showSnackBar(
+                                SnackBar(content: Text('Error: $e')),
+                              );
+                            }
                           },
-                        ),
-
-                        // REJECT
+                        ),                        // REJECT
                         IconButton(
                           icon: const Icon(Icons.close, color: Colors.red),
                           onPressed: () async {
-                            await req.reference.delete();
+                            final messenger = ScaffoldMessenger.of(context);
+                            try {
+                              await req.reference.delete();
+                            } catch (e) {
+                              messenger.showSnackBar(
+                                SnackBar(content: Text('Error: $e')),
+                              );
+                            }
                           },
                         ),
                       ],
