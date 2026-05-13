@@ -567,6 +567,7 @@ class _FeedScreenState extends State<FeedScreen>
                                 } catch (e) {
                                   debugPrint('Error toggling like: $e');
                                   // Revert local state on error
+                                  if (!mounted) return;
                                   setState(() {
                                     announcement.toggleLike(userId);
                                   });
@@ -593,6 +594,7 @@ class _FeedScreenState extends State<FeedScreen>
                                       });
 
                                   // Add to local state
+                                  if (!mounted) return;
                                   setState(() {
                                     announcement.comments.add(
                                       Comment(
