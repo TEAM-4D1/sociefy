@@ -16,8 +16,12 @@ class AuthService {
         email: email,
         password: password,
       );
+    } on FirebaseAuthException catch (e) {
+      lastError = e.message;
+      debugPrint('signIn error: [${e.code}] ${e.message}');
+      return null;
     } catch (e) {
-      // ignore: avoid_print
+      lastError = e.toString();
       debugPrint('signIn error: $e');
       return null;
     }
