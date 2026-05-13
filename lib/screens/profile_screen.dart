@@ -82,7 +82,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 subtitle,
                 style: const TextStyle(fontSize: 16, color: Colors.grey),
               ),
-              const SizedBox(height: 32),              if (!appState.isGuest)
+              const SizedBox(height: 32),
+              if (!appState.isGuest)
                 ElevatedButton.icon(
                   icon: const Icon(Icons.lock_reset),
                   label: const Text('Change Password'),
@@ -100,11 +101,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         );
                       } catch (e) {
                         if (!mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Error: $e'),
-                          ),
-                        );
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text('Error: $e')));
                       }
                     } else {
                       if (!mounted) return;
