@@ -138,7 +138,9 @@ class SocietyDetailScreen extends StatelessWidget {
                                       builder: (_) => EventDetailScreen(
                                         event: event,
                                         userId: appState.userId ?? '',
-                                        isSaved: appState.isEventSaved(event.id),
+                                        isSaved: appState.isEventSaved(
+                                          event.id,
+                                        ),
                                       ),
                                     ),
                                   );

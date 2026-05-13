@@ -38,7 +38,6 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
 
     final enteredEmail = _emailController.text.trim();
     final enteredPassword = _passwordController.text.trim();
-
     if (enteredEmail.toLowerCase().contains('myport')) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

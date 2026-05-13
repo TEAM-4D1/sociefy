@@ -201,58 +201,61 @@ class AppState extends ChangeNotifier {
   void loadAnnouncements() {
     // Cancel any existing subscription to prevent duplicates
     _announcementsSubscription?.cancel();
-    _announcementsSubscription = null;
-
-    // Set up new snapshots listener
+    _announcementsSubscription = null; // Set up new snapshots listener
     _announcementsSubscription = _firestore
         .collection('announcements')
         .orderBy('date', descending: true)
         .limit(50)
         .snapshots()
-        .listen((querySnapshot) async {
-          // Build a map of existing announcements to preserve likes/comments
-          final existingMap = {
-            for (final announcement in _announcements)
-              announcement.id: announcement,
-          };
+        .listen(
+          (querySnapshot) async {
+            // Build a map of existing announcements to preserve likes/comments
+            final existingMap = {
+              for (final announcement in _announcements)
+                announcement.id: announcement,
+            };
 
-          // Build new announcements list from snapshot
-          _announcements = querySnapshot.docs.map((doc) {
-            final data = doc.data();
-            final newAnnouncement = Announcement(
-              id: doc.id,
-              societyId: data['societyId'] ?? 'Unknown',
-              title: data['title'] ?? 'Untitled',
-              content: data['content'] ?? '',
-              date: data['date'] != null
-                  ? (data['date'] as Timestamp).toDate()
-                  : DateTime.now(),
-              imageUrl: data['imageUrl'],
-              time: null,
-              venue: data['venue'],
-              description: data['description'],
-            );
+            // Build new announcements list from snapshot
+            _announcements = querySnapshot.docs.map((doc) {
+              final data = doc.data();
+              final newAnnouncement = Announcement(
+                id: doc.id,
+                societyId: data['societyId'] ?? 'Unknown',
+                title: data['title'] ?? 'Untitled',
+                content: data['content'] ?? '',
+                date: data['date'] != null
+                    ? (data['date'] as Timestamp).toDate()
+                    : DateTime.now(),
+                imageUrl: data['imageUrl'],
+                time: null,
+                venue: data['venue'],
+                description: data['description'],
+              );
 
-            // Preserve likes and comments from existing announcement if it exists
-            if (existingMap.containsKey(newAnnouncement.id)) {
-              final existing = existingMap[newAnnouncement.id]!;
-              newAnnouncement.likedBy.addAll(existing.likedBy);
-              newAnnouncement.comments.addAll(existing.comments);
-            }
+              // Preserve likes and comments from existing announcement if it exists
+              if (existingMap.containsKey(newAnnouncement.id)) {
+                final existing = existingMap[newAnnouncement.id]!;
+                newAnnouncement.likedBy.addAll(existing.likedBy);
+                newAnnouncement.comments.addAll(existing.comments);
+              }
 
-            return newAnnouncement;
-          }).toList();
+              return newAnnouncement;
+            }).toList();
 
-          // Launch likes/comments loads in parallel for all announcements
-          await Future.wait([
-            for (final announcement in _announcements) ...[
-              _loadLikesForAnnouncement(announcement),
-              _loadCommentsForAnnouncement(announcement),
-            ],
-          ]);
+            // Launch likes/comments loads in parallel for all announcements
+            await Future.wait([
+              for (final announcement in _announcements) ...[
+                _loadLikesForAnnouncement(announcement),
+                _loadCommentsForAnnouncement(announcement),
+              ],
+            ]);
 
-          notifyListeners();
-        });
+            notifyListeners();
+          },
+          onError: (error) {
+            debugPrint('Error loading announcements: $error');
+          },
+        );
   }
 
   /// Loads all likes for a specific announcement from Firestore.
@@ -389,7 +392,7 @@ class AppState extends ChangeNotifier {
     loadEvents();
     loadAnnouncements();
 
-    if (!isGuest) {
+    if (!isGuest && this.userId != null) {
       loadJoinedSocieties(this.userId!);
       loadSavedEvents(this.userId!);
     }
