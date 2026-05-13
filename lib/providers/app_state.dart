@@ -197,33 +197,23 @@ class AppState extends ChangeNotifier {
         .orderBy('date', descending: true)
         .limit(50)
         .snapshots()
-        .listen((querySnapshot) {
+        .listen((querySnapshot) async {
           _announcements = querySnapshot.docs.map((doc) {
             final data = doc.data();
             return Announcement(
-              id: doc.id,
-              societyId: data['societyId'] ?? '',
-              title: data['title'] ?? 'Untitled',
-              content: data['content'] ?? '',
-              date: data['date'] != null
-                  ? (data['date'] as Timestamp).toDate()
-                  : DateTime.now(),
-              imageUrl: data['imageUrl'],
-              time: null, // Set if you store time separately
-              venue: data['venue'],
-              description: data['description'],
+              // ...
             );
           }).toList();
 
           notifyListeners();
 
-          // Fire off all likes and comments loads in parallel without awaiting.
-          // This avoids blocking the stream and N+1 sequential reads.
-          // Data updates trigger notifyListeners again as they complete.
-          for (final announcement in _announcements) {
-            _loadLikesForAnnouncement(announcement);
-            _loadCommentsForAnnouncement(announcement);
-          }
+          // Launch likes/comments loads in parallel for all announcements
+          await Future.wait([
+            for (final announcement in _announcements) ...[
+              _loadLikesForAnnouncement(announcement),
+              _loadCommentsForAnnouncement(announcement),
+            ]
+          ]);
         });
   }
 
