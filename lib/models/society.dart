@@ -57,8 +57,6 @@ class Society {
     this.committeeMembers = const [],
   });
 
-  get members => null;
-
   /// Returns a copy of this `Society` with the given fields replaced.
   ///
   /// Useful for immutable updates when only a subset of properties need
