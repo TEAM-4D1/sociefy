@@ -24,6 +24,16 @@ class _SocietyBrowserScreenState extends State<SocietyBrowserScreen>
   @override
   bool get wantKeepAlive => true;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<AppState>().loadSocieties();
+      }
+    });
+  }
+
   /// Filters societies by search query and selected category.
   List<Society> get _filteredSocieties {
     final appState = context.watch<AppState>();
