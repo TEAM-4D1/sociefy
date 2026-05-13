@@ -7,6 +7,7 @@ import 'package:sociefy/screens/register_screen.dart';
 import 'package:sociefy/services/auth_service.dart';
 import 'package:sociefy/widgets/app_bar_logo_action.dart';
 import 'package:sociefy/widgets/auth_logo_header.dart';
+import 'package:sociefy/main_tabs.dart';
 
 /// The primary authentication entry point for Sociefy.
 /// Provides email/password login for students and a separate button for committee/admin sign in.
