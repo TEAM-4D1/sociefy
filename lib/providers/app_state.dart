@@ -290,8 +290,9 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  /// Returns true if a user is currently logged in (userId is not null and not empty).
-  bool get isAuthenticated => userId != null && userId!.isNotEmpty;
+  /// Returns true if a user is currently logged in (userId is not null, not empty, and not 'guest').
+  bool get isAuthenticated =>
+      userId != null && userId!.isNotEmpty && userId != 'guest';
 
   /// Returns true if the current user is a guest (userId equals exactly 'guest').
   bool get isGuest => userId != null && userId == 'guest';
