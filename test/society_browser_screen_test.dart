@@ -161,7 +161,7 @@ void main() {
     ) async {
       final appState = AppState(skipFirebase: true);
 
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Test Society',
         category: 'Academic',
         description: 'Test description',
@@ -180,17 +180,17 @@ void main() {
     ) async {
       final appState = AppState(skipFirebase: true);
 
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Society One',
         category: 'Category A',
         description: 'Description 1',
       );
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Society Two',
         category: 'Category B',
         description: 'Description 2',
       );
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Society Three',
         category: 'Category C',
         description: 'Description 3',
@@ -207,7 +207,7 @@ void main() {
     testWidgets('search is case-insensitive', (WidgetTester tester) async {
       final appState = AppState(skipFirebase: true);
 
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Engineering Society',
         category: 'Academic',
         description: 'Engineers',
@@ -227,12 +227,12 @@ void main() {
     testWidgets('search works by category', (WidgetTester tester) async {
       final appState = AppState(skipFirebase: true);
 
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Math Club',
         category: 'Academic',
         description: 'Math',
       );
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Soccer Club',
         category: 'Sports',
         description: 'Soccer',
