@@ -5,7 +5,6 @@ import '../models/announcement.dart';
 import '../services/society_service.dart';
 import '../data/sample_events.dart';
 import '../config/admin_config.dart';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
