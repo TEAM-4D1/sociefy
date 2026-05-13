@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../models/society.dart';
 import '../providers/app_state.dart';
 import '../theme/colours.dart';
