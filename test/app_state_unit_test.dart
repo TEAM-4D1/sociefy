@@ -143,9 +143,9 @@ void main() {
       expect(appState.societies.first.name, equals('Chess Club'));
     });
 
-    test('createSociety() stores correct category', () {
+    test('createSociety() stores correct category', () async {
       final appState = AppState(skipFirebase: true);
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Dance Society',
         category: 'Arts',
         description: 'For dancers',
@@ -153,9 +153,9 @@ void main() {
       expect(appState.societies.first.category, equals('Arts'));
     });
 
-    test('createSociety() stores correct description', () {
+    test('createSociety() stores correct description', () async {
       final appState = AppState(skipFirebase: true);
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Robotics',
         category: 'Tech',
         description: 'Build robots',
@@ -163,11 +163,11 @@ void main() {
       expect(appState.societies.first.description, equals('Build robots'));
     });
 
-    test('createSociety() notifies listeners', () {
+    test('createSociety() notifies listeners', () async {
       final appState = AppState(skipFirebase: true);
       bool notified = false;
       appState.addListener(() => notified = true);
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Test',
         category: 'Test',
         description: 'Test',
@@ -415,14 +415,14 @@ void main() {
     //  createEvent()
     // ------------------------------------------------------------------ //
 
-    test('createEvent() adds event to events list', () {
+    test('createEvent() adds event to events list', () async {
       final appState = AppState(skipFirebase: true);
-      appState.createSociety(
+      await appState.createSociety(
         name: 'CS Club',
         category: 'Tech',
         description: 'D',
       );
-      appState.createEvent(
+      await appState.createEvent(
         societyId: appState.societies.first.id,
         title: 'Hackathon',
         description: 'All-night coding',
@@ -435,21 +435,21 @@ void main() {
       expect(appState.events.first.title, equals('Hackathon'));
     });
 
-    test('eventsForSociety() returns only events for that society', () {
+    test('eventsForSociety() returns only events for that society', () async {
       final appState = AppState(skipFirebase: true);
-      appState.createSociety(
+      await appState.createSociety(
         name: 'CS Club',
         category: 'Tech',
         description: 'D',
       );
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Art Club',
         category: 'Arts',
         description: 'D',
       );
       final csId = appState.societies[0].id;
       final artId = appState.societies[1].id;
-      appState.createEvent(
+      await appState.createEvent(
         societyId: csId,
         title: 'CS Event',
         description: 'D',
@@ -458,7 +458,7 @@ void main() {
         endTime: '11:00',
         venue: 'Lab',
       );
-      appState.createEvent(
+      await appState.createEvent(
         societyId: artId,
         title: 'Art Event',
         description: 'D',

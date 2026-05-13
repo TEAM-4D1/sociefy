@@ -52,7 +52,7 @@ void main() {
         appState.userId = 'testuser';
         appState.isAdmin = false;
         // Create a test society for the user to be part of
-        appState.createSociety(
+        await appState.createSociety(
           name: 'Test Society',
           category: 'Academic',
           description: 'Test',
