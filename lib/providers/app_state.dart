@@ -25,6 +25,7 @@ class AppState extends ChangeNotifier {
   String? userId;
   bool isAdmin = false;
   bool _pendingAdminLogin = false;
+  bool get isPendingAdminLogin => _pendingAdminLogin;
 
   StreamSubscription<QuerySnapshot>? _announcementsSubscription;
 
