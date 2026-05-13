@@ -69,7 +69,7 @@ class AppState extends ChangeNotifier {
           );
           _pendingAdminLogin = false;
         } else {
-          // Only logout if not already in a guest session
+          _pendingAdminLogin = false;
           if (!isGuest) {
             logout();
           }
