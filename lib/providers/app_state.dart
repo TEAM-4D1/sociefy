@@ -198,11 +198,27 @@ class AppState extends ChangeNotifier {
         .limit(50)
         .snapshots()
         .listen((querySnapshot) async {
+          // Build a map of existing announcements to preserve likes/comments
+          final existingMap = {
+            for (final announcement in _announcements) 
+              announcement.id: announcement,
+          };
+
+          // Build new announcements list from snapshot
           _announcements = querySnapshot.docs.map((doc) {
             final data = doc.data();
-            return Announcement(
+            final newAnnouncement = Announcement(
               // ...
             );
+            
+            // Preserve likes and comments from existing announcement if it exists
+            if (existingMap.containsKey(newAnnouncement.id)) {
+              final existing = existingMap[newAnnouncement.id]!;
+              newAnnouncement.likedBy.addAll(existing.likedBy);
+              newAnnouncement.comments.addAll(existing.comments);
+            }
+            
+            return newAnnouncement;
           }).toList();
 
           notifyListeners();
