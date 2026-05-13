@@ -99,12 +99,12 @@ void main() {
     ) async {
       final appState = AppState(skipFirebase: true);
 
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Photography Club',
         category: 'Arts',
         description: 'Photography lovers',
       );
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Robotics Club',
         category: 'Academic',
         description: 'Robotics enthusiasts',
@@ -127,12 +127,12 @@ void main() {
     ) async {
       final appState = AppState(skipFirebase: true);
 
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Gaming Society',
         category: 'Entertainment',
         description: 'Games',
       );
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Movie Club',
         category: 'Entertainment',
         description: 'Movies',
