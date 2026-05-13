@@ -61,7 +61,8 @@ class AppState extends ChangeNotifier {
       FirebaseAuth.instance.authStateChanges().listen((user) {
         if (user != null) {
           final normalizedEmail = user.email?.trim().toLowerCase();
-          final isCommitteeAdmin = normalizedEmail == AdminConfig.adminEmail.toLowerCase();
+          final isCommitteeAdmin =
+              normalizedEmail == AdminConfig.adminEmail.toLowerCase();
           login(
             userId: user.uid,
             isAdmin: _pendingAdminLogin || isCommitteeAdmin,
