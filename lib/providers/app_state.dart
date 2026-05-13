@@ -263,7 +263,6 @@ class AppState extends ChangeNotifier {
           announcement.likedBy.add(userId);
         }
       }
-      notifyListeners();
     } catch (e) {
       debugPrint('Error loading likes for announcement ${announcement.id}: $e');
     }
