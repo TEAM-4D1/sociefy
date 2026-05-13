@@ -122,8 +122,7 @@ class SocietyDetailScreen extends StatelessWidget {
                         final events = appState.eventsForSociety(society.id);
                         if (events.isEmpty) {
                           return const Text('No upcoming events.');
-                        }
-                        return Column(
+                        }                        return Column(
                           children: events.map((event) {
                             return Card(
                               margin: const EdgeInsets.only(bottom: 12),
@@ -138,7 +137,7 @@ class SocietyDetailScreen extends StatelessWidget {
                                       builder: (_) => EventDetailScreen(
                                         event: event,
                                         userId: appState.userId ?? '',
-                                        isSaved: false,
+                                        isSaved: appState.isEventSaved(event.id),
                                       ),
                                     ),
                                   );

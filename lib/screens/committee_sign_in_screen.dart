@@ -37,9 +37,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final enteredEmail = _emailController.text.trim();
-    final enteredPassword = _passwordController.text.trim();
-
-    if (enteredEmail.toLowerCase().contains('myport')) {
+    final enteredPassword = _passwordController.text.trim();    if (enteredEmail.toLowerCase().contains('myport')) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -48,7 +46,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
       );
       return;
     }
-    if (enteredEmail.toLowerCase() != AdminConfig.adminEmail ||
+    if (enteredEmail.toLowerCase() != AdminConfig.adminEmail.toLowerCase() ||
         enteredPassword != AdminConfig.adminPassword) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
