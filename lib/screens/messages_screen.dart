@@ -57,8 +57,22 @@ String _formatTimestamp(Timestamp? timestamp) {
 /// Displays a list of society group chat channels that the user is a member of.
 /// Provides quick access to messages and member approval features for committee admins.
 /// Accessible only to authenticated users who have joined societies.
-class MessagesPage extends StatelessWidget {
+class MessagesPage extends StatefulWidget {
   const MessagesPage({super.key});
+
+  @override
+  State<MessagesPage> createState() => _MessagesPageState();
+}
+
+class _MessagesPageState extends State<MessagesPage> {
+  final Map<String, Future<Map<String, dynamic>?>> _lastMessageFutures = {};
+
+  Future<Map<String, dynamic>?> _cachedLastMessage(String societyId) {
+    return _lastMessageFutures.putIfAbsent(
+      societyId,
+      () => _getLastMessage(societyId),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +113,7 @@ class MessagesPage extends StatelessWidget {
                           leading: const Icon(Icons.forum),
                           title: Text(society.name),
                           subtitle: FutureBuilder<Map<String, dynamic>?>(
-                            future: _getLastMessage(society.id),
+                            future: _cachedLastMessage(society.id),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
