@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../main_tabs.dart';
+import '../providers/app_state.dart';
 import '../widgets/app_bar_logo_action.dart';
 import '../widgets/auth_logo_header.dart';
 
