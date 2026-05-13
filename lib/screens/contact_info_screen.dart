@@ -92,9 +92,8 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
       }
     }
   }
-
   /// Removes a committee member from the list at the specified index.
-  void _removeMember(int index) async {
+  Future<void> _removeMember(int index) async {
     setState(() {
       _committeeMembers.removeAt(index);
     });
