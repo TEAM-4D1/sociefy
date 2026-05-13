@@ -44,3 +44,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 node_modules
+
+# Configuration files with sensitive data
+lib/config/admin_config.dart

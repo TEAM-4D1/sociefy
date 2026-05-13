@@ -4,6 +4,7 @@ import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/services/auth_service.dart';
 import 'package:sociefy/widgets/app_bar_logo_action.dart';
 import 'package:sociefy/widgets/auth_logo_header.dart';
+import 'package:sociefy/config/admin_config.dart';
 import '../main_tabs.dart';
 
 /// Provides dedicated authentication for committee members and admins with email/password login.
@@ -17,9 +18,6 @@ class CommitteeSignInScreen extends StatefulWidget {
 }
 
 class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
-  static const String _adminEmail = 'jburfoot12@gmail.com';
-  static const String _adminPassword = '111444';
-
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -49,10 +47,8 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
         ),
       );
       return;
-    }
-
-    if (enteredEmail.toLowerCase() != _adminEmail ||
-        enteredPassword != _adminPassword) {
+    }    if (enteredEmail.toLowerCase() != AdminConfig.adminEmail ||
+        enteredPassword != AdminConfig.adminPassword) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
