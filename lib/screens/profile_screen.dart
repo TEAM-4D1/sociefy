@@ -107,29 +107,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     }
                   },
                 ),
-              const SizedBox(height: 16),
-              ElevatedButton.icon(
+              const SizedBox(height: 16),              ElevatedButton.icon(
                 icon: const Icon(Icons.logout),
                 label: const Text('Sign Out'),
                 onPressed: () async {
                   final appState = context.read<AppState>();
-                  if (appState.isGuest) {
-                    appState.logout();
-                  } else {
+                  if (!appState.isGuest) {
                     await AuthService().signOut();
-                    appState.logout();
                   }
-                  // Ensure the user returns to the Sign In screen and clear navigation history
-                  if (Navigator.canPop(context)) {
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (_) => const SignInScreen()),
-                      (route) => false,
-                    );
-                  } else {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (_) => const SignInScreen()),
-                    );
-                  }
+                  appState.logout();
+                  if (!context.mounted) return;
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const SignInScreen()),
+                    (route) => false,
+                  );
                 },
               ),
             ],
