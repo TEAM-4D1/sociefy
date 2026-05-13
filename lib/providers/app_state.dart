@@ -381,10 +381,10 @@ class AppState extends ChangeNotifier {
   /// Calls [notifyListeners], triggers [loadSocieties], [loadEvents], [loadAnnouncements]. For non-guest users, also loads joined societies and saved events.
   Future<void> login({String? userId, bool isAdmin = false}) async {
     this.userId = userId ?? this.userId;
-    this.isAdmin = isAdmin;
-    notifyListeners();
+    this.isAdmin = isAdmin;    notifyListeners();
 
-    // Fire all data loads without awaiting    loadSocieties();
+    // Fire all data loads without awaiting
+    loadSocieties();
     loadEvents();
     loadAnnouncements();
 
