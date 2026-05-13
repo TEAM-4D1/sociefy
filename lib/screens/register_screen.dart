@@ -102,6 +102,12 @@ class _RegisterScreenState extends State<RegisterScreen>
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Registration successful')));
+      final appState = Provider.of<AppState>(context, listen: false);
+      await appState.login(
+        userId: result?.user?.uid ?? current?.uid,
+        isAdmin: false,
+      );
+      if (!mounted) return;
       // Let AppState auth listener run, but proactively navigate to MainTabs
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const MainTabs()),
