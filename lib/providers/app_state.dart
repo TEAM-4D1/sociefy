@@ -21,13 +21,13 @@ import 'dart:async';
 ///
 /// Construct with `AppState(skipFirebase: true)` in tests so the auth
 /// listener is not registered.
-class AppState extends ChangeNotifier {
-  String? userId;
+class AppState extends ChangeNotifier {  String? userId;
   bool isAdmin = false;
   bool _pendingAdminLogin = false;
   bool get isPendingAdminLogin => _pendingAdminLogin;
 
   StreamSubscription<QuerySnapshot>? _announcementsSubscription;
+  StreamSubscription<User?>? _authStateSubscription;
 
   /// Whether to skip Firebase initialization (used for testing).
   final bool _skipFirebase;
@@ -54,11 +54,10 @@ class AppState extends ChangeNotifier {
   }
 
   final SocietyService _societyService;
-
   /// Initialize the Firebase auth listener (called after construction in production).
   void _initializeFirebaseListener() {
     try {
-      FirebaseAuth.instance.authStateChanges().listen((user) {
+      _authStateSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
         if (user != null) {
           final normalizedEmail = user.email?.trim().toLowerCase();
           final isCommitteeAdmin =
@@ -289,10 +288,8 @@ class AppState extends ChangeNotifier {
       );
     }
   }
-
-  /// Returns true if a user is currently logged in (userId is not null, not empty, and not 'guest').
-  bool get isAuthenticated =>
-      userId != null && userId!.isNotEmpty && userId != 'guest';
+  /// Returns true if a user is currently logged in (userId is not null and not empty).
+  bool get isAuthenticated => userId != null && userId!.isNotEmpty;
 
   /// Returns true if the current user is a guest (userId equals exactly 'guest').
   bool get isGuest => userId != null && userId == 'guest';
@@ -427,9 +424,9 @@ class AppState extends ChangeNotifier {
 
     notifyListeners();
   }
-
   @override
   void dispose() {
+    _authStateSubscription?.cancel();
     _announcementsSubscription?.cancel();
     super.dispose();
   }
