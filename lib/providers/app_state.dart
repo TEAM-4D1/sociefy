@@ -53,11 +53,17 @@ class AppState extends ChangeNotifier {  String? userId;
     }
   }
 
-  final SocietyService _societyService;
-  /// Initialize the Firebase auth listener (called after construction in production).
+  final SocietyService _societyService;  /// Initialize the Firebase auth listener (called after construction in production).
   void _initializeFirebaseListener() {
     try {
       _authStateSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
+        // Only react to Firebase auth changes if we're not a guest.
+        // Guests manage their own login/logout via appState directly.
+        if (isGuest) {
+          // If we're a guest, don't let Firebase auth changes interfere
+          return;
+        }
+        
         if (user != null) {
           final normalizedEmail = user.email?.trim().toLowerCase();
           final isCommitteeAdmin =
@@ -69,9 +75,7 @@ class AppState extends ChangeNotifier {  String? userId;
           _pendingAdminLogin = false;
         } else {
           _pendingAdminLogin = false;
-          if (!isGuest) {
-            logout();
-          }
+          logout();
         }
       });
     } catch (e) {
