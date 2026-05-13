@@ -21,7 +21,8 @@ import 'dart:async';
 ///
 /// Construct with `AppState(skipFirebase: true)` in tests so the auth
 /// listener is not registered.
-class AppState extends ChangeNotifier {  String? userId;
+class AppState extends ChangeNotifier {
+  String? userId;
   bool isAdmin = false;
   bool _pendingAdminLogin = false;
   bool get isPendingAdminLogin => _pendingAdminLogin;
@@ -53,17 +54,21 @@ class AppState extends ChangeNotifier {  String? userId;
     }
   }
 
-  final SocietyService _societyService;  /// Initialize the Firebase auth listener (called after construction in production).
+  final SocietyService _societyService;
+
+  /// Initialize the Firebase auth listener (called after construction in production).
   void _initializeFirebaseListener() {
     try {
-      _authStateSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
+      _authStateSubscription = FirebaseAuth.instance.authStateChanges().listen((
+        user,
+      ) {
         // Only react to Firebase auth changes if we're not a guest.
         // Guests manage their own login/logout via appState directly.
         if (isGuest) {
           // If we're a guest, don't let Firebase auth changes interfere
           return;
         }
-        
+
         if (user != null) {
           final normalizedEmail = user.email?.trim().toLowerCase();
           final isCommitteeAdmin =
@@ -292,6 +297,7 @@ class AppState extends ChangeNotifier {  String? userId;
       );
     }
   }
+
   /// Returns true if a user is currently logged in (userId is not null and not empty).
   bool get isAuthenticated => userId != null && userId!.isNotEmpty;
 
@@ -428,6 +434,7 @@ class AppState extends ChangeNotifier {  String? userId;
 
     notifyListeners();
   }
+
   @override
   void dispose() {
     _authStateSubscription?.cancel();
