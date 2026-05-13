@@ -201,15 +201,14 @@ class AppState extends ChangeNotifier {
   void loadAnnouncements() {
     // Cancel any existing subscription to prevent duplicates
     _announcementsSubscription?.cancel();
-    _announcementsSubscription = null;
-
-    // Set up new snapshots listener
+    _announcementsSubscription = null;    // Set up new snapshots listener
     _announcementsSubscription = _firestore
         .collection('announcements')
         .orderBy('date', descending: true)
         .limit(50)
         .snapshots()
-        .listen((querySnapshot) async {
+        .listen(
+          (querySnapshot) async {
           // Build a map of existing announcements to preserve likes/comments
           final existingMap = {
             for (final announcement in _announcements)
@@ -252,7 +251,11 @@ class AppState extends ChangeNotifier {
           ]);
 
           notifyListeners();
-        });
+        },
+          onError: (error) {
+            debugPrint('Error loading announcements: $error');
+          },
+        );
   }
 
   /// Loads all likes for a specific announcement from Firestore.
