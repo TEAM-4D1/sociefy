@@ -103,33 +103,37 @@ class AppState extends ChangeNotifier {
   /// Calls [notifyListeners] after loading. Only fetches once per session.
   Future<void> loadSocieties({bool forceReload = false}) async {
     if (_societies.isNotEmpty && !forceReload) return;
-    final querySnapshot = await _firestore.collection('societies').get();
-    _societies = querySnapshot.docs.map((doc) {
-      final data = doc.data();
+    try {
+      final querySnapshot = await _firestore.collection('societies').get();
+      _societies = querySnapshot.docs.map((doc) {
+        final data = doc.data();
 
-      // Parse committeeMembers from Firestore data
-      List<CommitteeMember> committeeMembers = [];
-      final membersData = data['committeeMembers'] as List<dynamic>?;
-      if (membersData != null) {
-        committeeMembers = membersData.map((memberMap) {
-          final map = memberMap as Map<String, dynamic>;
-          return CommitteeMember(
-            name: map['name'] ?? '',
-            role: map['role'] ?? '',
-            email: map['email'] ?? '',
-          );
-        }).toList();
-      }
+        // Parse committeeMembers from Firestore data
+        List<CommitteeMember> committeeMembers = [];
+        final membersData = data['committeeMembers'] as List<dynamic>?;
+        if (membersData != null) {
+          committeeMembers = membersData.map((memberMap) {
+            final map = memberMap as Map<String, dynamic>;
+            return CommitteeMember(
+              name: map['name'] ?? '',
+              role: map['role'] ?? '',
+              email: map['email'] ?? '',
+            );
+          }).toList();
+        }
 
-      return Society(
-        id: doc.id,
-        name: data['name'] ?? 'Unknown Society',
-        category: data['category'] ?? 'General',
-        description: data['description'] ?? '',
-        committeeMembers: committeeMembers,
-      );
-    }).toList();
-    notifyListeners();
+        return Society(
+          id: doc.id,
+          name: data['name'] ?? 'Unknown Society',
+          category: data['category'] ?? 'General',
+          description: data['description'] ?? '',
+          committeeMembers: committeeMembers,
+        );
+      }).toList();
+      notifyListeners();
+    } catch (e) {
+      debugPrint('loadSocieties Firestore error: $e');
+    }
   }
 
   /// Fetches upcoming events from the Firestore 'events' collection with a 100-event limit and caches them locally.
