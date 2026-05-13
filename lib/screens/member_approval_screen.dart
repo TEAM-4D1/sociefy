@@ -29,7 +29,8 @@ class _MemberApprovalScreenState extends State<MemberApprovalScreen> {
           stream: FirebaseFirestore.instance
               .collection('pending_memberships')
               .where('societyId', isEqualTo: widget.societyId)
-              .snapshots(),          builder: (context, snapshot) {
+              .snapshots(),
+          builder: (context, snapshot) {
             // Loading state
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -37,7 +38,9 @@ class _MemberApprovalScreenState extends State<MemberApprovalScreen> {
 
             // Error state
             if (snapshot.hasError) {
-              return const Center(child: Text('Error loading pending requests.'));
+              return const Center(
+                child: Text('Error loading pending requests.'),
+              );
             }
 
             // Empty state
@@ -63,7 +66,8 @@ class _MemberApprovalScreenState extends State<MemberApprovalScreen> {
                     subtitle: Text('Request ID: ${req.id}'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: [                        // APPROVE
+                      children: [
+                        // APPROVE
                         IconButton(
                           icon: const Icon(Icons.check, color: Colors.green),
                           onPressed: () async {
@@ -85,7 +89,7 @@ class _MemberApprovalScreenState extends State<MemberApprovalScreen> {
                               );
                             }
                           },
-                        ),                        // REJECT
+                        ), // REJECT
                         IconButton(
                           icon: const Icon(Icons.close, color: Colors.red),
                           onPressed: () async {

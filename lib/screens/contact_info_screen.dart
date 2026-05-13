@@ -29,6 +29,7 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
       widget.society.committeeMembers,
     );
   }
+
   /// Shows a dialog to edit an existing committee member's information at the specified index.
   Future<void> _editMember(int index) async {
     final member = _committeeMembers[index];
@@ -60,6 +61,7 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
       }
     }
   }
+
   /// Shows a dialog to add a new committee member and adds them to the list if confirmed.
   Future<void> _addMember() async {
     final result = await showDialog<CommitteeMember>(
