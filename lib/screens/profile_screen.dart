@@ -88,15 +88,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   label: const Text('Change Password'),
                   onPressed: () async {
                     if (currentUser?.email != null) {
-                      await FirebaseAuth.instance.sendPasswordResetEmail(
-                        email: currentUser!.email!,
-                      );
-                      if (!mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Password reset email sent.'),
-                        ),
-                      );
+                      try {
+                        await FirebaseAuth.instance.sendPasswordResetEmail(
+                          email: currentUser!.email!,
+                        );
+                        if (!mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Password reset email sent.'),
+                          ),
+                        );
+                      } catch (e) {
+                        if (!mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Error: $e'),
+                          ),
+                        );
+                      }
                     } else {
                       if (!mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -107,7 +116,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     }
                   },
                 ),
-              const SizedBox(height: 16),              ElevatedButton.icon(
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
                 icon: const Icon(Icons.logout),
                 label: const Text('Sign Out'),
                 onPressed: () async {
