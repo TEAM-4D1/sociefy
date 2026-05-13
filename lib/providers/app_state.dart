@@ -296,9 +296,6 @@ class AppState extends ChangeNotifier {
   /// Returns true if the current user is a guest (userId equals exactly 'guest').
   bool get isGuest => userId != null && userId == 'guest';
 
-  /// Returns the pending admin login flag status.
-  bool get isPendingAdminLogin => _pendingAdminLogin;
-
   /// Loads the list of society IDs that the user with [userId] has joined from the Firestore 'memberships' collection.
   /// [userId] The ID of the user to load memberships for.
   /// Calls [notifyListeners] after loading.
