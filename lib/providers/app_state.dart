@@ -283,7 +283,6 @@ class AppState extends ChangeNotifier {
         final comment = Comment.fromFirestore(doc.data(), doc.id);
         announcement.comments.add(comment);
       }
-      notifyListeners();
     } catch (e) {
       debugPrint(
         'Error loading comments for announcement ${announcement.id}: $e',
