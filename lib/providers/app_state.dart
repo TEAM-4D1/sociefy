@@ -318,34 +318,35 @@ class AppState extends ChangeNotifier {
         if (sid != null) {
           societyIds.add(sid);
         }
-      }
-
-      // Return early if no societies found
+      }      // Return early if no societies found
       if (societyIds.isEmpty) {
         _mySocieties = [];
         notifyListeners();
         return;
       }
 
-      // Fetch all societies in a single query using whereIn
-      final societiesSnapshot = await _firestore
-          .collection('societies')
-          .where(FieldPath.documentId, whereIn: societyIds)
-          .get();
-
+      // Fetch all societies using chunked queries (Firestore whereIn limit is 10)
       final List<Society> results = [];
-      for (final doc in societiesSnapshot.docs) {
-        final data = doc.data();
-        results.add(
-          Society(
+      const chunkSize = 10;
+      for (int i = 0; i < societyIds.length; i += chunkSize) {
+        final chunk = societyIds.sublist(
+          i,
+          (i + chunkSize < societyIds.length) ? i + chunkSize : societyIds.length,
+        );
+        final snap = await _firestore
+            .collection('societies')
+            .where(FieldPath.documentId, whereIn: chunk)
+            .get();
+        for (final doc in snap.docs) {
+          final data = doc.data();
+          results.add(Society(
             id: doc.id,
             name: data['name'] ?? 'Unknown Society',
             category: data['category'] ?? 'General',
             description: data['description'] ?? '',
-          ),
-        );
+          ));
+        }
       }
-
       _mySocieties = results;
       notifyListeners();
     } catch (e) {
