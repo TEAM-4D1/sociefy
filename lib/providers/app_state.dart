@@ -495,11 +495,11 @@ class AppState extends ChangeNotifier {
   /// [category] The category of the society.
   /// [description] A description of the society.
   /// Generates a unique ID, adds to [_societies], calls [notifyListeners], and writes to Firestore 'societies' collection.
-  void createSociety({
+  Future<void> createSociety({
     required String name,
     required String category,
     required String description,
-  }) {
+  }) async {
     final id =
         '${name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-')}-${DateTime.now().millisecondsSinceEpoch}';
     _societies.add(
@@ -508,14 +508,13 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _firestore
-          .collection('societies')
-          .doc(id)
-          .set({'name': name, 'category': category, 'description': description})
-          .then((_) {
-            // Force reload societies after successful Firestore write to ensure consistency
-            loadSocieties(forceReload: true);
-          });
+      await _firestore.collection('societies').doc(id).set({
+        'name': name,
+        'category': category,
+        'description': description,
+      });
+      // Force reload societies after successful Firestore write to ensure consistency
+      await loadSocieties(forceReload: true);
     } catch (e) {
       debugPrint('createSociety Firestore error: $e');
     }
@@ -582,7 +581,7 @@ class AppState extends ChangeNotifier {
   /// [endTime] The end time of the event.
   /// [venue] The location where the event takes place.
   /// Generates unique ID, inserts at beginning of [_events], calls [notifyListeners], and writes to Firestore 'events' collection.
-  void createEvent({
+  Future<void> createEvent({
     required String societyId,
     required String title,
     required String description,
@@ -590,7 +589,7 @@ class AppState extends ChangeNotifier {
     required String startTime,
     required String endTime,
     required String venue,
-  }) {
+  }) async {
     final eventId =
         'e-${DateTime.now().microsecondsSinceEpoch}-${_eventIdCounter++}';
     final societyName = societyNameById(societyId);
@@ -613,7 +612,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _firestore.collection('events').doc(eventId).set({
+      await _firestore.collection('events').doc(eventId).set({
         'societyId': societyId,
         'societyName': societyName,
         'title': title,
