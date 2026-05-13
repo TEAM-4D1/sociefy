@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Represents a society awaiting admin approval.
-/// 
+///
 /// When a society is first created, it's stored in the 'pending_societies'
 /// collection. Admins can then approve or reject the request, moving approved
 /// societies to the main 'societies' collection.
