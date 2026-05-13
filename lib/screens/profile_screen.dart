@@ -10,9 +10,14 @@ import '../widgets/app_gradient_background.dart';
 /// Displays the current user's profile information including display name, email, and avatar.
 /// Provides a Sign Out button to end the current session and clear all session data.
 /// Accessible to all authenticated users and guests.
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
@@ -77,8 +82,7 @@ class ProfileScreen extends StatelessWidget {
                 subtitle,
                 style: const TextStyle(fontSize: 16, color: Colors.grey),
               ),
-              const SizedBox(height: 32),
-              if (!appState.isGuest)
+              const SizedBox(height: 32),              if (!appState.isGuest)
                 ElevatedButton.icon(
                   icon: const Icon(Icons.lock_reset),
                   label: const Text('Change Password'),
@@ -87,12 +91,14 @@ class ProfileScreen extends StatelessWidget {
                       await FirebaseAuth.instance.sendPasswordResetEmail(
                         email: currentUser!.email!,
                       );
+                      if (!mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Password reset email sent.'),
                         ),
                       );
                     } else {
+                      if (!mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('No email found for this user.'),
