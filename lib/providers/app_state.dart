@@ -4,6 +4,7 @@ import '../models/event.dart';
 import '../models/announcement.dart';
 import '../services/society_service.dart';
 import '../data/sample_events.dart';
+import '../config/admin_config.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -22,8 +23,6 @@ import 'dart:async';
 /// Construct with `AppState(skipFirebase: true)` in tests so the auth
 /// listener is not registered.
 class AppState extends ChangeNotifier {
-  static const String _committeeAdminEmail = 'jburfoot12@gmail.com';
-
   String? userId;
   bool isAdmin = false;
   bool _pendingAdminLogin = false;
@@ -200,7 +199,7 @@ class AppState extends ChangeNotifier {
         .listen((querySnapshot) async {
           // Build a map of existing announcements to preserve likes/comments
           final existingMap = {
-            for (final announcement in _announcements) 
+            for (final announcement in _announcements)
               announcement.id: announcement,
           };
 
@@ -210,14 +209,14 @@ class AppState extends ChangeNotifier {
             final newAnnouncement = Announcement(
               // ...
             );
-            
+
             // Preserve likes and comments from existing announcement if it exists
             if (existingMap.containsKey(newAnnouncement.id)) {
               final existing = existingMap[newAnnouncement.id]!;
               newAnnouncement.likedBy.addAll(existing.likedBy);
               newAnnouncement.comments.addAll(existing.comments);
             }
-            
+
             return newAnnouncement;
           }).toList();
 
@@ -228,7 +227,7 @@ class AppState extends ChangeNotifier {
             for (final announcement in _announcements) ...[
               _loadLikesForAnnouncement(announcement),
               _loadCommentsForAnnouncement(announcement),
-            ]
+            ],
           ]);
         });
   }
@@ -318,7 +317,7 @@ class AppState extends ChangeNotifier {
         if (sid != null) {
           societyIds.add(sid);
         }
-      }      // Return early if no societies found
+      } // Return early if no societies found
       if (societyIds.isEmpty) {
         _mySocieties = [];
         notifyListeners();
@@ -331,7 +330,9 @@ class AppState extends ChangeNotifier {
       for (int i = 0; i < societyIds.length; i += chunkSize) {
         final chunk = societyIds.sublist(
           i,
-          (i + chunkSize < societyIds.length) ? i + chunkSize : societyIds.length,
+          (i + chunkSize < societyIds.length)
+              ? i + chunkSize
+              : societyIds.length,
         );
         final snap = await _firestore
             .collection('societies')
@@ -339,12 +340,14 @@ class AppState extends ChangeNotifier {
             .get();
         for (final doc in snap.docs) {
           final data = doc.data();
-          results.add(Society(
-            id: doc.id,
-            name: data['name'] ?? 'Unknown Society',
-            category: data['category'] ?? 'General',
-            description: data['description'] ?? '',
-          ));
+          results.add(
+            Society(
+              id: doc.id,
+              name: data['name'] ?? 'Unknown Society',
+              category: data['category'] ?? 'General',
+              description: data['description'] ?? '',
+            ),
+          );
         }
       }
       _mySocieties = results;
