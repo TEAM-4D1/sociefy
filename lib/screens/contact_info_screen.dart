@@ -29,9 +29,8 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
       widget.society.committeeMembers,
     );
   }
-
   /// Shows a dialog to edit an existing committee member's information at the specified index.
-  void _editMember(int index) async {
+  Future<void> _editMember(int index) async {
     final member = _committeeMembers[index];
     final result = await showDialog<CommitteeMember>(
       context: context,
