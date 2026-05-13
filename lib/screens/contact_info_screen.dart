@@ -61,9 +61,8 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
       }
     }
   }
-
   /// Shows a dialog to add a new committee member and adds them to the list if confirmed.
-  void _addMember() async {
+  Future<void> _addMember() async {
     final result = await showDialog<CommitteeMember>(
       context: context,
       builder: (context) => _CommitteeMemberDialog(),
