@@ -29,11 +29,15 @@ class _MemberApprovalScreenState extends State<MemberApprovalScreen> {
           stream: FirebaseFirestore.instance
               .collection('pending_memberships')
               .where('societyId', isEqualTo: widget.societyId)
-              .snapshots(),
-          builder: (context, snapshot) {
+              .snapshots(),          builder: (context, snapshot) {
             // Loading state
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
+            }
+
+            // Error state
+            if (snapshot.hasError) {
+              return const Center(child: Text('Error loading pending requests.'));
             }
 
             // Empty state
