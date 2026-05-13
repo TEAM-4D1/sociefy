@@ -264,7 +264,7 @@ void main() {
       expect(appState.isEventSaved('nonexistent'), isFalse);
     });
 
-    test('saveEvent() marks event as saved (guest user)', () {
+    test('saveEvent() marks event as saved (guest user)', () async {
       final appState = AppState(skipFirebase: true);
       appState.userId = 'guest';
       appState.createSociety(name: 'T', category: 'T', description: 'T');
@@ -278,11 +278,11 @@ void main() {
         venue: 'Room 1',
       );
       final eventId = appState.events.first.id;
-      appState.saveEvent(eventId);
+      await appState.saveEvent(eventId);
       expect(appState.isEventSaved(eventId), isTrue);
     });
 
-    test('unsaveEvent() removes event from saved', () {
+    test('unsaveEvent() removes event from saved', () async {
       final appState = AppState(skipFirebase: true);
       appState.userId = 'guest';
       appState.createSociety(name: 'T', category: 'T', description: 'T');
@@ -296,8 +296,8 @@ void main() {
         venue: 'Room 1',
       );
       final eventId = appState.events.first.id;
-      appState.saveEvent(eventId);
-      appState.unsaveEvent(eventId);
+      await appState.saveEvent(eventId);
+      await appState.unsaveEvent(eventId);
       expect(appState.isEventSaved(eventId), isFalse);
     });
 
