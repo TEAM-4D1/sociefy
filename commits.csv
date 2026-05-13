@@ -1,0 +1,1086 @@
+justinb14, jburfoot12@gmail.com, 2026-05-13, Add specific error handling for signIn method: log FirebaseAuthException details for better debugging
+justinb14, jburfoot12@gmail.com, 2026-05-13, Add dispose method to MessageService: clean up stream controllers to prevent memory leaks
+justinb14, jburfoot12@gmail.com, 2026-05-13, Add analyze_output.txt: log dependency resolution and package updates
+justinb14, jburfoot12@gmail.com, 2026-05-13, Refactor ContactInfoScreen and MemberApprovalScreen: improve code readability by adding line breaks and formatting adjustments
+justinb14, jburfoot12@gmail.com, 2026-05-13, Add error handling for Firestore stream in MemberApprovalScreen
+justinb14, jburfoot12@gmail.com, 2026-05-13, Change _editMember method to return Future<void> for better async handling
+justinb14, jburfoot12@gmail.com, 2026-05-13, Change _addMember method to return Future<void> for better async handling
+justinb14, jburfoot12@gmail.com, 2026-05-13, Refactor ProfileScreen: improve password change button visibility and streamline error handling
+justinb14, jburfoot12@gmail.com, 2026-05-13, Add error handling for password reset email in ProfileScreen
+justinb14, jburfoot12@gmail.com, 2026-05-13, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+justinb14, jburfoot12@gmail.com, 2026-05-13, Remove unnecessary blank line in SocietyDetailScreen import section for cleaner code
+chikbunting, chikbunting04@gmail.com, 2026-05-13, Merge pull request #23 from TEAM-4D1/chik
+justinb14, jburfoot12@gmail.com, 2026-05-13, Refactor SignInScreen: adjust formatting for improved readability in button layout and navigation
+justinb14, jburfoot12@gmail.com, 2026-05-13, Add main_tabs import to SignInScreen for improved navigation handling
+justinb14, jburfoot12@gmail.com, 2026-05-13, Fix guest sign-in navigation: streamline route handling for guest users in SignInScreen
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-05-13, Merge origin/main into chik and resolve conflict in society detail screen
+chikbunting, chikbunting04@gmail.com, 2026-05-13, Refactor SocietyDetailScreen: update isSaved parameter to reflect event save state
+justinb14, jburfoot12@gmail.com, 2026-05-13, Refactor code for improved readability: adjust formatting in AppState, CommitteeSignInScreen, ContactInfoScreen, and SocietyDetailScreen
+chikbunting, chikbunting04@gmail.com, 2026-05-13, Fix admin email comparison to be case-insensitive in sign-in logic
+justinb14, jburfoot12@gmail.com, 2026-05-13, Refactor loadAnnouncements method: improve error handling and enhance code readability
+justinb14, jburfoot12@gmail.com, 2026-05-13, Refactor login method: improve readability by adjusting formatting and ensuring consistent code structure
+chikbunting, chikbunting04@gmail.com, 2026-05-13, Refactor Flutter CI: fix indentation for Setup Flutter step
+justinb14, jburfoot12@gmail.com, 2026-05-13, Fix formatting issues in CommitteeSignInScreen and SocietyDetailScreen: streamline code structure and improve readability
+justinb14, jburfoot12@gmail.com, 2026-05-13, Refactor _removeMember method: change return type to Future<void> for better async handling
+justinb14, jburfoot12@gmail.com, 2026-05-13, Refactor AppState and screens: improve logic for loading data and handling guest users
+justinb14, jburfoot12@gmail.com, 2026-05-13, Refactor AppState: improve formatting and readability of code structure
+justinb14, jburfoot12@gmail.com, 2026-05-13, Refactor AppState: prevent Firebase auth changes from affecting guest users
+justinb14, jburfoot12@gmail.com, 2026-05-13, Refactor AppState: manage auth state subscription and simplify isAuthenticated logic
+justinb14, jburfoot12@gmail.com, 2026-05-13, Refactor AppState: update isAuthenticated getter to exclude 'guest' userId
+justinb14, jburfoot12@gmail.com, 2026-05-13, Refactor AppState: remove redundant getter for pending admin login flag
+justinb14, jburfoot12@gmail.com, 2026-05-13, Refactor CI workflow: fix indentation for setup steps
+justinb14, jburfoot12@gmail.com, 2026-05-13, Refactor AppState: add getter for pending admin login flag
+justinb14, jburfoot12@gmail.com, 2026-05-13, Add admin configuration creation step in CI workflow
+justinb14, jburfoot12@gmail.com, 2026-05-13, Refactor AppState: remove unnecessary blank line for cleaner code
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor AppState: remove unnecessary notifyListeners() call after loading comments for announcements
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor AppState: remove unnecessary notifyListeners() call after loading likes for announcements
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor AppState: move notifyListeners() call to ensure UI updates after loading comments
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor SocietyBrowserScreen: load societies in initState for improved data handling
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor CommitteeSignInScreen: enhance admin login flow with user ID handling
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor RegisterScreen: integrate app state management for user login after registration
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor RegisterScreen: add missing provider import for app state management
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor MessagesPage: change from StatelessWidget to StatefulWidget for caching last messages
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor Society and SocietyBrowserScreen: remove unused members and category fields
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor SocietyBrowserScreen Tests: make createSociety calls await for proper asynchronous handling
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor SocietyBrowserScreen Tests: make createSociety calls asynchronous for proper handling
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor SocietyBrowserScreen Tests: improve readability by formatting testWidgets signatures and ensuring shimmer placeholders are correctly tested
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor AppState Unit Tests: make createSociety and createEvent tests asynchronous for proper handling
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor AppState Unit Tests: make createSociety tests asynchronous for proper handling
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor AppState: change createSociety and createEvent methods to async for improved Firestore handling
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Fix: prevent state updates on unmounted widget in like toggle error handling
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor AppState: enhance announcement mapping with additional fields for improved data integrity
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor AppState Unit Tests: make savedEvents test asynchronous for proper event saving
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor AppState Unit Tests: make saveEvent test asynchronous for proper event saving
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor AppState: change saveEvent and unsaveEvent methods to async for improved Firestore handling
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Handle Firestore errors in loadSocieties method and improve data fetching logic
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor AppState: format isCommitteeAdmin assignment for improved readability
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor AppState: replace hardcoded committee admin email with AdminConfig value for improved security
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor AppState: improve code readability by organizing imports and formatting, and enhance society fetching logic with chunked queries
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor SignInScreen: replace hardcoded admin email with AdminConfig value for improved security
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Add admin_config import to sign_in_screen for better configuration management
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor CommitteeSignInScreen: move sensitive admin credentials to admin_config.dart and remove hardcoded values
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Optimize society fetching: implement chunked queries for Firestore to handle larger society IDs
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor ProfileScreen: streamline sign-out logic and ensure navigation only occurs if context is mounted
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Enhance announcement loading: preserve likes and comments when updating announcements from Firestore
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Enhance MemberApprovalScreen: add error handling and feedback for membership approval and rejection actions
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor ProfileScreen: convert to StatefulWidget and handle mounted state checks for password reset
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Fix: prevent state updates on unmounted ContactInfoScreen during member edit and add operations
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor announcement loading: optimize likes and comments retrieval by using Future.wait for parallel execution
+waynedsz, waynedesouza33@gmail.com, 2026-05-13, Refactor AppState: simplify admin login logic by removing redundant guest session check
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor FeedScreen tests for clarity: update loading placeholders and widget hierarchy checks
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor FeedScreen tests: streamline loading placeholders and Firebase auth integration tests for clarity
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor FeedScreen tests: remove announcement-related tests and update existing tests for clarity and accuracy
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add comprehensive tests for FeedScreen functionality and user roles
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor FeedScreen tests for clarity and consistency
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add tests for admin functionalities and announcement display in FeedScreen
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Remove FirebaseService class as Firebase functionality is currently disabled
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Update coverage data in lcov.info to reflect reduced line coverage across multiple screens
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Update coverage data in lcov.info to reflect increased line coverage across multiple screens
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add test for leaveSociety method to verify Firestore document deletion and FCM unsubscribe
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor message service test to improve readability and structure
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Update coverage data in lcov.info to reflect reduced line coverage across multiple screens
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor MessageService constructor and streamline Firestore operations for joinSociety and leaveSociety methods
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Remove SocietyChatPage implementation and related components
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Remove unimplemented society_model.dart file
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Update coverage data in lcov.info to reflect changes across multiple screens
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Optimize announcement loading by fetching likes and comments in parallel without blocking the stream
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Update coverage data in lcov.info to reflect recent changes in multiple screens
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Update coverage data in lcov.info to reflect recent changes in multiple files
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor event ID generation for clarity and remove debug prints in unit tests
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add unique event ID generation to prevent collisions
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add debug prints to event creation and saving in app_state_unit_test
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor ContactInfoScreen test to improve button presence and disabled state checks
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Update coverage data in lcov.info to reflect recent changes in app_state.dart and other files
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor FeedScreen test to create a society directly instead of adding to joined list
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Fix unit tests by clearing events and setting user state directly
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor SocietyChatScreen tests to remove unnecessary widget structure tests and simplify runtime environment checks
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor MemberApprovalScreen tests to remove widget structure tests and retain essential runtime environment checks
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Remove SavedEventsScreen test file as it is no longer needed
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Remove redundant test for empty events state in SavedEventsScreen tests
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Remove redundant test for announcements in FeedScreen tests
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add tests for SavedEventsScreen to verify app bar and ListView rendering
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Update empty state test to allow for flexible app state verification
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Fix event title test expectation to allow for multiple instances on screen
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor MemberApprovalScreen tests to improve clarity and focus on widget structure
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor SocietyChatScreen tests to remove unnecessary checks and improve clarity
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Remove Firebase initialization from SocietyChatScreen tests to simplify setup
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor SocietyChatScreen tests to enhance clarity and coverage for guest behavior and UI elements
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Initialize Firebase in SocietyChatScreen tests to ensure proper setup before execution
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor SocietyDetailScreen test to improve clarity of expectations for AppBar and society name
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor SocietyChatScreen tests to improve parameter verification and simplify structure
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add tests for SocietyChatScreen to verify UI rendering and guest behavior
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add tests for MemberApprovalScreen to verify UI rendering and initial loading state
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add tests for ContactInfoScreen to verify UI rendering and interaction
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor EventDetailScreen test to simplify button icon verification
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add tests for EventDetailScreen to verify UI rendering and interaction
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add tests for join/leave button text in SocietyDetailScreen
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add tests for SocietyDetailScreen to verify UI rendering and interaction
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add tests for SavedEventsScreen to verify UI behavior and event handling
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add tests for FeedScreen to verify UI behavior for various states
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Update Sphinx configuration to use 'myst_parser' extension
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Simplify Python installation method in Read the Docs configuration
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add detailed documentation for data models including Society, Event, Announcement, Comment, and CommitteeMember
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add test for loadAnnouncements to verify loading likes and comments in parallel
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Refactor tests for loadSocieties, saveEvent, and createSociety to improve readability and consistency; add tests for loadAnnouncements with various scenarios
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add last message fetching and timestamp formatting to MessagesPage
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Add committee members parsing from Firestore to Society model
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Save committee members updates to Firestore after editing, adding, or removing members
+waynedsz, waynedesouza33@gmail.com, 2026-05-11, Optimize fetching likes and comments for announcements to run in parallel
+Aze, azizraximov919@icloud.com, 2026-05-11, Commit generated plugin files and lock after adding url_launcher
+Aze, azizraximov919@icloud.com, 2026-05-11, Add working Save/Unsave button to EventDetailScreen
+Aze, azizraximov919@icloud.com, 2026-05-11, Fix Add to Calendar on web: open Google Calendar URL
+Aze, azizraximov919@icloud.com, 2026-05-09, Fix createAnnouncement Firestore guard for injected fake
+Aze, azizraximov919@icloud.com, 2026-05-09, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Aze, azizraximov919@icloud.com, 2026-05-09, Fix 19 failing tests: viewport, async, and nav label
+Aze, azizraximov919@icloud.com, 2026-05-09, Fix 19 failing tests: viewport, async, and nav label
+Aze, azizraximov919@icloud.com, 2026-05-09, Merge origin/main: resolve createAnnouncement conflict
+Aze, azizraximov919@icloud.com, 2026-05-09, Fix failing tests: scroll to off-screen button and skip Firestore in unit tests
+justinb14, jburfoot12@gmail.com, 2026-05-09, chore: update dependencies for meta and test_api packages to latest versions
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, feat: enhance announcement creation and image upload error handling with retries and timeouts
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, feat: update createAnnouncement method to return a Future and handle Firestore errors
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, feat: improve image upload handling in CreatePostDialog with safe filename and content type detection
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, fix: reorder title and image display in announcement card for better layout
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, removed unncessary button in sign out screen
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, feat: enhance image upload handling in CreatePostDialog with timeout and user feedback
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, chore: format README.md for improved readability
+Trips424, uditini431@gmail.com, 2026-05-08, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Trips424, uditini431@gmail.com, 2026-05-08, made large scale changes to readme
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, feat: add error handling for image upload failure in CreatePostDialog
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, feat: enhance image upload functionality to support web and mobile platforms
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, feat: add 'View Events' button for admin users in ProfileScreen
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, refactor: update ListTile to Card for improved UI in MessagesPage
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, removed shadow in logo present in the sign in screen
+Trips424, uditini431@gmail.com, 2026-05-08, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Trips424, uditini431@gmail.com, 2026-05-08, fix: set default value for isSaved in EventDetailScreen to false
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, changed isSaved from null to false
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, update package versions in pubspec.lock for compatibility
+Trips424, uditini431@gmail.com, 2026-05-08, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Trips424, uditini431@gmail.com, 2026-05-08, add AppGradientBackground widget for consistent UI styling
+Trips424, uditini431@gmail.com, 2026-05-08, add AppGradientBackground to SocietyDetailScreen for improved UI
+Trips424, uditini431@gmail.com, 2026-05-08, add AppGradientBackground to SocietyChatScreen for improved UI
+Trips424, uditini431@gmail.com, 2026-05-08, add AppGradientBackground to SocietyBrowserScreen for improved UI
+Trips424, uditini431@gmail.com, 2026-05-08, add AppGradientBackground to SavedEventsScreen for improved UI
+Trips424, uditini431@gmail.com, 2026-05-08, add AppGradientBackground to ProfileScreen for improved UI
+Trips424, uditini431@gmail.com, 2026-05-08, add AppGradientBackground to MessagesPage for improved UI
+Trips424, uditini431@gmail.com, 2026-05-08, add AppGradientBackground to MemberApprovalScreen for improved UI
+Trips424, uditini431@gmail.com, 2026-05-08, add AppGradientBackground to FeedScreen for improved UI
+Trips424, uditini431@gmail.com, 2026-05-08, add AppGradientBackground to EventDetailScreen for improved UI
+Trips424, uditini431@gmail.com, 2026-05-08, add AppGradientBackground to ContactInfoScreen for enhanced UI
+Trips424, uditini431@gmail.com, 2026-05-08, add AppGradientBackground to SocietyChatPage for improved UI
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, added all events seen on guest and user profile
+Trips424, uditini431@gmail.com, 2026-05-08, update AppBar titles across multiple screens to use larger font size and bold weight
+Trips424, uditini431@gmail.com, 2026-05-08, add AuthLogoHeader widget for displaying logo with customizable size and spacing
+Trips424, uditini431@gmail.com, 2026-05-08, update default size for AppBarLogoAction to 48
+Trips424, uditini431@gmail.com, 2026-05-08, add AuthLogoHeader to SignInScreen
+Trips424, uditini431@gmail.com, 2026-05-08, add AuthLogoHeader to RegisterScreen
+Trips424, uditini431@gmail.com, 2026-05-08, add AuthLogoHeader to CommitteeSignInScreen
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, update AppBarLogoAction size and remove shadow decoration
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, update AppBar title style in SocietyDetailScreen
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, update AppBar title style in SavedEventsScreen
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, update AppBar title style in ProfileScreen
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, update AppBar title style in MessagesPage
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, update AppBar title style in FeedScreen
+Trips424, uditini431@gmail.com, 2026-05-08, update AppBarLogoAction padding and size properties
+Trips424, uditini431@gmail.com, 2026-05-08, add AppBarLogoAction to SocietyDetailScreen app bar
+Trips424, uditini431@gmail.com, 2026-05-08, add AppBarLogoAction to SocietyChatScreen app bar
+Trips424, uditini431@gmail.com, 2026-05-08, add AppBarLogoAction to SocietyBrowserScreen app bar
+Trips424, uditini431@gmail.com, 2026-05-08, add AppBarLogoAction to SignInScreen app bar
+Trips424, uditini431@gmail.com, 2026-05-08, refactor SavedEventsScreen app bar to use AppBarLogoAction
+Trips424, uditini431@gmail.com, 2026-05-08, add AppBarLogoAction widget
+Trips424, uditini431@gmail.com, 2026-05-08, add AppBarLogoAction to RegisterScreen
+Trips424, uditini431@gmail.com, 2026-05-08, add AppBarLogoAction to ProfileScreen
+Trips424, uditini431@gmail.com, 2026-05-08, add AppBarLogoAction to MessagesPage
+Trips424, uditini431@gmail.com, 2026-05-08, add AppBarLogoAction to MemberApprovalScreen
+Trips424, uditini431@gmail.com, 2026-05-08, add AppBarLogoAction to FeedScreen
+Trips424, uditini431@gmail.com, 2026-05-08, add AppBarLogoAction to EventDetailScreen
+Trips424, uditini431@gmail.com, 2026-05-08, add AppBarLogoAction to Contact Info screen
+Trips424, uditini431@gmail.com, 2026-05-08, added logo to committee sign in screen
+Trips424, uditini431@gmail.com, 2026-05-08, added logo to soc chat page
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, changed any computing events to include the compscisoc image
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, added mma and literature events and removed existing events to make room for them and keep the event count at 20
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, fix: improve description formatting for South Asian Film Screening event
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, remade sample events as they did not correlate to existing societies
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, modified logo, inserted into container to avoid overlap while scrolling down.
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, renamed saved tab from saved to events again
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, modified magnification and positioning of logo
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, refactor: enhance saved events display with Card and InkWell for better interaction
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, events box completely prompts cursor change, region for image and text are not seperated so mouse cursor does not change.
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, added logo to app, after signing in, users will be able to see the logo in the top left of every page.
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, added logo
+Trips424, uditini431@gmail.com, 2026-05-08, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Trips424, uditini431@gmail.com, 2026-05-08, pubspec
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, improved user experience by allowing for sign in via pressing enter on keyboard
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, sign in error fixed
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, changed event box so cursor change is displayed across the whole thing
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, refactor: streamline code formatting and improve readability in AppState
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, fixed issue where sample events dont show for admins but do for guest sign in
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, ignored unused parameter, as error loop occurs if removed
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, fixed error
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, fixed further erros in problems
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, fixed error
+chikbunting, chikbunting04@gmail.com, 2026-05-08, Merge pull request #22 from TEAM-4D1/chik
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-05-08, Merge remote-tracking branch 'origin/main' into chik
+chikbunting, chikbunting04@gmail.com, 2026-05-08, Update coverage data for AuthService to reflect new test cases and improve accuracy
+chikbunting, chikbunting04@gmail.com, 2026-05-08, Add unit tests for AuthService using MockFirebaseAuth to verify error handling
+chikbunting, chikbunting04@gmail.com, 2026-05-08, Add comprehensive tests for AppState and model classes
+chikbunting, chikbunting04@gmail.com, 2026-05-08, Add unit tests for SocietyService using fake Firestore for improved reliability
+chikbunting, chikbunting04@gmail.com, 2026-05-08, Refactor SocietyService to use optional Firestore instance for improved testability
+chikbunting, chikbunting04@gmail.com, 2026-05-08, Refactor AppState to use optional Firestore instance for improved testability
+chikbunting, chikbunting04@gmail.com, 2026-05-08, Refactor AppState to use injected Firestore instance for improved consistency and testability
+chikbunting, chikbunting04@gmail.com, 2026-05-08, Refactor AppState and SocietyService to use injected Firestore instance for improved testability
+chikbunting, chikbunting04@gmail.com, 2026-05-08, Refactor SocietyService to use injected Firestore instance and update pubspec.yaml with new dev dependencies
+chikbunting, chikbunting04@gmail.com, 2026-05-08, Add implementation issues documentation for Sociefy project
+chikbunting, chikbunting04@gmail.com, 2026-05-08, Remove sample societies data and Society class definition
+chikbunting, chikbunting04@gmail.com, 2026-05-08, Add documentation for AppColours class to clarify purpose and usage
+chikbunting, chikbunting04@gmail.com, 2026-05-08, Enhance documentation for Comment and Announcement classes for clarity
+chikbunting, chikbunting04@gmail.com, 2026-05-08, Refactor MessageService documentation for clarity and completeness
+chikbunting, chikbunting04@gmail.com, 2026-05-08, Fix event loading in SavedEventsScreen to avoid setState during build
+chikbunting, chikbunting04@gmail.com, 2026-05-08, remove redundant Firebase listener initialization method; reset pending admin login state on logout
+chikbunting, chikbunting04@gmail.com, 2026-05-08, update BottomNavigationBar label for clarity; enhance currentUser getter to handle Firebase initialization errors
+Trips424, uditini431@gmail.com, 2026-05-08, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+chikbunting, chikbunting04@gmail.com, 2026-05-08, update pubspec.lock to reflect latest package versions
+Trips424, uditini431@gmail.com, 2026-05-08, completed deletion and dediting messages
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, fixed errors further
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, ensured all socities are displayed in its resepctive category name
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, added cursor change prompt for entire event box when user hovers over it
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, fixed event related errors
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, enhance event filtering for societies to include name matching
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, fixed errors
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, fix formatting issues in SocietyDetailScreen widget
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, fixed errors
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, fixed errors
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, fixed errors
+Trips424, uditini431@gmail.com, 2026-05-08, added deleting and editing comments
+Trips424, uditini431@gmail.com, 2026-05-08, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, added cursor change prompt for events
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, modified 'clickable' region of events box
+Trips424, uditini431@gmail.com, 2026-05-08, completed implementation of deleting and editing comments
+Trips424, uditini431@gmail.com, 2026-05-08, started implementation of deleting and editing comments
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, style: format society image asset mapping for improved readability
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, Readded events that disseapeared from previous modifications
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-08, toggle to collapse comments on posts added
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, style: improve formatting and readability of like and comment display in announcement card
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, style: enhance like button interaction with mouse cursor feedback
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, style: format dateTime parsing for better readability
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, fixed error related to comments not staying persisted
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, repositioned speech bubble next to likes
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, style: update comment display logic for better clarity
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, fixed errors
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, changed comment style for aesthetics and simplicity
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, fixed errors
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, style: format comment input section for better readability
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, refactored commenting function on posts
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, Data persistence added to likes and comments
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, fix: remove unnecessary blank line in sign-in logic
+Trips424, uditini431@gmail.com, 2026-05-07, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Trips424, uditini431@gmail.com, 2026-05-07, fully completed implementation of comment section
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, sign in error fixed, admin sign ins now automatically transitioned to home screen
+Trips424, uditini431@gmail.com, 2026-05-07, created a comment section class for all posts
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, removed 'saved to calendar' button as an add to calendar button already exists. Removed to reduce ambiguity and confusion for users.
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, container added for images to preserve original aspect ratios and avoid any strehcing or cropping
+Trips424, uditini431@gmail.com, 2026-05-07, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Trips424, uditini431@gmail.com, 2026-05-07, completed implementation of like button
+Trips424, uditini431@gmail.com, 2026-05-07, fixed like button
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, removed unncessary placeholder in events tab
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, refactor: streamline BottomNavigationBarItem for Profile tab
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, renamed saved tab from saved to events as all events are displayed regardless of condition
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, added images and displayed them in the events tab
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, added society name to saved events for clarity
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, fixed sign out error on profile screen for new users
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, fixed undefined class error
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, fixed registration error, where account creates successfully but user is not navigated to home screen and false error message was displayed
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, fixed error on discovery screen, where entire list of societies would not render unless a category button was pressed.
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, fixed erros related to new event assets
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, added sample events to events screen, users who press saved will now see all ongoing events regardless of if they are in that society or not
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-07, Flutter pub get ran
+Aze, azizraximov919@icloud.com, 2026-05-07, fix: initialise Firebase before runApp so Firestore listeners start
+Aze, azizraximov919@icloud.com, 2026-05-07, fix: add auth gate so app shows SignInScreen when not authenticated
+Aze, azizraximov919@icloud.com, 2026-05-07, fix: provide AppState above MainTabs so all screens can access it
+Aze, azizraximov919@icloud.com, 2026-05-07, fix: use microsecondsSinceEpoch for event IDs to prevent collisions
+Aze, azizraximov919@icloud.com, 2026-05-07, fix: expand MainTabs to 5 tabs and fix savedEvents test
+Aze, azizraximov919@icloud.com, 2026-05-07, fix: replace deprecated value with initialValue in DropdownButtonFormField
+Aze, azizraximov919@icloud.com, 2026-05-07, fix: update snackbar text in register test to match updated screen message
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, refactor: remove unused import for sign_in_screen in register_screen.dart
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, refactor: update requirements.txt with specific package versions for consistency
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, refactor: improve announcement card layout and enhance post dialog functionality
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, refactor: enhance event detail screen with improved RSVP and calendar functionalities
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, refactor: enhance society detail screen with guest handling and improved button logic
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, refactor: enhance registration screen with animated background and improved form validation
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, refactor: streamline sign-in logic and enhance UI layout for Committee/Admin screen
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Refactor SignInScreen: Improve code readability and update comments for clarity
+wdszn, up2211325@myport.ac.uk, 2026-05-06, Merge pull request #21 from TEAM-4D1/Chik2026
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-05-06, Merge branch 'origin/main' into Chik2026 - resolve conflicts keeping announcement features
+chikbunting, chikbunting04@gmail.com, 2026-05-06, chore: update package versions in pubspec.lock for improved compatibility
+chikbunting, chikbunting04@gmail.com, 2026-05-06, feat: pass society notifier to AnnouncementHome for improved state management
+chikbunting, chikbunting04@gmail.com, 2026-05-06, feat: add filter bar for announcements to toggle between Upcoming, Past, and All
+chikbunting, chikbunting04@gmail.com, 2026-05-06, feat: enhance announcement card with RSVP and Save-to-Calendar actions
+chikbunting, chikbunting04@gmail.com, 2026-05-06, feat: import society_model for society-related functionality in announcements
+chikbunting, chikbunting04@gmail.com, 2026-05-06, feat: add dropdown for selecting society in announcement creation
+chikbunting, chikbunting04@gmail.com, 2026-05-06, feat: include selected society in announcement creation
+chikbunting, chikbunting04@gmail.com, 2026-05-06, feat: add society options to CreateAnnouncementPage for committee members
+chikbunting, chikbunting04@gmail.com, 2026-05-06, chore: update package versions in pubspec.lock for consistency
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Add comprehensive development setup guide for Sociefy project
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Add requirements.txt for project dependencies
+chikbunting, chikbunting04@gmail.com, 2026-05-06, feat: enhance Announcement model with society association and event time utilities
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Call super.build(context) in SocietyBrowserScreen to ensure proper state retention
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Add AutomaticKeepAliveClientMixin to SocietyBrowserScreen for improved state retention
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Add AutomaticKeepAliveClientMixin to FeedScreen for improved state retention
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Add custom _SearchBar widget for improved society search functionality
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Simplify society filtering by using pre-filtered societies in the UI
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Add missing import for Society model in SocietyBrowserScreen
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Refactor society filtering logic and replace TextField with custom _SearchBar widget for improved search functionality
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Add mounted check before updating loading state in sign-in process
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Trigger forced reload of societies after successful Firestore write in createSociety method
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Enhance loadSocieties method to support forced reload option for fetching data
+chikbunting, chikbunting04@gmail.com, 2026-05-06, chore: update package versions in pubspec.lock
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Optimize fetchMySocieties method to reduce Firestore calls by using a single query for society data
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Remove manual navigation to MainTabs in CommitteeSignInScreen, relying on reactive handling via Consumer<AppState>
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Refactor SignInScreen for improved code clarity and maintainability
+chikbunting, chikbunting04@gmail.com, 2026-05-06, docs: document SignInPage validation behaviour and viewport constraint
+chikbunting, chikbunting04@gmail.com, 2026-05-06, docs: update documentation for SignInPage to clarify validation behavior
+chikbunting, chikbunting04@gmail.com, 2026-05-06, docs: add documentation to app root and tab shell
+chikbunting, chikbunting04@gmail.com, 2026-05-06, docs: add comments to clarify application entry point and root widget functionality
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, docs: Add doc comments to private methods in screen files
+chikbunting, chikbunting04@gmail.com, 2026-05-06, docs: add documentation for date and time picker methods in CreateAnnouncementPage
+chikbunting, chikbunting04@gmail.com, 2026-05-06, docs: enhance documentation for Announcement and related classes
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Fix button alignment in SocietyDetailScreen and add documentation for event creation dialog
+chikbunting, chikbunting04@gmail.com, 2026-05-06, fix: update package versions in pubspec.lock for consistency
+chikbunting, chikbunting04@gmail.com, 2026-05-06, docs: document MessagesPage and its private helpers
+chikbunting, chikbunting04@gmail.com, 2026-05-06, docs: document SocietyChatPage and its helpers
+chikbunting, chikbunting04@gmail.com, 2026-05-06, docs: add documentation to SocietyDetailPage
+chikbunting, chikbunting04@gmail.com, 2026-05-06, fix: resolve "Unsupported operation: _Namespace" when picking image
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Remove unnecessary pump duration in SignInScreen test for cleaner execution
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Increase pump duration in SignInScreen test for improved rendering stability
+chikbunting, chikbunting04@gmail.com, 2026-05-06, refactor: switch Society from imagePath to imageBytes
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Refactor widget tests to focus on SignInScreen functionality and improve structure
+chikbunting, chikbunting04@gmail.com, 2026-05-06, feat: add cross-platform SocietyImage widget
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Refactor SignInScreen test for improved readability and consistency
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Add SignInScreen widget test for rendering with mocked AppState
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Refactor MyApp test for clarity and ensure SignInScreen displays correctly
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Refactor SignInScreen test descriptions for clarity and consistency
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Refactor SignInScreen tests for improved structure and consistency
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Fix Register button test description and correct text formatting
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Add delays in SignInScreen tests to ensure proper rendering and state updates
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Refactor SignInScreen tests for improved readability and consistency
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Refactor SignInScreen tests to use ChangeNotifierProvider and improve test coverage
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Update setup documentation with detailed Firebase configuration steps and installation instructions
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Enhance architecture documentation with detailed layer descriptions and component responsibilities
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Refactor Tech Stack section for improved formatting and clarity
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Add calendar event functionality and update add_2_calendar dependency
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Add test report and coverage data - 45 tests passed
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Add Testing section to documentation - reference test_report.json and coverage data
+waynedsz, waynedesouza33@gmail.com, 2026-05-06, Refactor code structure for improved readability and maintainability
+Trips424, uditini531@gmail.com, 2026-05-06, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Trips424, uditini531@gmail.com, 2026-05-06, fixed pubspec lock
+Aze, azizraximov919@icloud.com, 2026-05-06, fix: createAnnouncement missing fields in tests
+Aze, azizraximov919@icloud.com, 2026-05-06, fix: correct event index in savedEvents test (createEvent inserts at front)
+Aze, azizraximov919@icloud.com, 2026-05-06, fix: remove stub RegisterScreen class shadowing real import in sign_in_screen
+Aze, azizraximov919@icloud.com, 2026-05-05, fix: bump firebase packages to firebase_core 4.x compatible versions and fill app_state_unit_test
+Aze, azizraximov919@icloud.com, 2026-05-05, fix: fill app_state_unit_test and resolve docs conflicts
+wdszn, up2211325@myport.ac.uk, 2026-05-05, Merge pull request #20 from TEAM-4D1/copilot/fix-merge-conflicts
+wdszn, up2211325@myport.ac.uk, 2026-05-05, Merge pull request #19 from TEAM-4D1/copilot/finish-merge-delete-branch
+wdszn, up2211325@myport.ac.uk, 2026-05-05, Merge pull request #18 from TEAM-4D1/Udit
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-05-05, Merge origin/main into Udit - resolve merge conflicts
+wdszn, up2211325@myport.ac.uk, 2026-05-05, Merge pull request #15 from TEAM-4D1/chikezie
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-05-05, Merge origin/main into chikezie - resolve conflicts in pubspec.lock
+Aze, azizraximov919@icloud.com, 2026-05-05, fix: remove unused import and triple_click
+Aze, azizraximov919@icloud.com, 2026-05-05, fix: society browser screen test
+Aze, azizraximov919@icloud.com, 2026-05-05, add society browser screen test
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-05, Resolved all merge conflicts and fixed pubspec
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-05, fixed duplicate categories of the same name for societies, instead of having the same category multiple times
+Trips424, uditini531@gmail.com, 2026-05-05, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Trips424, uditini531@gmail.com, 2026-05-05, added change password button from profile_screen.dart that will send email to user to reset password
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-05, added assets in google firebase to reflect changes in discover screen and fill page with socities + general content
+wdszn, up2211325@myport.ac.uk, 2026-05-05, Merge pull request #14 from TEAM-4D1/Wayne
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, Add SocietyBrowserScreen tests to improve coverage and functionality validation
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, Add comprehensive tests for ProfileScreen AppState functionality
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, Remove profile_screen_test.dart file and all associated tests for AppState and ProfileScreen functionality.
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, Add comprehensive tests for ProfileScreen and AppState functionality
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, refactor: remove ProfileScreen test file to streamline test suite
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, refactor: consolidate ProfileScreen tests and improve guest login setup for clarity
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, refactor: remove ProfileScreen test file to streamline test suite
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, refactor: consolidate ProfileScreen tests and improve guest login setup for clarity
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, refactor: remove ProfileScreen test file to streamline test suite
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, refactor: streamline guest login setup in ProfileScreen tests for improved clarity and consistency
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-05, created second admin account for udit to test
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, refactor: enhance ProfileScreen tests by consolidating guest login setup and improving state verification
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, refactor: replace guest login call with setupGuestAppState for consistency in ProfileScreen tests
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, refactor: replace guest login calls with setupGuestAppState for consistency in tests
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, refactor: replace direct guest login calls with setupGuestAppState for improved test clarity
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, feat: refactor guest login setup in ProfileScreen tests for improved clarity and maintainability
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, feat: add comprehensive widget tests for ProfileScreen covering user authentication, UI structure, and styling
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, feat: add comprehensive widget tests for CommitteeSignInScreen covering validation, error handling, and UI interactions
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, refactor: remove CommitteeSignInScreen test file to streamline test suite
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, feat: enhance CommitteeSignInScreen tests with navigator observers and pumpAndSettle for improved stability
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, feat: add widget tests for CommitteeSignInScreen covering validation, UI interactions, and error handling
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, feat: add comprehensive testing documentation index for Sociefy application
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, feat: add comprehensive test summary and documentation for Sociefy application test suite
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, feat: implement comprehensive test suite for Sociefy application with 50 passing tests and detailed documentation
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, feat: add comprehensive widget tests for RegisterScreen covering validation and UI interactions
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, feat: refactor AppState for improved testing and authentication logic
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, feat: add requirements for Sphinx documentation build
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, feat: enhance documentation across various screens for clarity and accessibility
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, feat: enhance documentation for AuthService and SocietyService methods
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, feat: enhance documentation for AppState methods and properties
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, feat: add comprehensive documentation for service classes and their methods in services.rst
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, feat: add detailed documentation for state management and public methods in providers.rst
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, feat: add comprehensive documentation for user screens and their functionalities
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, fix: update features and tech stack sections in documentation for clarity and completeness
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, fix: update Sphinx configuration to use 'sphinx_rtd_theme' and set HTML theme options
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, fix: clear mySocieties on user logout to ensure a fresh state
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, fix: prevent potential errors by checking if widget is mounted before proceeding with guest sign-in
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, fix: prevent logout during guest session in admin login flow
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, fix: add loading state for admin login and ensure correct screen display based on authentication
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, fix: remove unused import and simplify back navigation in CommitteeSignInScreen
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, fix: remove unused import and sign-in navigation from ProfileScreen
+waynedsz, waynedesouza33@gmail.com, 2026-05-05, fix: correct string interpolation in register error logging
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-05, Refactor society card UI to enhance delete functionality and improve layout
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-05, Fixed sign out errors when in admin profile
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-05, fixed errors related to new society deletion feature
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-05, add createdBy field to Society model and implement society deletion feature
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-05, added feature to delete socieites as admin if you created it
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-05, removed unused imports
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-05, added edit button when own post expanded as well as delete button
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-05, fixed errors related to new post deletion feature
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-05, adding assets such as societies and posts is now retained within each login iteration, thus data persistence
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-05, removed 'continue as guest' button as this was only for testing purposes.
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-05, added feature, where users can expand post, if an admin who posted chooses to expand own message, they can delete the post, and it will disseapear for all users.
+Justin Burfoot, jburfoot12@gmail.com, 2026-05-05, testing, flutter pub get ran
+Trips424, uditini531@gmail.com, 2026-05-05, imported app state and changed so contact info will always say contact info
+Trips424, uditini531@gmail.com, 2026-05-05, this file stores settings for dart and flutter devtools
+Trips424, uditini531@gmail.com, 2026-05-05, fixed errors
+Trips424, uditini531@gmail.com, 2026-05-05, created an elevated button and shows time properly
+Trips424, uditini531@gmail.com, 2026-05-05, clock time selector continued
+Trips424, uditini531@gmail.com, 2026-05-05, started making clock time setter for event making not writer
+Trips424, uditini531@gmail.com, 2026-05-05, added text of start and end time to event detail screen so people know when events start and end
+Trips424, uditini531@gmail.com, 2026-05-05, post button working
+Trips424, uditini531@gmail.com, 2026-05-05, post button completed
+Trips424, uditini531@gmail.com, 2026-05-05, fully building the controller of post button
+Trips424, uditini531@gmail.com, 2026-05-05, post history continued
+Trips424, uditini531@gmail.com, 2026-05-05, post history in society detail screen started
+Trips424, uditini531@gmail.com, 2026-05-05, firebase storage fully installed
+Trips424, uditini531@gmail.com, 2026-05-05, the firebase storage dependenct was added and installed
+Trips424, uditini531@gmail.com, 2026-05-05, reworked with app_state.dart with new announcment data
+Trips424, uditini531@gmail.com, 2026-05-05, added timeofday venue and description to announcement.dart
+Trips424, uditini531@gmail.com, 2026-05-05, made smaller version of image when added
+Trips424, uditini531@gmail.com, 2026-05-05, fixed bug when image is added
+Trips424, uditini531@gmail.com, 2026-05-05, Readded back button on committee log in page
+Trips424, uditini531@gmail.com, 2026-05-05, edited so when sign out button pressed, takes you back to sign in screen
+Trips424, uditini531@gmail.com, 2026-05-05, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Trips424, uditini531@gmail.com, 2026-05-05, removed developer login
+Trips424, uditini531@gmail.com, 2026-05-05, commit pubspec lock
+Trips424, uditini531@gmail.com, 2026-05-05, fixed authentication service
+Trips424, uditini531@gmail.com, 2026-05-05, fixed authentication service
+Trips424, uditini531@gmail.com, 2026-05-05, turned sample societies into sample societies and kept society.dart into main society model
+Trips424, uditini531@gmail.com, 2026-05-05, added image url to announcements
+justinb14, jburfoot12@gmail.com, 2026-05-04, fixed all errors in main
+justinb14, jburfoot12@gmail.com, 2026-05-04, fixed errors in main
+justinb14, jburfoot12@gmail.com, 2026-05-04, resolve merge conflicts
+justinb14, jburfoot12@gmail.com, 2026-05-04, merge
+justinb14, jburfoot12@gmail.com, 2026-05-04, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+justinb14, jburfoot12@gmail.com, 2026-05-04, add readthedocs config
+justinb14, jburfoot12@gmail.com, 2026-05-04, merging chaqnges
+justinb14, jburfoot12@gmail.com, 2026-05-04, added readthedocs config file
+justinb14, jburfoot12@gmail.com, 2026-05-04, added readthedocs config file
+justinb14, jburfoot12@gmail.com, 2026-05-04, added troubleshooting steps to setup.rst + added link to clone repo in setup.rst
+justinb14, jburfoot12@gmail.com, 2026-05-04, added troubleshooting steps to setup.rst + added link to clone repo in setup.rst
+justinb14, jburfoot12@gmail.com, 2026-05-04, added to setup.rst
+justinb14, jburfoot12@gmail.com, 2026-05-04, added to setup.rst
+justinb14, jburfoot12@gmail.com, 2026-05-04, added info to architecture.rst
+justinb14, jburfoot12@gmail.com, 2026-05-04, added info to architecture.rst
+justinb14, jburfoot12@gmail.com, 2026-05-04, added text to index.rst
+justinb14, jburfoot12@gmail.com, 2026-05-04, added text to index.rst
+justinb14, jburfoot12@gmail.com, 2026-05-04, created initial directory for ReadTheDocs
+justinb14, jburfoot12@gmail.com, 2026-05-04, created initial directory for ReadTheDocs
+justinb14, jburfoot12@gmail.com, 2026-05-04, Ran flutter test --coverage again with coverage gutter to highlight lines of code in green or red, to show lines which have been covered and havent, all tests passed as of 12:35 04.05.26
+justinb14, jburfoot12@gmail.com, 2026-05-04, Ran flutter test --coverage again with coverage gutter to highlight lines of code in green or red, to show lines which have been covered and havent, all tests passed as of 12:35 04.05.26
+justinb14, jburfoot12@gmail.com, 2026-05-04, ensured flutter test --coverage works for all tests, fixed 'some tests failed' error.
+justinb14, jburfoot12@gmail.com, 2026-05-04, ensured flutter test --coverage works for all tests, fixed 'some tests failed' error.
+justinb14, jburfoot12@gmail.com, 2026-05-04, fixed errors
+justinb14, jburfoot12@gmail.com, 2026-05-04, fixed errors
+justinb14, jburfoot12@gmail.com, 2026-05-04, test: mock firebase for auth service
+justinb14, jburfoot12@gmail.com, 2026-05-04, test: mock firebase for auth service
+justinb14, jburfoot12@gmail.com, 2026-05-04, test: add widget tests for authentication UI, test passed
+justinb14, jburfoot12@gmail.com, 2026-05-04, test: add widget tests for authentication UI, test passed
+justinb14, jburfoot12@gmail.com, 2026-05-04, test: add unit tests for society model parsing
+justinb14, jburfoot12@gmail.com, 2026-05-04, test: add unit tests for society model parsing
+justinb14, jburfoot12@gmail.com, 2026-05-04, feat: fetch user specific societies
+justinb14, jburfoot12@gmail.com, 2026-05-04, feat: fetch user specific societies
+justinb14, jburfoot12@gmail.com, 2026-05-04, UI: bind join button to society service
+justinb14, jburfoot12@gmail.com, 2026-05-04, UI: bind join button to society service
+justinb14, jburfoot12@gmail.com, 2026-05-04, feat: add calendar sync logic to event detail
+justinb14, jburfoot12@gmail.com, 2026-05-04, feat: add calendar sync logic to event detail
+justinb14, jburfoot12@gmail.com, 2026-05-04, added docstrings to data models
+justinb14, jburfoot12@gmail.com, 2026-05-04, added docstrings to data models
+Trips424, uditini531@gmail.com, 2026-05-03, Added functionality that edits committee member data and edits exist committee data
+Trips424, uditini531@gmail.com, 2026-05-03, removed place holders and added different society members
+Trips424, uditini531@gmail.com, 2026-05-03, added committee member list constructor to society class
+Trips424, uditini531@gmail.com, 2026-05-03, created committee member class with name role and email as constructors
+Trips424, uditini531@gmail.com, 2026-05-03, added add edit and delete committee members
+Trips424, uditini531@gmail.com, 2026-05-03, added image functionality
+Trips424, uditini531@gmail.com, 2026-05-03, added image urls to announcements
+Trips424, uditini531@gmail.com, 2026-05-03, added image urls to announcements
+Trips424, uditini531@gmail.com, 2026-05-03, added ability to add images to posts on feed screen
+Trips424, uditini531@gmail.com, 2026-05-03, imported member screen class so now no errors
+Trips424, uditini531@gmail.com, 2026-05-03, added approve member screen to bottom slider in messages tab for each society but only if you are a committee member
+Trips424, uditini531@gmail.com, 2026-05-03, Add approve and reject membership actions
+Trips424, uditini531@gmail.com, 2026-05-03, Display pending membership requests
+Trips424, uditini531@gmail.com, 2026-05-03, Connect member approval screen to pending memberships stream
+Trips424, uditini531@gmail.com, 2026-05-03, add member approval screen
+Trips424, uditini531@gmail.com, 2026-05-03, edited so that registration takes uni email
+Trips424, uditini531@gmail.com, 2026-05-03, changed text colours in register screen
+Trips424, uditini531@gmail.com, 2026-05-02, changed register screen background to blue
+Trips424, uditini531@gmail.com, 2026-05-02, removed unneccessary imports
+Trips424, uditini531@gmail.com, 2026-05-02, added initial value on the feed screen
+chikbunting, chikbunting04@gmail.com, 2026-05-03, Merge pull request #13 from TEAM-4D1/Chiklol
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-05-03, Merge origin/main into Chiklol: resolve conflicts in home_screen.dart, main.dart, main_tabs.dart, announcements.dart, messages_screen.dart, sign_in_screen.dart
+chikbunting, chikbunting04@gmail.com, 2026-05-03, Update pubspec.lock to upgrade package versions for improved stability and performance
+chikbunting, chikbunting04@gmail.com, 2026-05-03, Refactor HomePage and MessagesPage to integrate SocietyNotifier for improved state management; add SocietyChatPage for enhanced messaging functionality.
+chikbunting, chikbunting04@gmail.com, 2026-05-03, Add Society and SocietyNotifier classes for managing societies and membership functionality
+chikbunting, chikbunting04@gmail.com, 2026-05-03, Update pubspec.lock to upgrade package versions for improved stability and performance
+chikbunting, chikbunting04@gmail.com, 2026-05-03, Refactor SignInPage to enhance UI and streamline animations; remove unused slide-in animation and adjust button styles for better consistency.
+chikbunting, chikbunting04@gmail.com, 2026-05-03, Refactor HomePage to simplify FloatingActionButton implementation; remove unused animation controller and streamline code structure.
+chikbunting, chikbunting04@gmail.com, 2026-05-03, Refactor Announcement and SignIn pages for improved UI and functionality; add animations, enhance layout, and update theme styles.
+chikbunting, chikbunting04@gmail.com, 2026-05-03, Refactor HomePage and MainTabs for improved UI and functionality; enhance FAB animation, add society card display, and update theme styles.
+chikbunting, chikbunting04@gmail.com, 2026-05-03, Merge pull request #11 from TEAM-4D1/chikbnt
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-05-03, Merge origin/main into chikbnt: resolve pubspec.yaml and pubspec.lock conflicts
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-05-03, Add explicit permissions block to flutter_ci.yml to restrict GITHUB_TOKEN scope
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-05-03, Fix test/sign_in_screen_test.dart to match new SignInScreen location and validation messages
+chikbunting, chikbunting04@gmail.com, 2026-05-03, Merge pull request #12 from TEAM-4D1/chikezie
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-05-03, Merge origin/main into chikbnt: resolve conflicts in pubspec.yaml, pubspec.lock, and sign_in_screen.dart path
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-05-03, Merge origin/main into chikezie - resolve conflicts in pubspec.yaml and pubspec.lock
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-05-03, Merge origin/main into chikezie - resolve conflicts in pubspec.yaml and pubspec.lock
+chikbunting, chikbunting04@gmail.com, 2026-05-03, Update tests to ensure widget presence in multiple contexts and improve clarity in assertions
+chikbunting, chikbunting04@gmail.com, 2026-05-03, Update tests and documentation for improved coverage and accuracy
+chikbunting, chikbunting04@gmail.com, 2026-05-03, Refactor MessagesScreen tests to improve structure and add comprehensive widget tests
+chikbunting, chikbunting04@gmail.com, 2026-05-03, Add SignInPage and enhance announcement and home screen tests with comprehensive scenarios
+chikbunting, chikbunting04@gmail.com, 2026-05-03, Update dependencies and add integration tests for announcements, home screen, main tabs, messages screen, and sign-in screen
+chikbunting, chikbunting04@gmail.com, 2026-05-03, Update test plan to include performance and usability testing scenarios
+justinb14, jburfoot12@gmail.com, 2026-04-30, added back button on register screen and a view password button on the admin sign in screen
+justinb14, jburfoot12@gmail.com, 2026-04-30, added back button on register screen and a view password button on the admin sign in screen
+justinb14, jburfoot12@gmail.com, 2026-04-30, fixed logic error where committee members could use normal sign on screen.
+justinb14, jburfoot12@gmail.com, 2026-04-30, fixed logic error where committee members could use normal sign on screen.
+justinb14, jburfoot12@gmail.com, 2026-04-30, fixed errors related to sign in with committee removed logic error where normal user credentials could be used on committee sign in screen, and vice versa
+justinb14, jburfoot12@gmail.com, 2026-04-30, fixed errors related to sign in with committee removed logic error where normal user credentials could be used on committee sign in screen, and vice versa
+justinb14, jburfoot12@gmail.com, 2026-04-30, removed 'sign in as guest commitee to avoid grief' additionally added credentials for sign in as committee member to test any features that will be exclusive to committee members.
+justinb14, jburfoot12@gmail.com, 2026-04-30, removed 'sign in as guest commitee to avoid grief' additionally added credentials for sign in as committee member to test any features that will be exclusive to committee members.
+justinb14, jburfoot12@gmail.com, 2026-04-30, fixed some sign on related errors and touched up on sign in transition for better user experience
+justinb14, jburfoot12@gmail.com, 2026-04-30, fixed some sign on related errors and touched up on sign in transition for better user experience
+justinb14, jburfoot12@gmail.com, 2026-04-30, successfully implemented data persistence in both the feed and sign in, ensures user data is saved and can be reused. Done via firebase and toggling sign on via gmail and email/password
+justinb14, jburfoot12@gmail.com, 2026-04-30, successfully implemented data persistence in both the feed and sign in, ensures user data is saved and can be reused. Done via firebase and toggling sign on via gmail and email/password
+justinb14, jburfoot12@gmail.com, 2026-04-30, data persistence added related to sign in
+justinb14, jburfoot12@gmail.com, 2026-04-30, data persistence added related to sign in
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-04-30, Merge origin/main into Udit: resolve all merge conflicts
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-04-30, Merge origin/main into Udit: resolve conflicts
+justinb14, jburfoot12@gmail.com, 2026-04-30, fixed error detected in problems tab
+justinb14, jburfoot12@gmail.com, 2026-04-30, fixed error detected in problems tab
+justinb14, jburfoot12@gmail.com, 2026-04-30, fixed errrors final
+justinb14, jburfoot12@gmail.com, 2026-04-30, fixed errrors final
+justinb14, jburfoot12@gmail.com, 2026-04-30, fixed errors
+justinb14, jburfoot12@gmail.com, 2026-04-30, fixed errors
+justinb14, jburfoot12@gmail.com, 2026-04-30, fixed sign on related errors
+justinb14, jburfoot12@gmail.com, 2026-04-30, fixed sign on related errors
+justinb14, jburfoot12@gmail.com, 2026-04-30, created a secojnd 'Justin' branch
+justinb14, jburfoot12@gmail.com, 2026-04-30, created a secojnd 'Justin' branch
+wdszn, up2211325@myport.ac.uk, 2026-04-27, Merge pull request #9 from TEAM-4D1/Wayne
+wdszn, up2211325@myport.ac.uk, 2026-04-27, Merge pull request #9 from TEAM-4D1/Wayne
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor onMembershipCreated function to improve documentation and enhance error handling
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor onMembershipCreated function to improve documentation and enhance error handling
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor MainTabs to remove unused imports and ensure consistent widget instantiation
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor MainTabs to remove unused imports and ensure consistent widget instantiation
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor SocietyBrowserScreen to improve loading state handling and display shimmer placeholders
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor SocietyBrowserScreen to improve loading state handling and display shimmer placeholders
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor ContactInfoScreen to extract snackbar logic into a separate method for improved readability
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor ContactInfoScreen to extract snackbar logic into a separate method for improved readability
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor SocietyDetailScreen to clean up comments and improve dialog controller disposal
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor SocietyDetailScreen to clean up comments and improve dialog controller disposal
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor EventDetailScreen to improve RSVP handling and enhance guest user experience
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor EventDetailScreen to improve RSVP handling and enhance guest user experience
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor SocietyChatScreen to improve guest sign-in prompt and enhance message input layout
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor SocietyChatScreen to improve guest sign-in prompt and enhance message input layout
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor ProfileScreen to use context.watch for AppState and update variable naming for clarity
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor ProfileScreen to use context.watch for AppState and update variable naming for clarity
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Clarify comment on navigation handling in sign-in process
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Clarify comment on navigation handling in sign-in process
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add comments to clarify user reload process after display name update in registration
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add comments to clarify user reload process after display name update in registration
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add user reload after updating display name in registration process
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add user reload after updating display name in registration process
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor onSocMemberAdded function to use correct document paths and improve variable naming for clarity
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor onSocMemberAdded function to use correct document paths and improve variable naming for clarity
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add validation and keyboard type for start and end time fields in event creation
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add validation and keyboard type for start and end time fields in event creation
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Dispose text controllers in _showCreateEventDialog to prevent memory leaks
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Dispose text controllers in _showCreateEventDialog to prevent memory leaks
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Improve password field validation in SignInScreen for null safety
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Improve password field validation in SignInScreen for null safety
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Remove unused controllers and simplify sign-in method in SignInScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Remove unused controllers and simplify sign-in method in SignInScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Simplify constructor syntax in SocietyBrowserScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Simplify constructor syntax in SocietyBrowserScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor empty societies message layout in FeedScreen for improved padding
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor empty societies message layout in FeedScreen for improved padding
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Fix scroll animation in SocietyChatScreen to check for active scroll controller
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Fix scroll animation in SocietyChatScreen to check for active scroll controller
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add MessageService test to validate user channel functionality
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add MessageService test to validate user channel functionality
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor appState access in SocietyChatScreen to use watch method and improve guest user message styling
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor appState access in SocietyChatScreen to use watch method and improve guest user message styling
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor appState access in ProfileScreen to use read method and ensure consistent CircleAvatar styling
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor appState access in ProfileScreen to use read method and ensure consistent CircleAvatar styling
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add guest user message prompt in SocietyChatScreen and refactor message input logic
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add guest user message prompt in SocietyChatScreen and refactor message input logic
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor display name and email assignment logic based on user type in ProfileScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor display name and email assignment logic based on user type in ProfileScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Implement navigation to SignInScreen after sign out in ProfileScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Implement navigation to SignInScreen after sign out in ProfileScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor guest user checks to use isGuest getter for improved readability
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor guest user checks to use isGuest getter for improved readability
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add guard to prevent reloading for already logged in guest-committee user
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add guard to prevent reloading for already logged in guest-committee user
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Cancel existing announcements subscription before setting up a new listener to prevent duplicates
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Cancel existing announcements subscription before setting up a new listener to prevent duplicates
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Set admin pending state during sign-in process and handle invalid credentials
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Set admin pending state during sign-in process and handle invalid credentials
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Enhance login logic to support pending admin status and add setter for admin pending state
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Enhance login logic to support pending admin status and add setter for admin pending state
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Clear cached data and cancel announcements subscription on logout
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Clear cached data and cancel announcements subscription on logout
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Simplify sign out logic by removing unnecessary context check for mounted state
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Simplify sign out logic by removing unnecessary context check for mounted state
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor sign out logic to handle guest users and improve readability
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor sign out logic to handle guest users and improve readability
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add scroll controller to SocietyChatScreen and limit message retrieval to 100
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add scroll controller to SocietyChatScreen and limit message retrieval to 100
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor refreshFeed method to clear all data lists and load societies and events in parallel; update SocietyBrowserScreen to use RefreshIndicator for data refresh
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor refreshFeed method to clear all data lists and load societies and events in parallel; update SocietyBrowserScreen to use RefreshIndicator for data refresh
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add refreshFeed method to AppState and integrate with FeedScreen for data reloading
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add refreshFeed method to AppState and integrate with FeedScreen for data reloading
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Filter events to include only those from the last day and limit results to 100
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Filter events to include only those from the last day and limit results to 100
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Implement real-time announcements loading with Firestore snapshots and manage subscription lifecycle
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Implement real-time announcements loading with Firestore snapshots and manage subscription lifecycle
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Optimize data loading in AppState by preventing redundant fetches for societies, events, and announcements
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Optimize data loading in AppState by preventing redundant fetches for societies, events, and announcements
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Improve FeedScreen announcement display with loading placeholders and cleaner code structure
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Improve FeedScreen announcement display with loading placeholders and cleaner code structure
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor AppState to remove loading state management and initiate data loading without awaiting
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Refactor AppState to remove loading state management and initiate data loading without awaiting
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Enhance message display in SocietyChatScreen with sender ID and conditional styling for own messages
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Enhance message display in SocietyChatScreen with sender ID and conditional styling for own messages
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Enhance message display in SocietyChatScreen with sender name and timestamp formatting
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Enhance message display in SocietyChatScreen with sender name and timestamp formatting
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add category filter chips to SocietyBrowserScreen for improved society search
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add category filter chips to SocietyBrowserScreen for improved society search
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Remove unnecessary whitespace at the end of SocietyDetailScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Remove unnecessary whitespace at the end of SocietyDetailScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Format ContactInfoScreen navigation for improved readability
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Format ContactInfoScreen navigation for improved readability
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add Create Event button for admins in SocietyDetailScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add Create Event button for admins in SocietyDetailScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add createEvent method to AppState for event creation and Firestore persistence
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add createEvent method to AppState for event creation and Firestore persistence
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add RSVP status check to EventDetailScreen initialization
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add RSVP status check to EventDetailScreen initialization
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add ProfileScreen to MainTabs for improved navigation
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add ProfileScreen to MainTabs for improved navigation
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add ProfileScreen to display user information and sign-out functionality
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add ProfileScreen to display user information and sign-out functionality
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add display name update to registration process
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add display name update to registration process
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add display name field to registration form with validation
+waynedsz, waynedesouza33@gmail.com, 2026-04-27, Add display name field to registration form with validation
+wdszn, up2211325@myport.ac.uk, 2026-04-23, Merge pull request #8 from TEAM-4D1/Wayne
+wdszn, up2211325@myport.ac.uk, 2026-04-23, Merge pull request #8 from TEAM-4D1/Wayne
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Refactor CommitteeSignInScreen to use AuthService for sign-in logic and improve error handling
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Refactor CommitteeSignInScreen to use AuthService for sign-in logic and improve error handling
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Refactor message sender identification in SocietyChatScreen to use FirebaseAuth for current user details
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Refactor message sender identification in SocietyChatScreen to use FirebaseAuth for current user details
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add import for RegisterScreen in SignInScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add import for RegisterScreen in SignInScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add guest committee sign-in option with navigation to MainTabs
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add guest committee sign-in option with navigation to MainTabs
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Remove Calendar tab from BottomNavigationBar in MainTabs
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Remove Calendar tab from BottomNavigationBar in MainTabs
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Remove Announcement and CreateAnnouncementPage classes along with related functionality
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Remove Announcement and CreateAnnouncementPage classes along with related functionality
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add Firestore integration to createAnnouncement method for persistent announcements
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add Firestore integration to createAnnouncement method for persistent announcements
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add Firestore integration to createSociety method for persistent society data
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add Firestore integration to createSociety method for persistent society data
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add Firestore persistence for saved and unsaved events for authenticated users
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add Firestore persistence for saved and unsaved events for authenticated users
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add loadJoinedSocieties method and integrate into login process
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add loadJoinedSocieties method and integrate into login process
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add society join and leave functionality for authenticated users
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add society join and leave functionality for authenticated users
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Update message and society services for improved functionality
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Update message and society services for improved functionality
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Refactor guest login functionality to handle asynchronous login and improve user experience
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Refactor guest login functionality to handle asynchronous login and improve user experience
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Replace TextButton with OutlinedButton for improved styling and user experience
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Replace TextButton with OutlinedButton for improved styling and user experience
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Refactor guest committee login button for improved layout and accessibility
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Refactor guest committee login button for improved layout and accessibility
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add guest login option for CommitteeSignInScreen to enhance accessibility
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add guest login option for CommitteeSignInScreen to enhance accessibility
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add guest login option to SignInScreen for improved accessibility
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add guest login option to SignInScreen for improved accessibility
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add loading state to MyApp for improved user experience during authentication
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add loading state to MyApp for improved user experience during authentication
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Enhance login process by adding loading state and handling asynchronous loading of societies, events, and announcements
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Enhance login process by adding loading state and handling asynchronous loading of societies, events, and announcements
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Optimize loading of societies, events, and announcements during login by using Future.wait
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Optimize loading of societies, events, and announcements during login by using Future.wait
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Trim whitespace from email and password fields in registration process
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Trim whitespace from email and password fields in registration process
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Refactor sign-in logic to utilize AuthService and improve error handling
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Refactor sign-in logic to utilize AuthService and improve error handling
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Refactor authentication handling in AppState class
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Refactor authentication handling in AppState class
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add stub implementation for FirebaseOptions in firebase_options.dart
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Add stub implementation for FirebaseOptions in firebase_options.dart
+chikbunting, chikbunting04@gmail.com, 2026-04-23, emulate the website
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Implement Firebase initialization in main function and add firebase_options.dart file
+waynedsz, waynedesouza33@gmail.com, 2026-04-23, Implement Firebase initialization in main function and add firebase_options.dart file
+wdszn, up2211325@myport.ac.uk, 2026-04-23, Merge pull request #7 from TEAM-4D1/Wayne
+wdszn, up2211325@myport.ac.uk, 2026-04-23, Merge pull request #7 from TEAM-4D1/Wayne
+Trips424, uditini431@gmail.com, 2026-04-23, fixed errors
+Trips424, uditini431@gmail.com, 2026-04-23, created view password button and added parameters
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Remove firebase_options.dart and google-services.json from project
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Remove firebase_options.dart and google-services.json from project
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Add firebase_options.dart and google-services.json to project
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Add firebase_options.dart and google-services.json to project
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Remove Firebase initialization logic and related methods from FirebaseService
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Remove Firebase initialization logic and related methods from FirebaseService
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Remove FirebaseService initialization from main function
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Remove FirebaseService initialization from main function
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Refactor SignInScreen to integrate AppState for user login handling
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Refactor SignInScreen to integrate AppState for user login handling
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Add error handling for Firebase initialization in FirebaseService
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Add error handling for Firebase initialization in FirebaseService
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Add error handling for Firebase initialization in main function
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Add error handling for Firebase initialization in main function
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Add Flutter CI workflow for continuous integration
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Add Flutter CI workflow for continuous integration
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Load societies, events, announcements, and saved events on user login
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Load societies, events, announcements, and saved events on user login
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Refactor AppState to load societies, events, and announcements from Firestore
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Refactor AppState to load societies, events, and announcements from Firestore
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Add SocietyChatScreen for messaging functionality within societies
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Add SocietyChatScreen for messaging functionality within societies
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Add SavedEventsScreen to display and navigate saved events
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Add SavedEventsScreen to display and navigate saved events
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Pass isSaved state to EventDetailScreen and handle save/unsave functionality with error feedback
+waynedsz, waynedesouza33@gmail.com, 2026-04-22, Pass isSaved state to EventDetailScreen and handle save/unsave functionality with error feedback
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Add isSaved functionality to EventDetailScreen for saving events to calendar
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Add isSaved functionality to EventDetailScreen for saving events to calendar
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Add Firestore integration for saving, unsaving, and loading events
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Add Firestore integration for saving, unsaving, and loading events
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Pass userId to EventDetailScreen when navigating from SocietyDetailScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Pass userId to EventDetailScreen when navigating from SocietyDetailScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Add RSVP functionality to EventDetailScreen with Firestore integration
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Add RSVP functionality to EventDetailScreen with Firestore integration
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Refactor EventDetailScreen to StatefulWidget and add RSVP functionality
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Refactor EventDetailScreen to StatefulWidget and add RSVP functionality
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Implement search functionality in SocietyBrowserScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Implement search functionality in SocietyBrowserScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Remove flutter_lints dependency and update integration_test to direct main dependency
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Remove flutter_lints dependency and update integration_test to direct main dependency
+wdszn, up2211325@myport.ac.uk, 2026-04-21, Merge pull request #6 from TEAM-4D1/Justin
+wdszn, up2211325@myport.ac.uk, 2026-04-21, Merge pull request #6 from TEAM-4D1/Justin
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-04-21, Resolve merge conflicts with main branch
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-04-21, Resolve merge conflicts with main branch
+wdszn, up2211325@myport.ac.uk, 2026-04-21, Merge pull request #5 from TEAM-4D1/Chik
+wdszn, up2211325@myport.ac.uk, 2026-04-21, Merge pull request #5 from TEAM-4D1/Chik
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-04-21, Merge remote-tracking branch 'origin/main' into Chik
+copilot-swe-agent[bot], 198982749+Copilot@users.noreply.github.com, 2026-04-21, Merge remote-tracking branch 'origin/main' into Chik
+wdszn, up2211325@myport.ac.uk, 2026-04-21, Merge pull request #4 from TEAM-4D1/Wayne
+wdszn, up2211325@myport.ac.uk, 2026-04-21, Merge pull request #4 from TEAM-4D1/Wayne
+wdszn, up2211325@myport.ac.uk, 2026-04-21, Merge pull request #3 from TEAM-4D1/revert-2-main
+wdszn, up2211325@myport.ac.uk, 2026-04-21, Merge pull request #3 from TEAM-4D1/revert-2-main
+wdszn, waynedesouza33@gmail.com, 2026-04-21, Revert "Merge pull request #1 from TEAM-4D1/Wayne"
+wdszn, waynedesouza33@gmail.com, 2026-04-21, Revert "Merge pull request #1 from TEAM-4D1/Wayne"
+wdszn, up2211325@myport.ac.uk, 2026-04-21, Merge pull request #2 from TEAM-4D1/main
+wdszn, up2211325@myport.ac.uk, 2026-04-21, Merge pull request #2 from TEAM-4D1/main
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Update society_service.dart to fix issues with leaveSociety method
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Update society_service.dart to fix issues with leaveSociety method
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Update society_service.dart to fix issues with leaveSociety method
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Update society_service.dart to fix issues with leaveSociety method
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Update society_service.dart to fix issues with leaveSociety method
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Update society_service.dart to fix issues with leaveSociety method
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Refactor SocietyService to improve code structure and maintainability
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Refactor SocietyService to improve code structure and maintainability
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Add firebase_messaging dependency and update GeneratedPluginRegistrant
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Add firebase_messaging dependency and update GeneratedPluginRegistrant
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Update message_service.dart to enhance user society management functionality
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Update message_service.dart to enhance user society management functionality
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Implement create society dialog in FeedScreen with input fields for name and category
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Implement create society dialog in FeedScreen with input fields for name and category
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Implement create society dialog in FeedScreen with input fields for name and category
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Implement create society dialog in FeedScreen with input fields for name and category
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Implement add post dialog in FeedScreen with title and content input fields
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Implement add post dialog in FeedScreen with title and content input fields
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Implement add post dialog in FeedScreen with title and content input fields
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Implement add post dialog in FeedScreen with title and content input fields
+wdszn, up2211325@myport.ac.uk, 2026-04-21, Merge pull request #1 from TEAM-4D1/Wayne
+wdszn, up2211325@myport.ac.uk, 2026-04-21, Merge pull request #1 from TEAM-4D1/Wayne
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Refactor SignInScreen by removing unused registration variables and cleaning up code structure
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Refactor SignInScreen by removing unused registration variables and cleaning up code structure
+chikbunting, chikbunting04@gmail.com, 2026-04-21, Update pubspec.lock and add integration tests for performance and usability
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Refactor SignInScreen layout and improve input validation for email and password fields
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Refactor SignInScreen layout and improve input validation for email and password fields
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Refactor SignInScreen to include animated background and maintain loading state during sign-in
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Refactor SignInScreen to include animated background and maintain loading state during sign-in
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-21, fixed errors
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-21, fixed errors
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Simplify committee/admin sign-in prompt text in SignInScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Simplify committee/admin sign-in prompt text in SignInScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Remove unnecessary spacing in SignInScreen layout
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Remove unnecessary spacing in SignInScreen layout
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-21, fixed errors
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-21, fixed errors
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Add email validation to SignInScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Add email validation to SignInScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Add password visibility toggle to SignInScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Add password visibility toggle to SignInScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Add loading state to SignInScreen and disable buttons during sign-in process
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Add loading state to SignInScreen and disable buttons during sign-in process
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-21, fixed errors
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-21, fixed errors
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Add MessagesPage to MainTabs and enhance announcement data in FeedScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Add MessagesPage to MainTabs and enhance announcement data in FeedScreen
+chikbunting, chikbunting04@gmail.com, 2026-04-21, Add integration tests for performance and usability requirements
+chikbunting, chikbunting04@gmail.com, 2026-04-21, Add Firestore trigger for new SOC member to manage group chat participants
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Remove SocietiesScreen implementation to streamline codebase
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Remove SocietiesScreen implementation to streamline codebase
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Simplify joined societies retrieval in FeedScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Simplify joined societies retrieval in FeedScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Refactor padding in FeedScreen for improved readability
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Refactor padding in FeedScreen for improved readability
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Remove unused imports from SignInScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Remove unused imports from SignInScreen
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-21, fixed errors
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-21, fixed errors
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-21, adding extra functionality to committee sign in usage.
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-21, adding extra functionality to committee sign in usage.
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Update Dart SDK version in pubspec.yaml and pubspec.lock to support compatibility
+waynedsz, waynedesouza33@gmail.com, 2026-04-21, Update Dart SDK version in pubspec.yaml and pubspec.lock to support compatibility
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Implement getAllSocieties method to retrieve societies from Firestore
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Implement getAllSocieties method to retrieve societies from Firestore
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Implement SocietyService for handling society-related operations
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Implement SocietyService for handling society-related operations
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Implement registration form in RegisterScreen with validation and error handling
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Implement registration form in RegisterScreen with validation and error handling
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor sign-in logic in SignInScreen to use AuthService for authentication
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor sign-in logic in SignInScreen to use AuthService for authentication
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Implement sign-out logic and current user retrieval in AuthService
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Implement sign-out logic and current user retrieval in AuthService
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Implement registration logic in AuthService with error logging
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Implement registration logic in AuthService with error logging
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add import for foundation package in AuthService
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add import for foundation package in AuthService
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Implement sign-in logic in AuthService with error logging
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Implement sign-in logic in AuthService with error logging
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add AuthService class for handling authentication operations
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add AuthService class for handling authentication operations
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Initialize Firebase services in the main function
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Initialize Firebase services in the main function
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add FirebaseService class for initializing and accessing Firebase services
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add FirebaseService class for initializing and accessing Firebase services
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add Firebase dependencies for core, authentication, and Firestore
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add Firebase dependencies for core, authentication, and Firestore
+Trips424, uditini431@gmail.com, 2026-04-20, Registration: Added start registration screen and identified what needs to be added
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Update generated plugin registrant files for consistency across platforms
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Update generated plugin registrant files for consistency across platforms
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Refactor Event and AppState: add formattedDate getter and clean up comments
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Refactor Event and AppState: add formattedDate getter and clean up comments
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor Event and SocietyDetailScreen: streamline event formatting and update UI for society details
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor Event and SocietyDetailScreen: streamline event formatting and update UI for society details
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor SocietiesScreen: improve layout and enhance society card display
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor SocietiesScreen: improve layout and enhance society card display
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor MessagesPage: replace joinedChannels with joinedSocieties and update UI accordingly
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor MessagesPage: replace joinedChannels with joinedSocieties and update UI accordingly
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor AppState: clean up society data structure by removing contact information and member count
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor AppState: clean up society data structure by removing contact information and member count
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, added admin and user feature differentiation for clarity
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, added admin and user feature differentiation for clarity
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor AppState: enhance societies and events data structure, add contact information, and streamline logic
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor AppState: enhance societies and events data structure, add contact information, and streamline logic
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor Society class: remove sample societies data and streamline class structure
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor Society class: remove sample societies data and streamline class structure
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor Event model: add missing properties and remove unused date formatting
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor Event model: add missing properties and remove unused date formatting
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor EventDetailScreen: update date formatting and clean up unused properties
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor EventDetailScreen: update date formatting and clean up unused properties
+Trips424, uditini431@gmail.com, 2026-04-20, Announcements: when end time is met, the announcement is removed from the tab
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor AppState: remove dummy data and streamline class structure
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor AppState: remove dummy data and streamline class structure
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, AppState: remove unimplemented library placeholder
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, AppState: remove unimplemented library placeholder
+Trips424, uditini431@gmail.com, 2026-04-20, Announcements: added end time when an announcement is made
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, AppState: remove dummy data and streamline class structure
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, AppState: remove dummy data and streamline class structure
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Enhance AppState: replace dummy data with detailed sample societies, events, and announcements
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Enhance AppState: replace dummy data with detailed sample societies, events, and announcements
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Replace dummy data with detailed sample societies, events, and announcements
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Replace dummy data with detailed sample societies, events, and announcements
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, AppState: encapsulate authentication state and improve getter methods
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, AppState: encapsulate authentication state and improve getter methods
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, AppState: replace dummy data with detailed sample societies, events, and announcements
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, AppState: replace dummy data with detailed sample societies, events, and announcements
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add Announcement model: create new class for announcements with required fields
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add Announcement model: create new class for announcements with required fields
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Society model: remove unused fields and streamline constructor parameters
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Society model: remove unused fields and streamline constructor parameters
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, fixed further errors
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, fixed further errors
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, MainTabs: remove unused imports and update navigation structure
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, MainTabs: remove unused imports and update navigation structure
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add navigation to SocietyDetailScreen from SocietyBrowserScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add navigation to SocietyDetailScreen from SocietyBrowserScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add society listing functionality to SocietyBrowserScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add society listing functionality to SocietyBrowserScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add SocietyBrowserScreen for society discovery and search functionality
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add SocietyBrowserScreen for society discovery and search functionality
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, fixed errors
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, fixed errors
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add FeedScreen to MainTabs for improved navigation
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add FeedScreen to MainTabs for improved navigation
+waynedsz, waynedesouza33@gmail.com, 2026-04-20,  _AnnouncementCard and update FeedScreen to display society announcements with relevant details
+waynedsz, waynedesouza33@gmail.com, 2026-04-20,  _AnnouncementCard and update FeedScreen to display society announcements with relevant details
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, FeedScreen to display joined societies and their categories, with a message for unjoined users
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, FeedScreen to display joined societies and their categories, with a message for unjoined users
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Enhance _AnnouncementCard to display society name and date alongside title
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Enhance _AnnouncementCard to display society name and date alongside title
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Create FeedScreen to display society updates
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Create FeedScreen to display society updates
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, added more to the registration page, an email and password box prompt now displays, and users can create an account here
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, added more to the registration page, an email and password box prompt now displays, and users can create an account here
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add button to navigate to ContactInfoScreen in SocietyDetailScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add button to navigate to ContactInfoScreen in SocietyDetailScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add committee member details to ContactInfoScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add committee member details to ContactInfoScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, feat: Implement ContactInfoScreen to display society contact information
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, feat: Implement ContactInfoScreen to display society contact information
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add 'Save to Calendar' button in EventDetailScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add 'Save to Calendar' button in EventDetailScreen
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, improved functionality of message function after user joins society
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, improved functionality of message function after user joins society
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, refactor: Update EventDetailScreen layout and improve description display
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, refactor: Update EventDetailScreen layout and improve description display
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, feat: Add EventDetailScreen and navigation from SocietyDetailScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, feat: Add EventDetailScreen and navigation from SocietyDetailScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, refactor: Remove registration link from SignInScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, refactor: Remove registration link from SignInScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, refactor: Simplify navigation to RegisterScreen in SignInScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, refactor: Simplify navigation to RegisterScreen in SignInScreen
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add registration screen and navigation link from sign-in screen
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add registration screen and navigation link from sign-in screen
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, feat: Implement form validation for sign-in button
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, feat: Implement form validation for sign-in button
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, feat: Add email and password fields to SignInScreen with validation
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, feat: Add email and password fields to SignInScreen with validation
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor: Convert SignInScreen to StatefulWidget and implement form handling
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor: Convert SignInScreen to StatefulWidget and implement form handling
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, fixed errors
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, fixed errors
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor: Update SignInScreen to use Provider for authentication state management
+Trips424, uditini431@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Trips424, uditini531@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+Trips424, uditini431@gmail.com, 2026-04-20, added functionality, where when user joins society it adds to a message group of the same name
+Trips424, uditini531@gmail.com, 2026-04-20, added functionality, where when user joins society it adds to a message group of the same name
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor: Add authentication methods for user login and logout
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor: Introduce AppTheme class for centralized theme management
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor: Remove MessagesPage and SignInScreen components to streamline codebase
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Update README.md to enhance project description and detail app features
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor SignInScreen to simplify text styling and improve layout consistency
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor SocietyDetailScreen to improve code readability, enhance event display, and ensure proper widget structure
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor SocietyDetailScreen to enhance layout, improve event display, and streamline join/leave button functionality
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor SocietyDetailScreen to remove redundant UI elements and streamline join/leave button functionality
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, Added copilot changes, test 2
+Justin Burfoot, jburfoot12@gmail.com, 2026-04-20, attempted to update messaging, test commit
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Enhance SocietyDetailScreen with event listing and join/leave functionality
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add upcoming events section to SocietyDetailScreen with dynamic event listing
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor SocietyDetailScreen layout for improved structure and readability by adjusting widget properties and adding missing imports
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add SocietyDetailScreen to display society information with a styled header
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add join/leave button for societies with feedback messages
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor SocietiesScreen layout for improved readability by formatting code and adjusting widget properties
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Enhance SocietiesScreen UI by replacing ListTile with a custom Card layout, improving visual structure and adding society details
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor SocietiesScreen to enable search functionality with a TextField and update state management
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Implement dynamic list of societies in SocietiesScreen using Consumer for state management
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add SocietiesScreen with basic UI structure including AppBar and loading text
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Enhance SignInScreen button style with custom colors, padding, and rounded corners for improved aesthetics
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Enhance SignInScreen UI by adding app icon and branding text for improved user experience
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor SignInScreen to enhance UI with a gradient background and add label to sign-in button
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add intl package dependency and update pubspec.lock
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor main.dart to integrate ChangeNotifierProvider for AppState and update pubspec.yaml to include provider dependency
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Implement AppState class to manage societies and events with join, leave, save, and unsave functionalities
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Format event descriptions for better readability
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add sample events data for various societies and clubs
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Refactor sample societies data to remove const and improve description formatting
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add sample societies data for various clubs and organizations
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add Event model class with properties, copyWith method, and formatted date/time getters
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add Society model class with properties and copyWith method
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add AppTextStyles class for centralized text styling management
+waynedsz, waynedesouza33@gmail.com, 2026-04-20, Add AppColours class for centralized color management
+justinb14, jburfoot12@gmail.com, 2026-03-03, added a dropdown menu for announcements, the options in this dropdown menu relate to the names of the societies in the home screen
+justinb14, jburfoot12@gmail.com, 2026-03-03, added new feature where users clicking on a soc in the home screen will display the announcements relevant to that society.
+justinb14, jburfoot12@gmail.com, 2026-03-03, added feature to divide joined socities and available socities in the home screen
+justinb14, jburfoot12@gmail.com, 2026-03-03, changed post join message from 'joined' to 'sent join reqest to admin'
+waynedsz, waynedesouza33@gmail.com, 2026-03-03, Refactor main.dart to use Builder for SignInScreen navigation context
+waynedsz, waynedesouza33@gmail.com, 2026-03-03, Refactor sign-in logic to conditionally navigate to main tabs or invoke callback
+waynedsz, waynedesouza33@gmail.com, 2026-03-03, Refactor SignInScreen to simplify UI by removing email/password form and retaining only "Sign in with UoP" button
+waynedsz, waynedesouza33@gmail.com, 2026-03-03, Implement sign-in screen navigation to main tabs after successful sign-in
+justinb14, jburfoot12@gmail.com, 2026-03-03, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+justinb14, jburfoot12@gmail.com, 2026-03-03, fully corrected image picker, no errors now show
+chikbunting, chikbunting04@gmail.com, 2026-03-03, Update package versions and SHA256 checksums in pubspec.lock
+waynedsz, waynedesouza33@gmail.com, 2026-03-03, Replace MainTabs with SignInScreen as the home widget in MyApp
+waynedsz, waynedesouza33@gmail.com, 2026-03-03, Implement sign-in screen with email/password form and UoP login option
+justinb14, jburfoot12@gmail.com, 2026-03-03, added feature which shows file name after image is picked in creation tab
+justinb14, jburfoot12@gmail.com, 2026-03-03, Fixed errors related to image insertion
+justinb14, jburfoot12@gmail.com, 2026-03-03, Merge branch 'main' of https://github.com/TEAM-4D1/sociefy
+waynedsz, waynedesouza33@gmail.com, 2026-03-03, Implement MainTabs widget with navigation for Home, Announcements, and Messages
+justinb14, jburfoot12@gmail.com, 2026-03-03, Added an image picker in the creation tab of the home screen when users choose to create a new society. Overflow error fixed
+justinb14, jburfoot12@gmail.com, 2026-03-03, Changes made to home screen, users can now create societies, with a title and a description and a join button given, must add permissions so those with relevent credentials in sign in page are the only ones who can create societies.
+waynedsz, waynedesouza33@gmail.com, 2026-03-03, Implement HomePage widget and update main.dart to include home_screen.dart
+chikbunting, chikbunting04@gmail.com, 2026-02-24, Refactor main app structure: replace main entry point and implement MyApp class with navigation tabs
+chikbunting, chikbunting04@gmail.com, 2026-02-24, Remove main app entry point and associated MyApp class; update home screen comment for logo rendering
+chikbunting, chikbunting04@gmail.com, 2026-02-24, Co-authored-by: Justin <justinb14@users.noreply.github.com> Co-authored-by: wdszn <wdszn@users.noreply.github.com> Co-authored-by: Udit Tripathy <Trips424@users.noreply.github.com>
+chikbunting, chikbunting04@gmail.com, 2026-02-24, Co-authored-by: Justin <justinb14@users.noreply.github.com> Co-authored-by: wdszn <wdszn@users.noreply.github.com>
+chikbunting, chikbunting04@gmail.com, 2026-02-24, first commit
