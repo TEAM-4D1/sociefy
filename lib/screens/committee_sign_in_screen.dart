@@ -48,7 +48,7 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
       );
       return;
     }
-    if (enteredEmail.toLowerCase() != AdminConfig.adminEmail ||
+    if (enteredEmail.toLowerCase() != AdminConfig.adminEmail.toLowerCase() ||
         enteredPassword != AdminConfig.adminPassword) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
