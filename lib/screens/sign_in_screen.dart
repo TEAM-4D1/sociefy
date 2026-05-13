@@ -216,9 +216,7 @@ class _SignInScreenState extends State<SignInScreen>
                             ),
                           ),
 
-                          const SizedBox(height: 12),
-
-                          // GUEST
+                          const SizedBox(height: 12),                          // GUEST
                           TextButton(
                             onPressed: () async {
                               final appState = Provider.of<AppState>(
@@ -230,6 +228,10 @@ class _SignInScreenState extends State<SignInScreen>
                                 isAdmin: false,
                               );
                               if (!mounted) return;
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (_) => const MainTabs()),
+                                (route) => false,
+                              );
                             },
                             child: const Text(
                               'Continue as Guest',
