@@ -15,7 +15,9 @@ void main() {
       );
     }
 
-    testWidgets('search text field renders on screen', (WidgetTester tester) async {
+    testWidgets('search text field renders on screen', (
+      WidgetTester tester,
+    ) async {
       final appState = AppState(skipFirebase: true);
       await tester.pumpWidget(buildTestWidget(appState));
 
@@ -31,18 +33,23 @@ void main() {
       expect(find.byType(FilterChip), findsOneWidget);
     });
 
-    testWidgets('screen renders shimmer placeholders when societies list is empty', (WidgetTester tester) async {
-      final appState = AppState(skipFirebase: true);
-      await tester.pumpWidget(buildTestWidget(appState));
+    testWidgets(
+      'screen renders shimmer placeholders when societies list is empty',
+      (WidgetTester tester) async {
+        final appState = AppState(skipFirebase: true);
+        await tester.pumpWidget(buildTestWidget(appState));
 
-      // Empty list → shimmer containers, NOT "No societies found."
-      expect(find.byType(SocietyBrowserScreen), findsOneWidget);
-      expect(find.text('No societies found.'), findsNothing);
-    });
+        // Empty list → shimmer containers, NOT "No societies found."
+        expect(find.byType(SocietyBrowserScreen), findsOneWidget);
+        expect(find.text('No societies found.'), findsNothing);
+      },
+    );
 
-    testWidgets('"No societies found." shows when search matches nothing', (WidgetTester tester) async {
+    testWidgets('"No societies found." shows when search matches nothing', (
+      WidgetTester tester,
+    ) async {
       final appState = AppState(skipFirebase: true);
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Chess Club',
         category: 'Academic',
         description: 'Chess',
@@ -56,15 +63,17 @@ void main() {
       expect(find.text('No societies found.'), findsOneWidget);
     });
 
-    testWidgets('typing into search field updates displayed list', (WidgetTester tester) async {
+    testWidgets('typing into search field updates displayed list', (
+      WidgetTester tester,
+    ) async {
       final appState = AppState(skipFirebase: true);
 
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Computer Science Club',
         category: 'Academic',
         description: 'For CS enthusiasts',
       );
-      appState.createSociety(
+      await appState.createSociety(
         name: 'Dance Society',
         category: 'Arts',
         description: 'For dancers',
@@ -85,7 +94,9 @@ void main() {
       expect(find.text('Dance Society'), findsNothing);
     });
 
-    testWidgets('filtering by search shows correct society results', (WidgetTester tester) async {
+    testWidgets('filtering by search shows correct society results', (
+      WidgetTester tester,
+    ) async {
       final appState = AppState(skipFirebase: true);
 
       appState.createSociety(
@@ -111,7 +122,9 @@ void main() {
       expect(find.text('Photography Club'), findsNothing);
     });
 
-    testWidgets('clearing search field shows all societies again', (WidgetTester tester) async {
+    testWidgets('clearing search field shows all societies again', (
+      WidgetTester tester,
+    ) async {
       final appState = AppState(skipFirebase: true);
 
       appState.createSociety(
@@ -143,7 +156,9 @@ void main() {
       expect(find.text('Movie Club'), findsOneWidget);
     });
 
-    testWidgets('society cards display correct information', (WidgetTester tester) async {
+    testWidgets('society cards display correct information', (
+      WidgetTester tester,
+    ) async {
       final appState = AppState(skipFirebase: true);
 
       appState.createSociety(
@@ -160,7 +175,9 @@ void main() {
       expect(find.text('Academic'), findsWidgets);
     });
 
-    testWidgets('multiple societies render in list', (WidgetTester tester) async {
+    testWidgets('multiple societies render in list', (
+      WidgetTester tester,
+    ) async {
       final appState = AppState(skipFirebase: true);
 
       appState.createSociety(
