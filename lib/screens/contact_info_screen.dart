@@ -29,6 +29,7 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
       widget.society.committeeMembers,
     );
   }
+
   /// Shows a dialog to edit an existing committee member's information at the specified index.
   void _editMember(int index) async {
     final member = _committeeMembers[index];
@@ -60,6 +61,7 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
       }
     }
   }
+
   /// Shows a dialog to add a new committee member and adds them to the list if confirmed.
   void _addMember() async {
     final result = await showDialog<CommitteeMember>(
@@ -92,13 +94,13 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
   }
 
   /// Removes a committee member from the list at the specified index.
-  void _removeMember(int index) {
+  void _removeMember(int index) async {
     setState(() {
       _committeeMembers.removeAt(index);
     });
     // Save updated committee members to Firestore
     try {
-      FirebaseFirestore.instance
+      await FirebaseFirestore.instance
           .collection('societies')
           .doc(widget.society.id)
           .update({

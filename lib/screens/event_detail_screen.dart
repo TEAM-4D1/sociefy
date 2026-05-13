@@ -72,7 +72,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   /// Checks if the user has already RSVP'd by querying the Firestore 'rsvps' collection.
   /// Skips the lookup for guest users.
   Future<void> _checkRsvpStatus() async {
-    if (widget.userId.isEmpty || widget.userId.startsWith('guest')) return;
+    if (widget.userId.isEmpty || widget.userId == 'guest') return;
     try {
       final docSnapshot = await FirebaseFirestore.instance
           .collection('rsvps')
@@ -126,9 +126,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
       }
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Opening calendar...')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Opening calendar...')));
       }
     } catch (e) {
       if (context.mounted) {
@@ -268,12 +268,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  icon: Icon(
-                    _isSaved ? Icons.bookmark : Icons.bookmark_border,
-                  ),
+                  icon: Icon(_isSaved ? Icons.bookmark : Icons.bookmark_border),
                   label: Text(_isSaved ? 'Unsave Event' : 'Save Event'),
-                  onPressed:
-                      isGuest ? null : () => _toggleSave(context),
+                  onPressed: isGuest ? null : () => _toggleSave(context),
                 ),
               ),
               const SizedBox(height: 12),

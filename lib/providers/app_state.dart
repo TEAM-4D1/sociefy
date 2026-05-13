@@ -384,12 +384,11 @@ class AppState extends ChangeNotifier {
     this.isAdmin = isAdmin;
     notifyListeners();
 
-    // Fire all data loads without awaiting
-    loadSocieties();
+    // Fire all data loads without awaiting    loadSocieties();
     loadEvents();
     loadAnnouncements();
 
-    if (!isGuest) {
+    if (!isGuest && this.userId != null) {
       loadJoinedSocieties(this.userId!);
       loadSavedEvents(this.userId!);
     }
