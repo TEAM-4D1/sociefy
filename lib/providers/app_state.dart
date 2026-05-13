@@ -235,8 +235,6 @@ class AppState extends ChangeNotifier {
             return newAnnouncement;
           }).toList();
 
-          notifyListeners();
-
           // Launch likes/comments loads in parallel for all announcements
           await Future.wait([
             for (final announcement in _announcements) ...[
@@ -244,6 +242,8 @@ class AppState extends ChangeNotifier {
               _loadCommentsForAnnouncement(announcement),
             ],
           ]);
+
+          notifyListeners();
         });
   }
 
