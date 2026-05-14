@@ -958,3 +958,6 @@ class _CreatePostDialogState extends State<_CreatePostDialog> {
     );
   }
 }
+
+// Use types from the firebase_storage package; local shim classes
+// removed to avoid type conflicts with the real package.

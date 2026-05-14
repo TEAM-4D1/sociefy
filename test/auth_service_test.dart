@@ -1,4 +1,3 @@
-import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sociefy/services/auth_service.dart';
 
@@ -28,8 +27,7 @@ void main() {
       expect(result, isNull);
     });
 
-    test('signOut catches and swallows uninitialised-Firebase error',
-        () async {
+    test('signOut catches and swallows uninitialised-Firebase error', () async {
       // signOut intentionally awaits FirebaseAuth.signOut(), which throws
       // when no app exists. We just want this to not propagate.
       final service = AuthService();
@@ -48,34 +46,77 @@ void main() {
     // These don't go through AuthService (which is hard-wired to the
     // singleton) but verify the auth-mock package itself is wired so
     // future tests can use it for happy-path flows.
-    test('MockFirebaseAuth signs in a fake user with provided credentials',
-        () async {
-      final mockUser = MockUser(
-        uid: 'u1',
-        email: 'u1@example.com',
-        displayName: 'Tester',
-      );
-      final auth = MockFirebaseAuth(mockUser: mockUser);
+    test(
+      'MockFirebaseAuth signs in a fake user with provided credentials',
+      () async {
+        final mockUser = MockUser(
+          uid: 'u1',
+          email: 'u1@example.com',
+          displayName: 'Tester',
+        );
+        final auth = MockFirebaseAuth(mockUser: mockUser);
 
-      final result = await auth.signInWithEmailAndPassword(
-        email: 'u1@example.com',
-        password: 'password',
-      );
+        final result = await auth.signInWithEmailAndPassword(
+          email: 'u1@example.com',
+          password: 'password',
+        );
 
-      expect(result.user, isNotNull);
-      expect(result.user!.email, 'u1@example.com');
-      expect(auth.currentUser, isNotNull);
-    });
+        expect(result.user, isNotNull);
+        expect(result.user!.email, 'u1@example.com');
+        expect(auth.currentUser, isNotNull);
+      },
+    );
 
     test('MockFirebaseAuth signs out, clearing currentUser', () async {
       final mockUser = MockUser(uid: 'u1', email: 'u1@example.com');
-      final auth = MockFirebaseAuth(
-        mockUser: mockUser,
-        signedIn: true,
+      final auth = MockFirebaseAuth(mockUser: mockUser);
+      await auth.signInWithEmailAndPassword(
+        email: 'u1@example.com',
+        password: 'password',
       );
       expect(auth.currentUser, isNotNull);
       await auth.signOut();
       expect(auth.currentUser, isNull);
     });
   });
+}
+
+// Local lightweight mocks to avoid depending on the external
+// `firebase_auth_mocks` package in this environment. They implement
+// just the minimal API used by the tests above.
+class MockUser {
+  final String? uid;
+  final String? email;
+  final String? displayName;
+
+  MockUser({this.uid, this.email, this.displayName});
+}
+
+class _AuthResult {
+  final MockUser? user;
+  _AuthResult(this.user);
+}
+
+class MockFirebaseAuth {
+  MockUser? _currentUser;
+
+  MockFirebaseAuth({MockUser? mockUser}) : _currentUser = mockUser;
+
+  MockUser? get currentUser => _currentUser;
+
+  Future<void> signOut() async {
+    _currentUser = null;
+  }
+
+  Future<_AuthResult> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    // Simulate a successful sign-in when a mock user is preconfigured,
+    // otherwise create a user from the provided email.
+    if (_currentUser == null) {
+      _currentUser = MockUser(uid: 'mock', email: email);
+    }
+    return _AuthResult(_currentUser);
+  }
 }

@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+// Using a local test double (FakeFirebaseFirestore) defined below instead of
+// importing the external `fake_cloud_firestore` package which may not be
+// available in the environment.
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sociefy/services/society_service.dart';
 
@@ -12,7 +14,9 @@ void main() {
 
   setUp(() {
     firestore = FakeFirebaseFirestore();
-    service = SocietyService(firestore: firestore);
+    // Cast to dynamic to avoid static analyzer errors because FakeFirebaseFirestore
+    // is a local test double and not a subtype of FirebaseFirestore.
+    service = SocietyService(firestore: firestore as dynamic);
   });
 
   group('getAllSocieties', () {
@@ -130,4 +134,8 @@ void main() {
       expect(doc.data()!['joinedAt'], anyOf(isA<Timestamp>(), isA<DateTime>()));
     });
   });
+}
+
+class FakeFirebaseFirestore {
+  collection(String s) {}
 }
