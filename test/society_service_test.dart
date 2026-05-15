@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-// Using a local test double (FakeFirebaseFirestore) defined below instead of
-// importing the external `fake_cloud_firestore` package which may not be
-// available in the environment.
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sociefy/services/society_service.dart';
 
@@ -14,9 +12,7 @@ void main() {
 
   setUp(() {
     firestore = FakeFirebaseFirestore();
-    // Cast to dynamic to avoid static analyzer errors because FakeFirebaseFirestore
-    // is a local test double and not a subtype of FirebaseFirestore.
-    service = SocietyService(firestore: firestore as dynamic);
+    service = SocietyService(firestore: firestore);
   });
 
   group('getAllSocieties', () {
@@ -116,8 +112,6 @@ void main() {
   group('error paths', () {
     test('uses FirebaseFirestore.instance lazily when no override is given',
         () {
-      // Creating a service without an override does not throw — the
-      // singleton is only resolved when a method is called.
       expect(() => SocietyService(), returnsNormally);
     });
   });
@@ -128,14 +122,7 @@ void main() {
       await service.joinSociety('u1', 'sA');
 
       final doc = await firestore.collection('memberships').doc('u1_sA').get();
-      // FakeFirebaseFirestore materialises FieldValue.serverTimestamp() as
-      // a real Timestamp on read, so we just assert the field is set and
-      // is a recognised Firestore time type.
       expect(doc.data()!['joinedAt'], anyOf(isA<Timestamp>(), isA<DateTime>()));
     });
   });
-}
-
-class FakeFirebaseFirestore {
-  collection(String s) {}
 }
