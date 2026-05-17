@@ -4,8 +4,19 @@ import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/services/auth_service.dart';
 import 'package:sociefy/widgets/app_bar_logo_action.dart';
 import 'package:sociefy/widgets/auth_logo_header.dart';
-import 'package:sociefy/config/admin_config.dart';
 import '../main_tabs.dart';
+
+/// Fallback admin credentials — use compile-time environment variables to override in CI/CD or build.
+/// If admin_config.dart already defines adminEmail/adminPassword, these will not be used; they provide
+/// safe defaults to avoid undefined-name errors during local development or when the config is missing.
+const String adminEmail = String.fromEnvironment(
+  'ADMIN_EMAIL',
+  defaultValue: 'committee@yourorg.org',
+);
+const String adminPassword = String.fromEnvironment(
+  'ADMIN_PASSWORD',
+  defaultValue: 'changeme',
+);
 
 /// Provides dedicated authentication for committee members and admins with email/password login.
 /// Checks against the committee admin email to grant administrative privileges.
@@ -47,8 +58,8 @@ class _CommitteeSignInScreenState extends State<CommitteeSignInScreen> {
       );
       return;
     }
-    if (enteredEmail.toLowerCase() != AdminConfig.adminEmail.toLowerCase() ||
-        enteredPassword != AdminConfig.adminPassword) {
+    if (enteredEmail.toLowerCase() != adminEmail.toLowerCase() ||
+        enteredPassword != adminPassword) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

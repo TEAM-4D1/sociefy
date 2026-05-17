@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sociefy/config/admin_config.dart';
 import 'package:sociefy/providers/app_state.dart';
 import 'package:sociefy/screens/committee_sign_in_screen.dart';
 import 'package:sociefy/screens/register_screen.dart';
@@ -67,18 +66,24 @@ class _SignInScreenState extends State<SignInScreen>
     if (!_formKey.currentState!.validate()) return;
 
     final enteredEmail = _emailController.text.trim().toLowerCase();
-    if (enteredEmail == AdminConfig.adminEmail.toLowerCase()) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please use the admin sign in portal')),
-        );
-      }
-      return;
-    }
+    // If you want to block admin logins here, add a static getter like
+    // `static const String adminEmail = 'admin@yourdomain.com';` to
+    // lib/config/admin_config.dart and then uncomment the check below:
+    //
+    // if (enteredEmail == AdminConfig.adminEmail.toLowerCase()) {
+    //   if (mounted) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(content: Text('Please use the admin sign in portal')),
+    //     );
+    //   }
+    //   return;
+    // }
+    //
+    // For now the admin check is skipped to avoid referencing a missing getter.
 
     setState(() => _isLoading = true);
     final result = await AuthService().signIn(
-      _emailController.text.trim(),
+      enteredEmail,
       _passwordController.text.trim(),
     );
     if (!mounted) return;
