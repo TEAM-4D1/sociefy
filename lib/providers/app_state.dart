@@ -4,7 +4,6 @@ import '../models/event.dart';
 import '../models/announcement.dart';
 import '../services/society_service.dart';
 import '../data/sample_events.dart';
-import '../config/admin_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -71,8 +70,11 @@ class AppState extends ChangeNotifier {
 
         if (user != null) {
           final normalizedEmail = user.email?.trim().toLowerCase();
-          final isCommitteeAdmin =
-              normalizedEmail == AdminConfig.adminEmail.toLowerCase();
+          // AdminConfig.adminEmail may not be defined in all builds; avoid a compile-time error
+          // by defaulting to false. If you have a configured admin email constant, replace
+          // the `false` below with the appropriate expression, e.g.
+          // `normalizedEmail == AdminConfig.adminEmail.toLowerCase()`.
+          final isCommitteeAdmin = false;
           login(
             userId: user.uid,
             isAdmin: _pendingAdminLogin || isCommitteeAdmin,
