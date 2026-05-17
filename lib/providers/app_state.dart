@@ -69,11 +69,10 @@ class AppState extends ChangeNotifier {
         }
 
         if (user != null) {
-          final normalizedEmail = user.email?.trim().toLowerCase();
           // AdminConfig.adminEmail may not be defined in all builds; avoid a compile-time error
           // by defaulting to false. If you have a configured admin email constant, replace
           // the `false` below with the appropriate expression, e.g.
-          // `normalizedEmail == AdminConfig.adminEmail.toLowerCase()`.
+          // `user.email?.trim().toLowerCase() == AdminConfig.adminEmail.toLowerCase()`.
           final isCommitteeAdmin = false;
           login(
             userId: user.uid,
